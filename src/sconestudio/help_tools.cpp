@@ -4,6 +4,7 @@
 #include "xo/filesystem/filesystem.h"
 #include "scone/core/system_tools.h"
 #include "QDesktopServices"
+#include "studio_tools.h"
 
 namespace scone
 {
@@ -12,7 +13,7 @@ namespace scone
 		static xo::flat_map<QString, QString> data;
 		if ( data.empty() )
 		{
-			auto vec = xo::split_str( xo::load_string( GetFolder( SCONE_RESOURCE_FOLDER ) / "help/keywords.txt" ), "\n" );
+			auto vec = xo::split_str( xo::load_string( GetSconeStudioFolder() / "resources/help/keywords.txt" ), "\n" );
 			for ( const auto& k : vec )
 			{
 				QString doku = QString( k.c_str() ).remove( ".txt" );

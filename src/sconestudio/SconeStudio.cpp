@@ -51,6 +51,7 @@
 #include "file_tools.h"
 #include "model_conversion.h"
 #include "scone/sconelib_config.h"
+#include "studio_tools.h"
 
 using namespace scone;
 using namespace xo::literals;
@@ -251,7 +252,7 @@ bool SconeStudio::init()
 		this, SLOT( selectBrowserItem( const QModelIndex&, const QModelIndex& ) ) );
 
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
-	ui.osgViewer->createHud( GetFolder( SCONE_UI_RESOURCE_FOLDER ) / "scone_hud.png" );
+	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
 	//ui.tabWidget->tabBar()->tabButton( 0, QTabBar::RightSide )->resize( 0, 0 );
 
 	ui.playControl->setRange( 0, 100 );

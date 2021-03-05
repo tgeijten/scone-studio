@@ -27,6 +27,7 @@
 
 #include "scone/sconelib_config.h"
 #include "scone/core/Exception.h"
+#include "studio_tools.h"
 
 int main( int argc, char *argv[] )
 {
@@ -46,7 +47,7 @@ int main( int argc, char *argv[] )
 		xo::log::debug( "Created log file: ", log_file );
 
 		// init plash screen
-		QPixmap splash_pm( to_qt( scone::GetFolder( scone::SCONE_UI_RESOURCE_FOLDER ) / "scone_splash.png" ) );
+		QPixmap splash_pm( to_qt( GetSconeStudioFolder() / "resources/ui/scone_splash.png" ) );
 		QSplashScreen splash( splash_pm );
 		splash.show();
 		a.processEvents();
