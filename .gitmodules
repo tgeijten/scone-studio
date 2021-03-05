@@ -4,3 +4,6 @@
 [submodule "submodules/vis"]
 	path = submodules/vis
 	url = https://github.com/tgeijten/vis.git
+[submodule "scone-core"]
+	path = scone-core
+	url = ../scone-core.git
