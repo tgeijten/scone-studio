@@ -1,28 +1,12 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-project(scone)
+project(scone-studio)
 
 # To create a folder hierarchy within Visual Studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # compilation database for completion on Linux
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# Find dependencies.
-# ------------------
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/CMakeModules")
-
-option(SCONE_OPENSIM_3 "Support OpenSim 3.3" ON)
-option(SCONE_OPENSIM_4 "Support OpenSim 4.0 - EXPERIMENTAL" OFF)
-option(SCONE_LUA "Support for lua scripting" OFF)
-option(SCONE_HYFYDY "Support Hyfydy - EXPERIMENTAL" OFF)
-option(SCONE_ENABLE_PROFILER "Enable SCONE profiler" ON)
-option(SCONE_SCONESTUDIO_REQUIRED "Require that sconestudio is built" OFF)
-option(SCONE_SCONESTUDIO "Build sconestudio" ON)
-option(SCONE_EXPERIMENTAL_FEATURES "Enable experimental features" OFF)
-
-# Find TCLAP
-find_path( TCLAP_DIR NAMES "tclap/CmdLine.h" PATHS "${CMAKE_SOURCE_DIR}/contrib/tclap-1.2.1/include" )
 
 # Various settings
 # ----------------
@@ -36,40 +20,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 # Silence CMake warning on OSX.
 set(CMAKE_MACOSX_RPATH ON)
 
-# Build lua if SCONE_LUA is set
-if (SCONE_LUA)
-	add_subdirectory(contrib/lua-5.3.5)
-endif()
-
-#
-# Add submodules
-#
-add_subdirectory(submodules/xo)
-add_subdirectory(submodules/spot)
-
 #
 # Add targets
 #
-add_subdirectory(src/sconelib)
-add_subdirectory(src/sconecmd)
-add_subdirectory(src/sconeunittests)
+add_subdirectory(scone-core)
 
-if (SCONE_SCONESTUDIO)
-    find_package(Qt5 COMPONENTS Widgets OpenGL PrintSupport REQUIRED)
-    add_subdirectory(submodules/vis)
-	add_subdirectory(src/sconestudio)
-endif()
-
-if (SCONE_HYFYDY)
-	find_path( SCONE_HYFYDY_DIR "sconehfd/sconehfd/ModelHfd.h" HINTS "../sconehfd" )
-	add_subdirectory("${SCONE_HYFYDY_DIR}" "${CMAKE_BINARY_DIR}/sconehfd")
-endif()
-
-#
-# Add tests
-#
-enable_testing()
-if (XO_TEST_ENABLED)
-	add_test( xo_test "${EXECUTABLE_OUTPUT_PATH}/xo_test")
-endif()
-add_test( scone_unit_tests "${EXECUTABLE_OUTPUT_PATH}/sconeunittests")
+find_package(Qt5 COMPONENTS Widgets OpenGL PrintSupport REQUIRED)
+add_subdirectory(submodules/vis)
+add_subdirectory(src/sconestudio)
