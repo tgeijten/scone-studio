@@ -23,7 +23,7 @@ set(CMAKE_MACOSX_RPATH ON)
 #
 # Add targets
 #
-add_subdirectory(scone-core)
+add_subdirectory(scone)
 
 find_package(Qt5 COMPONENTS Widgets OpenGL PrintSupport REQUIRED)
 add_subdirectory(submodules/vis)
