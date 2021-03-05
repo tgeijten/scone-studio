@@ -24,6 +24,8 @@ set(STUDIOFILES
 	StudioSettings.cpp
 	SconeStorageDataModel.h
 	SconeStorageDataModel.cpp
+	studio_tools.h
+	studio_tools.cpp
 	ResultsFileSystemModel.h
 	ResultsFileSystemModel.cpp
 	ParTableModel.h
@@ -183,7 +185,7 @@ if(MSVC)
 	source_group("Resource Files" FILES ${RESOURCEFILES})
 
 	# Write .sconeroot to build folder
-	file(WRITE "${CMAKE_BINARY_DIR}/.sconeroot" ${CMAKE_SOURCE_DIR})
+	file(WRITE "${CMAKE_BINARY_DIR}/.sconestudioroot" ${CMAKE_SOURCE_DIR})
 	
 	# Copy DLLs
 	SET(DLL_TARGET_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>)
@@ -204,55 +206,6 @@ if(MSVC)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Widgets_DIR}/../../../plugins/platforms/qwindows$<$<CONFIG:debug>:d>.dll "${DLL_TARGET_DIR}/platforms"
 	)
 	
-	# Copy all OpenSim3 DLLs
-	if (SCONE_OPENSIM_3)
-		# check if platform is x86 or x64 (OpenSim has different names for dynamic library depending on the ABI)
-		if(${CMAKE_SIZEOF_VOID_P} EQUAL 8) # check if x64
-			set(PTHREAD pthreadVC2_x64)
-			set(LIBGCC libgcc_s_sjlj-1)
-			set(SIMBODY_NAMESPACE ${SIMBODY_LIBRARY_PREFIX})
-		else() # else x86k
-			set(PTHREAD pthreadVC2)
-			set(LIBGCC libgcc_s_dw2-1)
-			set(SIMBODY_NAMESPACE "OpenSim_")
-		endif()
-
-		SET(OPENSIM_DLLS ${OPENSIM_LIBRARY_PREFIX}Tools ${OPENSIM_LIBRARY_PREFIX}Analyses ${OPENSIM_LIBRARY_PREFIX}Actuators ${OPENSIM_LIBRARY_PREFIX}Simulation ${OPENSIM_LIBRARY_PREFIX}Lepton ${OPENSIM_LIBRARY_PREFIX}Common 
-			${SIMBODY_NAMESPACE}SimTKsimbody ${SIMBODY_NAMESPACE}SimTKmath ${SIMBODY_NAMESPACE}SimTKcommon)
-		foreach(opensimdll ${OPENSIM_DLLS})
-			add_custom_command(TARGET sconestudio POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENSIM_INSTALL_DIR}/bin/${opensimdll}$<$<CONFIG:debug>:_d>.dll ${DLL_TARGET_DIR}
-			)
-		endforeach()
-
-		# Copy extra opensim files
-		SET(OPENSIM_EXTRA_DLLS libblas liblapack ${LIBGCC} libgfortran-3 libquadmath-0 ${PTHREAD})
-		foreach(opensimdll ${OPENSIM_EXTRA_DLLS})
-			add_custom_command(TARGET sconestudio POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENSIM_INSTALL_DIR}/bin/${opensimdll}.dll ${DLL_TARGET_DIR}
-			)
-		endforeach()
-	endif()
-
-	# Copy all OpenSim4 DLLs
-	if (SCONE_OPENSIM_4)
-		SET(OPENSIM4_INSTALL_DIR "${OpenSim_DIR}/..")
-		SET(OPENSIM4_DLLS osimTools osimAnalyses osimActuators osimSimulation osimLepton osimCommon 
-			SimTKsimbody SimTKmath SimTKcommon)
-		foreach(opensimdll ${OPENSIM4_DLLS})
-			add_custom_command(TARGET sconestudio POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENSIM4_INSTALL_DIR}/bin/${opensimdll}$<$<CONFIG:debug>:_d>.dll ${DLL_TARGET_DIR}
-			)
-		endforeach()
-		# Copy extra opensim files
-		SET(OPENSIM4_EXTRA_DLLS libblas liblapack libgcc_s_sjlj-1 libgfortran-3 libquadmath-0)
-		foreach(opensimdll ${OPENSIM4_EXTRA_DLLS})
-			add_custom_command(TARGET sconestudio POST_BUILD
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENSIM4_INSTALL_DIR}/bin/${opensimdll}.dll ${DLL_TARGET_DIR}
-			)
-		endforeach()
-	endif()
-		
 	# Copy OSG DLLs
 	# get OSG_INSTALL_DIR
 	get_filename_component(OSG_INSTALL_DIR ${OSG_INCLUDE_DIR} DIRECTORY)
