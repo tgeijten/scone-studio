@@ -15,12 +15,53 @@
 #include "xo/system/error_code.h"
 #include "scone/core/Log.h"
 #include "xo/string/string_cast.h"
+#include "scone/core/system_tools.h"
+#include "xo/serialization/serialize.h"
+#include "qt_convert.h"
+#include "xo/filesystem/filesystem.h"
+
+#define SCONE_USE_RESULTS_CACHE 0
+
+xo::path results_cache_file() { return scone::GetSettingsFolder() / "results_cache.zml"; }
+
+namespace xo {
+	bool from_prop_node( const prop_node& pn, ResultsFileSystemModel::Status& stat ) {
+		stat.gen = pn.get<int>( "gen" );
+		stat.best = pn.get<double>( "best" );
+		stat.modified.fromString( to_qt( pn.get<string>( "best" ) ), Qt::ISODate );
+		return true;
+	}
+	prop_node to_prop_node( const ResultsFileSystemModel::Status& stat ) {
+		prop_node pn;
+		pn[ "gen" ] = stat.gen;
+		pn[ "best" ] = stat.best;
+		pn[ "modified" ] = stat.modified.toString( Qt::ISODate ).toStdString();
+		return pn;
+	}
+}
 
 ResultsFileSystemModel::ResultsFileSystemModel( QObject* parent ) : QFileSystemModel( parent )
-{}
+{
+#if SCONE_USE_RESULTS_CACHE
+	auto f = results_cache_file();
+	if ( xo::file_exists( f ) )
+	{
+		xo::error_code ec;
+		auto status_cache = xo::load_file( f, &ec );
+		if ( ec.good() )
+			xo::from_prop_node( status_cache, m_StatusCache );
+	}
+#endif
+}
 
 ResultsFileSystemModel::~ResultsFileSystemModel()
-{}
+{
+#if SCONE_USE_RESULTS_CACHE
+	xo::error_code ec;
+	auto status_cache = xo::to_prop_node( m_StatusCache );
+	xo::save_file( status_cache, results_cache_file(), &ec );
+#endif
+}
 
 ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo &fi ) const
 {
@@ -28,30 +69,33 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo &fi 
 	if ( fi.isFile() && fi.suffix() == "par" )
 	{
 		auto split = fi.completeBaseName().split( "_" );
-		if ( split.size() > 0 )
-			xo::from_str( split[ 0 ].toStdString(), stat.gen );
 		if ( split.size() > 2 )
-			xo::from_str( split[ 2 ].toStdString(), stat.best );
+		{
+			bool ok = false;
+			if ( auto gen = split[ 0 ].toInt( &ok ); ok )
+				stat.gen = gen;
+			if ( auto best = split[ 2 ].toDouble( &ok ); ok )
+				stat.best = best;
+		}
 	}
-	else
+	else if ( fi.isDir() )
 	{
 		fi.refresh();
 		auto filename = fi.fileName().toStdString();
 		auto cache_it = m_StatusCache.find( filename );
-		if ( cache_it != m_StatusCache.end() && cache_it->second.modified == fi.lastModified() )
+		if ( cache_it != m_StatusCache.end() && abs( cache_it->second.modified.secsTo( fi.lastModified() ) ) < 3 )
 			return cache_it->second;
 
 		//scone::log::trace( "Scanning folder ", fi.absoluteFilePath().toStdString() );
-		for ( QDirIterator dir_it( fi.absoluteFilePath() ); dir_it.hasNext(); )
+		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par" }, QDir::Files ); dir_it.hasNext(); )
 		{
 			QFileInfo fileinf = QFileInfo( dir_it.next() );
-			if ( fileinf.isFile() )
-			{
+			if ( fileinf.isFile() )	{
 				auto fs = getStatus( fileinf );
-				if ( fs.gen > stat.gen ) stat = fs;
+				if ( fs.gen > stat.gen )
+					stat = fs;
 			}
-			else if ( fileinf.fileName() != ".." && fileinf.fileName() != "." )
-			{
+			else if ( fileinf.fileName() != ".." && fileinf.fileName() != "." )	{
 				// do something?
 			}
 		}
