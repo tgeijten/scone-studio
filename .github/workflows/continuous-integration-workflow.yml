@@ -56,17 +56,17 @@ jobs:
     - name: Build SCONE
       run: cd $GITHUB_WORKSPACE && ./tools/unix_2d_build-scone
 
-    # - name: Rearrange SCONE into portable install dir
-    #   run: cd $GITHUB_WORKSPACE && ./tools/mac_3_create-install-dirtree
+    - name: Rearrange SCONE into portable install dir
+      run: cd $GITHUB_WORKSPACE && ./tools/mac_3_create-install-dirtree
 
-    # - name: Create .dmg file from the tree
-    #   run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
+    - name: Create .dmg file from the tree
+      run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
 
-    # - name: Upload DMG file as an artifact
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: sconestudio.dmg
-    #     path: build/*.dmg
+    - name: Upload DMG file as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: sconestudio.dmg
+        path: build/*.dmg
 
   linux:
     name: Build on Ubuntu 18.04
@@ -129,17 +129,17 @@ jobs:
       run: cd $GITHUB_WORKSPACE && ./tools/unix_2d_build-scone
 
 
-    # - name: Rearrange binaries into single dir
-    #   run: cd $GITHUB_WORKSPACE && ./tools/linux_3_create-install-dirtree
+    - name: Rearrange binaries into single dir
+      run: cd $GITHUB_WORKSPACE && ./tools/linux_3_create-install-dirtree
 
 
-    # - name: Package dir into deb package
-    #   run: cd $GITHUB_WORKSPACE && ./tools/linux_4_package
+    - name: Package dir into deb package
+      run: cd $GITHUB_WORKSPACE && ./tools/linux_4_package
 
 
-    # - name: Upload deb package artifact
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: deb-installer.zip
-    #     path: build/*.deb
+    - name: Upload deb package artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: deb-installer.zip
+        path: build/*.deb
 
