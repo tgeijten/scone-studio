@@ -84,7 +84,7 @@ EOF
 mkdir -p "${app_dir}/Contents/Resources/"
 
 # SconeStudio.app/Contents/Resources/Tutorials
-rsync -avz --delete "${PROJECT_DIR}/scenarios/Tutorials" "${app_dir}/Contents/Resources/"
+rsync -avz --delete "${PROJECT_DIR}/scenarios/scenarios/Tutorials" "${app_dir}/Contents/Resources/"
 
 # SconeStudio.app/Contents/Resources/geometry
 rsync -avz --delete "${PROJECT_DIR}/resources/geometry" "${app_dir}/Contents/Resources"
