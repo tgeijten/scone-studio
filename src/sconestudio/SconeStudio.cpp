@@ -682,7 +682,8 @@ bool SconeStudio::createScenario( const QString& any_file )
 	try
 	{
 		// create scenario and update viewer
-		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( any_file ) );
+		currentFilename = any_file;
+		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ) );
 		updateViewSettings();
 
 		// update parview
@@ -886,7 +887,7 @@ void SconeStudio::evaluateActiveScenario()
 
 void SconeStudio::performanceTest( bool write_stats )
 {
-	if ( createAndVerifyActiveScenario( false ) )
+	if ( !currentFilename.isEmpty() && createScenario( currentFilename ) )
 	{
 		auto par = SearchPoint( scenario_->GetModelObjective().info() );
 		if ( !write_stats )

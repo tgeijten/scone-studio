@@ -132,6 +132,7 @@ private:
 
 	// model
 	std::unique_ptr< scone::StudioModel > scenario_;
+	QString currentFilename;
 	bool createScenario( const QString& any_file );
 	bool createAndVerifyActiveScenario( bool always_create );
 	void updateModelDataWidgets();
