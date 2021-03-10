@@ -4,5 +4,5 @@
 
 xo::path GetSconeStudioFolder()
 {
-	return scone::GetInstallFolder() / "..";
+	return scone::GetInstallFolder().parent_path();
 }
