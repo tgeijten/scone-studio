@@ -1,9 +1,5 @@
 /_output/
 /bin/
-/doc/ref/
-/doc/html/
-/doc/xml/
-/doc/config/NaturalDocs/Working Data/
 /scenarios/Tutorials/*.sto
 /scenarios/UnitTests/*.sto
 /scenarios/UnitTests/Hyfydy
