@@ -889,7 +889,11 @@ void SconeStudio::performanceTest( bool write_stats )
 {
 	if ( !currentFilename.isEmpty() && createScenario( currentFilename ) )
 	{
-		auto par = SearchPoint( scenario_->GetModelObjective().info() );
+		auto filename = xo::path( currentFilename.toStdString() );
+		bool is_par_file = filename.extension_no_dot() == "par";
+		auto& inf = scenario_->GetModelObjective().info();
+		auto par = is_par_file ? SearchPoint( inf, filename ) : SearchPoint( inf );
+
 		if ( !write_stats )
 		{
 			xo::timer real_time;
