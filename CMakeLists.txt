@@ -28,3 +28,5 @@ add_subdirectory(scone)
 find_package(Qt5 COMPONENTS Widgets OpenGL PrintSupport REQUIRED)
 add_subdirectory(submodules/vis)
 add_subdirectory(src/sconestudio)
+
+enable_testing()
