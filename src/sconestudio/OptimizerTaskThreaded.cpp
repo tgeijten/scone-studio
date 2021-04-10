@@ -39,12 +39,21 @@ namespace scone
 
 	void OptimizerTaskThreaded::thread_func()
 	{
-		// do optimization
-		xo::path scenario_dir = xo::path( scenario_file_.toStdString() ).parent_path();
-		optimizer_ = CreateOptimizer( scenario_pn_, scenario_dir );
-		has_optimizer_ = true; // set the flag because unique_ptr can't be atomic
-		optimizer_->SetOutputMode( Optimizer::status_queue_output );
-		optimizer_->Run();
+		try
+		{
+			// do optimization
+			xo::path scenario_dir = xo::path( scenario_file_.toStdString() ).parent_path();
+			optimizer_ = CreateOptimizer( scenario_pn_, scenario_dir );
+			has_optimizer_ = true; // set the flag because unique_ptr can't be atomic
+			optimizer_->SetOutputMode( Optimizer::status_queue_output );
+			optimizer_->Run();
+		}
+		catch ( const std::exception& e )
+		{
+			log::critical( "Error optimizing ", scenario_file_.toStdString(), ": ", e.what() );
+			message_[ "error" ] = e.what();
+			has_message_ = true;
+		}
 		active_ = false;
 	}
 
@@ -66,8 +75,10 @@ namespace scone
 	std::deque<PropNode> OptimizerTaskThreaded::getMessages()
 	{
 		std::deque<PropNode> results;
-		if ( has_optimizer_ )
-			return results = optimizer_->GetStatusMessages();
+		if ( has_message_ )
+			results.emplace_back( message_ ), has_message_ = false;
+		else if ( has_optimizer_ )
+			results = optimizer_->GetStatusMessages();
 		return results;
 	}
 }

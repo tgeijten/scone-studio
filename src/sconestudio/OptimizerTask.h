@@ -25,6 +25,8 @@ namespace scone
 
 		const QString scenario_file_;
 		const QStringList options_;
+		PropNode message_;
+		std::atomic_bool has_message_;
 	};
 
 	u_ptr<OptimizerTask> createOptimizerTask( const QString& scenario, const QStringList& args = QStringList() );

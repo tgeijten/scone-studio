@@ -8,7 +8,8 @@ namespace scone
 {
 	OptimizerTask::OptimizerTask( const QString& scenario, const QStringList& options ) :
 		scenario_file_( scenario ),
-		options_( options )
+		options_( options ),
+		has_message_( false )
 	{}
 
 	OptimizerTask::~OptimizerTask()
