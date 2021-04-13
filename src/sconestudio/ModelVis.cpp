@@ -83,7 +83,7 @@ namespace scone
 			{
 				// #todo: add support for other shapes (i.e. planes)
 				contact_geoms.push_back( vis::mesh( parent, vis::shape_info{ cg->GetShape(), xo::color::cyan(), xo::vec3f::zero(), 0.75f } ) );
-				contact_geoms.back().set_material( contact_mat );
+				contact_geoms.back().set_material( cg->GetPos().is_null() ? bone_mat : contact_mat ); // use bone_mat if shape is at (0,0,0)
 				contact_geoms.back().pos_ori( vis::vec3f( cg->GetPos() ), vis::quatf( cg->GetOri() ) );
 			}
 		}
