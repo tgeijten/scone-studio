@@ -31,9 +31,12 @@
 
 int main( int argc, char *argv[] )
 {
-	QApplication::setStyle( "fusion" );
-	QApplication a( argc, argv );
+	// Qt setup, required before creating QApplication
 	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+	QApplication::setStyle( "fusion" );
+
+	// create application
+	QApplication a( argc, argv );
 
 	try
 	{
