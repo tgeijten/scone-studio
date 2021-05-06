@@ -119,8 +119,9 @@ namespace scone
 						Ui::LicenseDialog ui;
 						ui.setupUi( &lic_dlg );
 						ui.textBrowser->setText( to_qt( agreement.licenseAgreement ) );
-						lic_dlg.setWindowTitle( to_qt( agreement.licenseType + " Agreement" ) );
-						ui.checkBox->setText( to_qt( "I agree to the terms and conditions of the " + agreement.licenseType ) );
+						auto agreement_str = to_qt( agreement.licenseType + " AGREEMENT" );
+						lic_dlg.setWindowTitle( agreement_str );
+						ui.checkBox->setText( "I accept the " + agreement_str );
 						auto* okButton = ui.buttonBox->button( QDialogButtonBox::Ok );
 						okButton->setDisabled( true );
 						QWidget::connect( ui.checkBox, &QCheckBox::stateChanged,
