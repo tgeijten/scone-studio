@@ -35,7 +35,7 @@ namespace scone
 		if ( auto* gp = model.GetGroundPlane() )
 		{
 			auto& plane = std::get<xo::plane>( gp->GetShape() );
-			ground_ = vis::plane( root_node_, 128, 128, 0.5f, scone::GetStudioSetting< xo::color >( "viewer.tile1" ), scone::GetStudioSetting< xo::color >( "viewer.tile2" ) );
+			ground_ = vis::plane( root_node_, 128, 128, 0.5f, GetStudioSetting< xo::color >( "viewer.tile1" ), GetStudioSetting< xo::color >( "viewer.tile2" ) );
 			auto normal_rot = xo::quat_from_directions( xo::vec3f::unit_y(), plane.normal_ );
 			//ground_plane = scene_.add< vis::plane >( xo::vec3f( 64, 0, 0 ), xo::vec3f( 0, 0, -64 ), GetFolder( SCONE_UI_RESOURCE_FOLDER ) / "stile160.png", 64, 64 );
 			ground_.pos_ori( vis::vec3f( gp->GetPos() ), normal_rot * xo::quatf( gp->GetOri() ) );
@@ -58,7 +58,7 @@ namespace scone
 				try
 				{
 					auto model_folder = model.GetModelFile().parent_path();
-					auto geom_file = xo::try_find_file( { model_folder / geom.filename, geom.filename, path( "geometry" ) / geom.filename, scone::GetFolder( scone::SCONE_GEOMETRY_FOLDER ) / geom.filename } );
+					auto geom_file = xo::try_find_file( { model_folder / geom.filename, geom.filename, path( "geometry" ) / geom.filename, GetFolder( SCONE_GEOMETRY_FOLDER ) / geom.filename } );
 					if ( geom_file )
 					{
 						//log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
