@@ -455,7 +455,7 @@ void SconeStudio::captureImage()
 {
 	QString filename = QFileDialog::getSaveFileName( this, "Image Filename", QString(), "png files (*.png)" );
 	if ( !filename.isEmpty() )
-		ui.osgViewer->captureCurrentFrame( filename.toStdString() );
+		ui.osgViewer->captureCurrentFrame( xo::path( filename.toStdString() ).replace_extension( "" ).str() );
 }
 
 void SconeStudio::modelAnalysis()
