@@ -172,9 +172,12 @@ namespace scone
 		// update com / heading
 		if ( view_flags.get<ShowModelComHeading>() )
 		{
-			auto pos = xo::vec3f( model.GetComPos() );
-			auto dir = xo::quatf( model.GetRootBody()->GetOrientation() ) * xo::vec3f( 0.5f, 0, 0 );
-			heading_.pos_ofs( pos, dir );
+			if ( auto* root = model.GetRootBody() )
+			{
+				auto pos = xo::vec3f( model.GetComPos() );
+				auto dir = xo::quatf( root->GetOrientation() ) * xo::vec3f( 0.5f, 0, 0 );
+				heading_.pos_ofs( pos, dir );
+			}
 		}
 	}
 
