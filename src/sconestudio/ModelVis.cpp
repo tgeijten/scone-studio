@@ -22,7 +22,7 @@ namespace scone
 		muscle_mat( { GetStudioSetting< xo::color >( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
 		tendon_mat( { GetStudioSetting< xo::color >( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
 		arrow_mat( { GetStudioSetting< xo::color >( "viewer.force" ), specular_, shininess_, ambient_ } ),
-		contact_mat( { GetStudioSetting< xo::color >( "viewer.contact" ), specular_, shininess_, ambient_ } ),
+		contact_mat( { GetStudioSetting< xo::color >( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
 		muscle_gradient( {
 			{ 0.0f, GetStudioSetting< xo::color >( "viewer.muscle_0" ) },
 			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
