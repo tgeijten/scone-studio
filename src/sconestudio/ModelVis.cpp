@@ -55,22 +55,33 @@ namespace scone
 			auto geoms = body->GetDisplayGeometries();
 			for ( auto geom : geoms )
 			{
-				try
+				if ( !geom.filename_.empty() )
 				{
-					auto model_folder = model.GetModelFile().parent_path();
-					auto geom_file = xo::try_find_file( { model_folder / geom.filename, geom.filename, path( "geometry" ) / geom.filename, GetFolder( SCONE_GEOMETRY_FOLDER ) / geom.filename } );
-					if ( geom_file )
+					try
 					{
-						//log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
-						body_meshes.push_back( vis::mesh( bodies.back(), *geom_file ) );
-						body_meshes.back().set_material( bone_mat );
-						body_meshes.back().pos_ori( vis::vec3f( geom.pos ), vis::quatf( geom.ori ) );
-						body_meshes.back().scale( vis::vec3f( geom.scale ) );
-					} else log::warning( "Could not find ", geom.filename );
+						auto model_folder = model.GetModelFile().parent_path();
+						auto geom_file = xo::try_find_file( { model_folder / geom.filename_, geom.filename_, path( "geometry" ) / geom.filename_, GetFolder( SCONE_GEOMETRY_FOLDER ) / geom.filename_ } );
+						if ( geom_file )
+						{
+							//log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
+							body_meshes.push_back( vis::mesh( bodies.back(), *geom_file ) );
+							body_meshes.back().set_material( bone_mat );
+							body_meshes.back().pos_ori( vis::vec3f( geom.pos_ ), vis::quatf( geom.ori_ ) );
+							body_meshes.back().scale( vis::vec3f( geom.scale_ ) );
+						}
+						else log::warning( "Could not find ", geom.filename_ );
+					}
+					catch ( std::exception& e )
+					{
+						log::warning( "Could not load ", geom.filename_, ": ", e.what() );
+					}
 				}
-				catch ( std::exception & e )
-				{
-					log::warning( "Could not load ", geom.filename, ": ", e.what() );
+				else {
+					// shape
+					body_meshes.push_back( vis::mesh( bodies.back(), vis::shape_info{ geom.shape_, xo::color::white(), xo::vec3f::zero(), 0.75f } ) );
+					body_meshes.back().set_material( bone_mat );
+					body_meshes.back().pos_ori( vis::vec3f( geom.pos_ ), vis::quatf( geom.ori_ ) );
+					body_meshes.back().scale( vis::vec3f( geom.scale_ ) );
 				}
 			}
 		}
