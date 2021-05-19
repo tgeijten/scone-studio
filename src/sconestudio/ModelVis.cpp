@@ -77,7 +77,7 @@ namespace scone
 
 		for ( auto& cg : model.GetContactGeometries() )
 		{
-			auto idx = FindIndexByName( model.GetBodies(), cg->GetBody().GetName() );
+			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b.get(); } );
 			auto& parent = idx != NoIndex ? bodies[ idx ] : root_node_;
 			if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
