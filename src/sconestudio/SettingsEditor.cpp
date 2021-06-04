@@ -130,7 +130,6 @@ namespace scone
 	int ShowLicenseDialog( QWidget* parent )
 	{
 #if SCONE_HYFYDY_ENABLED
-		auto& scone_settings = GetSconeSettings();
 		auto license_key = GetSconeSetting<String>( "hyfydy.license" );
 		auto agreement = GetHfdLicenseAgreement( license_key.c_str() );
 		if ( agreement.isValid() )
@@ -156,7 +155,7 @@ namespace scone
 				GetSconeSettings().set( "hyfydy.enabled", false );
 				GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", 0 );
 			}
-			scone_settings.save();
+			GetSconeSettings().save();
 
 			return result;
 		}
