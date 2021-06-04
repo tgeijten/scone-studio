@@ -128,7 +128,6 @@ private:
 
 	// ui
 	Ui::SconeStudioClass ui;
-	scone::SettingsEditor settings;
 
 	// model
 	std::unique_ptr< scone::StudioModel > scenario_;

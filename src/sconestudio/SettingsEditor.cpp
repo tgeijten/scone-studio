@@ -28,7 +28,7 @@
 
 namespace scone
 {
-	int SettingsEditor::showDialog( QWidget* parent )
+	int ShowPreferencesDialog( QWidget* parent )
 	{
 		QDialog dialog_window( parent );
 		Ui::Settings ui;
@@ -78,7 +78,7 @@ namespace scone
 			auto hid = to_qt( GetHardwareId() );
 			QApplication::clipboard()->setText( hid );
 			auto message = "Please send the following hardware ID along with your request (copied to clipboard):\n\n" + hid;
-			QMessageBox::information( NULL, "Hyfydy License Request", message ); });
+			QMessageBox::information( NULL, "Hyfydy License Request", message ); } );
 #else
 		ui.tabWidget->removeTab( ui.tabWidget->indexOf( ui.hfdTab ) );
 #endif
@@ -110,35 +110,7 @@ namespace scone
 				scone_settings.set( "hyfydy.license", hfd_new_license );
 				scone_settings.set( "hyfydy.enabled", hfd_new_enabled );
 				if ( hfd_new_enabled )
-				{
-					const char* license_key = GetSconeSetting<String>( "hyfydy.license" ).c_str();
-					auto agreement = GetHfdLicenseAgreement( license_key );
-					if ( agreement.isValid() )
-					{
-						QDialog lic_dlg( parent );
-						Ui::LicenseDialog ui;
-						ui.setupUi( &lic_dlg );
-						ui.textBrowser->setText( to_qt( agreement.licenseAgreement ) );
-						auto agreement_str = to_qt( agreement.licenseType + " AGREEMENT" );
-						lic_dlg.setWindowTitle( agreement_str );
-						ui.checkBox->setText( "I accept the " + agreement_str );
-						auto* okButton = ui.buttonBox->button( QDialogButtonBox::Ok );
-						okButton->setDisabled( true );
-						QWidget::connect( ui.checkBox, &QCheckBox::stateChanged,
-							[&]( int i ) { okButton->setDisabled( i != Qt::Checked ); } );
-						const auto result = lic_dlg.exec();
-						if ( result == QDialog::Accepted && ui.checkBox->isChecked() )
-						{
-							scone_settings.set( "hyfydy.license_agreement_accepted_version", agreement.licenseVersion );
-							RegisterSconeHfd( GetSconeSetting<String>( "hyfydy.license" ).c_str() );
-						}
-						else
-						{
-							scone_settings.set( "hyfydy.enabled", false );
-							scone_settings.set( "hyfydy.license_agreement_accepted_version", agreement.licenseVersion );
-						}
-					}
-				}
+					ShowLicenseDialog( parent );
 			}
 #endif
 			scone_settings.save();
@@ -152,5 +124,42 @@ namespace scone
 		}
 
 		return ret;
+	}
+
+	int ShowLicenseDialog( QWidget* parent )
+	{
+#if SCONE_HYFYDY_ENABLED
+		auto license_key = GetSconeSetting<String>( "hyfydy.license" );
+		auto agreement = GetHfdLicenseAgreement( license_key.c_str() );
+		if ( agreement.isValid() )
+		{
+			QDialog lic_dlg( parent );
+			Ui::LicenseDialog ui;
+			ui.setupUi( &lic_dlg );
+			ui.textBrowser->setText( to_qt( agreement.licenseAgreement ) );
+			auto agreement_str = to_qt( agreement.licenseType + " AGREEMENT" );
+			lic_dlg.setWindowTitle( agreement_str );
+			ui.checkBox->setText( "I accept the " + agreement_str );
+			auto* okButton = ui.buttonBox->button( QDialogButtonBox::Ok );
+			okButton->setDisabled( true );
+			QWidget::connect( ui.checkBox, &QCheckBox::stateChanged,
+				[&]( int i ) { okButton->setDisabled( i != Qt::Checked ); } );
+			const auto result = lic_dlg.exec();
+			if ( result == QDialog::Accepted && ui.checkBox->isChecked() )
+			{
+				GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", agreement.licenseVersion );
+				RegisterSconeHfd( GetSconeSetting<String>( "hyfydy.license" ).c_str() );
+			}
+			else
+			{
+				GetSconeSettings().set( "hyfydy.enabled", false );
+				GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", agreement.licenseVersion );
+			}
+			return result;
+		}
+#endif
+
+		// Hyfydy is either disabled or the agreement is invalid
+		return QDialog::Rejected;
 	}
 }

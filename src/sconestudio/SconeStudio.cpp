@@ -1001,10 +1001,8 @@ void SconeStudio::updateViewSettings()
 
 void SconeStudio::showSettingsDialog()
 {
-	if ( settings.showDialog( this ) == QDialog::Accepted )
-	{
+	if ( ShowPreferencesDialog( this ) == QDialog::Accepted )
 		gaitAnalysis->reset();
-	}
 }
 
 void SconeStudio::updateTabTitles()

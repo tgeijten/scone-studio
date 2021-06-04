@@ -59,12 +59,19 @@ int main( int argc, char *argv[] )
 		SconeStudio w;
 		QThread::sleep( 0 ); // sleep a while so people can enjoy the splash screen :-)
 		w.init();
+		w.show();
+		scone::log::info( "SCONE version ", scone::GetSconeVersion() );
+
+#if SCONE_HYFYDY_ENABLED
+		// check if license agreement has been updated
+		if ( scone::GetSconeSetting<bool>( "hyfydy.enabled" ) )
+			if ( !scone::CheckHfdLicenseAgreement( scone::GetSconeSetting<String>( "hyfydy.license" ) ) )
+				scone::ShowLicenseDialog( nullptr );
+#endif
 
 		// init scone file format and libraries
-		scone::log::info( "SCONE version ", scone::GetSconeVersion() );
 		scone::Initialize();
 
-		w.show();
 		splash.close();
 		
 		return a.exec();

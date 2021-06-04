@@ -12,12 +12,6 @@
 
 namespace scone
 {
-	class SettingsEditor
-	{
-	public:
-		SettingsEditor() {}
-		virtual ~SettingsEditor() {}
-
-		int showDialog( QWidget* parent );
-	};
+	int ShowPreferencesDialog( QWidget* parent );
+	int ShowLicenseDialog( QWidget* parent );
 }
