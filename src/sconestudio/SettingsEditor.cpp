@@ -110,7 +110,8 @@ namespace scone
 				scone_settings.set( "hyfydy.license", hfd_new_license );
 				scone_settings.set( "hyfydy.enabled", hfd_new_enabled );
 				if ( hfd_new_enabled )
-					ShowLicenseDialog( parent );
+					if ( ShowLicenseDialog( parent ) == QDialog::Accepted )
+						RegisterSconeHfd( hfd_new_license );
 			}
 #endif
 			scone_settings.save();
@@ -148,12 +149,11 @@ namespace scone
 			if ( result == QDialog::Accepted && ui.checkBox->isChecked() )
 			{
 				GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", agreement.licenseVersion );
-				RegisterSconeHfd( GetSconeSetting<String>( "hyfydy.license" ).c_str() );
 			}
 			else
 			{
 				GetSconeSettings().set( "hyfydy.enabled", false );
-				GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", agreement.licenseVersion );
+				GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", 0 );
 			}
 			return result;
 		}

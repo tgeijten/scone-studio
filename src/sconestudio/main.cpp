@@ -66,7 +66,7 @@ int main( int argc, char *argv[] )
 		// check if license agreement has been updated
 		if ( scone::GetSconeSetting<bool>( "hyfydy.enabled" ) )
 			if ( !scone::CheckHfdLicenseAgreement( scone::GetSconeSetting<String>( "hyfydy.license" ) ) )
-				scone::ShowLicenseDialog( nullptr );
+				scone::ShowLicenseDialog( &w );
 #endif
 
 		// init scone file format and libraries
