@@ -100,6 +100,7 @@ public slots:
 	void findPrevious() { if ( auto* e = getActiveCodeEditor() ) e->findNext( true ); }
 	void toggleComments() { if ( auto* e = getActiveCodeEditor() ) e->toggleComments(); }
 	void resetWindowLayout();
+	void fixViewerWindowSize();
 
 	void deleteSelectedFileOrFolder();
 	void sortResultsByDate();

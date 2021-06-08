@@ -183,6 +183,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
 	setCorner( Qt::BottomRightCorner, Qt::BottomDockWidgetArea );
 
+	connect( ui.viewerDock, &QDockWidget::topLevelChanged, this, &SconeStudio::fixViewerWindowSize );
+
+
 	addDockWidget( Qt::LeftDockWidgetArea, ui.resultsDock );
 	registerDockWidget( ui.resultsDock, "&Optimization Results" );
 
@@ -405,57 +408,6 @@ void SconeStudio::evaluate()
 
 	reportModel->setData( scenario_->GetResult() );
 	reportView->expandToDepth( 0 );
-}
-
-void SconeStudio::createVideo()
-{
-	if ( !scenario_ )
-		return error( "No Scenario", "There is no scenario open" );
-
-	if ( auto p = GetStudioSetting<path>( "video.path_to_ffmpeg" ); !xo::file_exists( p ) )
-		return error( "Could not find ffmpeg", to_qt( "Could not find " + p.str() ) );
-
-	if ( ui.viewerDock->isFloating() ) {
-		auto borderSize = ui.viewerDock->size() - ui.osgViewer->size();
-		auto videoSize = QSize( GetStudioSettings().get<int>( "video.width" ), GetStudioSettings().get<int>( "video.height" ) );
-		ui.viewerDock->resize( borderSize + videoSize + QSize( 2, 2 ) );
-	}
-
-	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", QString(), "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
-	if ( captureFilename.isEmpty() )
-		return;
-
-	// start recording
-	QDir().mkdir( captureFilename + ".images" );
-	ui.osgViewer->startCapture( captureFilename.toStdString() + ".images/image" );
-
-	ui.osgViewer->stopTimer();
-	ui.abortButton->setChecked( false );
-	ui.progressBar->setValue( 0 );
-	ui.progressBar->setFormat( " Creating Video (%p%)" );
-	ui.stackedWidget->setCurrentIndex( 1 );
-
-	const double step_size = ui.playControl->slowMotionFactor() / GetStudioSettings().get<double>( "video.frame_rate" );
-	for ( double t = 0.0; t <= scenario_->GetMaxTime(); t += step_size )
-	{
-		setTime( t, true );
-		ui.progressBar->setValue( int( t / scenario_->GetMaxTime() * 100 ) );
-		QApplication::processEvents();
-		if ( ui.abortButton->isChecked() )
-			break;
-	}
-
-	// finalize recording
-	finalizeCapture();
-	ui.stackedWidget->setCurrentIndex( 0 );
-	ui.osgViewer->startTimer();
-}
-
-void SconeStudio::captureImage()
-{
-	QString filename = QFileDialog::getSaveFileName( this, "Image Filename", QString(), "png files (*.png)" );
-	if ( !filename.isEmpty() )
-		ui.osgViewer->captureCurrentFrame( xo::path( filename.toStdString() ).replace_extension( "" ).str() );
 }
 
 void SconeStudio::modelAnalysis()
@@ -1016,6 +968,63 @@ void SconeStudio::resetWindowLayout()
 	GetStudioSettings().set( "ui.reset_layout", true );
 	GetStudioSettings().save();
 	information( "Reset Window Layout", "Please restart SCONE for the changes to take effect" );
+}
+
+void SconeStudio::fixViewerWindowSize()
+{
+	if ( ui.viewerDock->isFloating() )
+	{
+		auto borderSize = ui.viewerDock->size() - ui.osgViewer->size();
+		auto videoSize = QSize( GetStudioSettings().get<int>( "video.width" ), GetStudioSettings().get<int>( "video.height" ) );
+		ui.viewerDock->resize( borderSize + videoSize + QSize( 2, 2 ) );
+	}
+}
+
+void SconeStudio::createVideo()
+{
+	if ( !scenario_ )
+		return error( "No Scenario", "There is no scenario open" );
+
+	if ( auto p = GetStudioSetting<path>( "video.path_to_ffmpeg" ); !xo::file_exists( p ) )
+		return error( "Could not find ffmpeg", to_qt( "Could not find " + p.str() ) );
+
+	fixViewerWindowSize();
+
+	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", QString(), "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
+	if ( captureFilename.isEmpty() )
+		return;
+
+	// start recording
+	QDir().mkdir( captureFilename + ".images" );
+	ui.osgViewer->startCapture( captureFilename.toStdString() + ".images/image" );
+
+	ui.osgViewer->stopTimer();
+	ui.abortButton->setChecked( false );
+	ui.progressBar->setValue( 0 );
+	ui.progressBar->setFormat( " Creating Video (%p%)" );
+	ui.stackedWidget->setCurrentIndex( 1 );
+
+	const double step_size = ui.playControl->slowMotionFactor() / GetStudioSettings().get<double>( "video.frame_rate" );
+	for ( double t = 0.0; t <= scenario_->GetMaxTime(); t += step_size )
+	{
+		setTime( t, true );
+		ui.progressBar->setValue( int( t / scenario_->GetMaxTime() * 100 ) );
+		QApplication::processEvents();
+		if ( ui.abortButton->isChecked() )
+			break;
+	}
+
+	// finalize recording
+	finalizeCapture();
+	ui.stackedWidget->setCurrentIndex( 0 );
+	ui.osgViewer->startTimer();
+}
+
+void SconeStudio::captureImage()
+{
+	QString filename = QFileDialog::getSaveFileName( this, "Image Filename", QString(), "png files (*.png)" );
+	if ( !filename.isEmpty() )
+		ui.osgViewer->captureCurrentFrame( xo::path( filename.toStdString() ).replace_extension( "" ).str() );
 }
 
 void SconeStudio::finalizeCapture()
