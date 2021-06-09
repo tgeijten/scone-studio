@@ -1,4 +1,4 @@
-#include "ModelVis.h"
+#include "ModelVis.h" 
 
 #include "StudioSettings.h"
 #include "vis/scene.h"
@@ -53,20 +53,29 @@ namespace scone
 			}
 
 			auto geoms = body->GetDisplayGeometries();
-			for ( auto geom : geoms )
+			for ( const auto& geom : geoms )
 			{
 				if ( !geom.filename_.empty() )
 				{
 					try
 					{
 						auto model_folder = model.GetModelFile().parent_path();
-						auto geom_file = xo::try_find_file( { model_folder / geom.filename_, geom.filename_, path( "geometry" ) / geom.filename_, GetFolder( SCONE_GEOMETRY_FOLDER ) / geom.filename_ } );
+						auto file_options = {
+							geom.filename_,
+							path( "geometry" ) / geom.filename_,
+							model_folder / geom.filename_,
+							model_folder / "geometry" / geom.filename_,
+							GetFolder( SCONE_GEOMETRY_FOLDER ) / geom.filename_
+						};
+						auto geom_file = xo::try_find_file( file_options );
 						if ( geom_file )
 						{
 							//log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
 							body_meshes.push_back( vis::mesh( bodies.back(), *geom_file ) );
 							body_meshes.back().set_material( bone_mat );
-							body_meshes.back().pos_ori( vis::vec3f( geom.pos_ ), vis::quatf( geom.ori_ ) );
+							auto fix_obj_ori = geom_file->extension_no_dot() == "obj";
+							auto ori = fix_obj_ori ? xo::quat_from_x_angle( -90_degf ) * vis::quatf( geom.ori_ ) : vis::quatf( geom.ori_ );
+							body_meshes.back().pos_ori( vis::vec3f( geom.pos_ ), ori );
 							body_meshes.back().scale( vis::vec3f( geom.scale_ ) );
 						}
 						else log::warning( "Could not find ", geom.filename_ );
