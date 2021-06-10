@@ -98,12 +98,13 @@ namespace scone
 		for ( auto& cg : model.GetContactGeometries() )
 		{
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b.get(); } );
-			auto& parent = idx != NoIndex ? bodies[ idx ] : root_node_;
+			auto& parent_node = idx != NoIndex ? bodies[ idx ] : root_node_;
 			if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
 				// #todo: add support for other shapes (i.e. planes)
-				contact_geoms.push_back( vis::mesh( parent, vis::shape_info{ cg->GetShape(), xo::color::cyan(), xo::vec3f::zero(), 0.75f } ) );
-				contact_geoms.back().set_material( cg->GetPos().is_null() ? bone_mat : contact_mat ); // use bone_mat if shape is at (0,0,0)
+				contact_geoms.push_back( vis::mesh( parent_node, vis::shape_info{ cg->GetShape(), xo::color::cyan(), xo::vec3f::zero(), 0.75f } ) );
+				bool use_bone_mat = cg->GetPos().is_null() && parent_node.size() <= 3;
+				contact_geoms.back().set_material( use_bone_mat ? bone_mat : contact_mat ); // use bone_mat if shape is at (0,0,0)
 				contact_geoms.back().pos_ori( vis::vec3f( cg->GetPos() ), vis::quatf( cg->GetOri() ) );
 			}
 		}
