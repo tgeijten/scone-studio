@@ -8,6 +8,7 @@
 #include "scone/model/Joint.h"
 #include "xo/geometry/path_alg.h"
 #include "scone/core/math.h"
+#include "xo/geometry/quat.h"
 
 namespace scone
 {
@@ -87,10 +88,8 @@ namespace scone
 				}
 				else {
 					// shape
-					body_meshes.push_back( vis::mesh( bodies.back(), vis::shape_info{ geom.shape_, xo::color::white(), xo::vec3f::zero(), 0.75f } ) );
-					body_meshes.back().set_material( bone_mat );
-					body_meshes.back().pos_ori( vis::vec3f( geom.pos_ ), vis::quatf( geom.ori_ ) );
-					body_meshes.back().scale( vis::vec3f( geom.scale_ ) );
+					contact_geoms.push_back( MakeMesh(
+						bodies.back(), geom.shape_, xo::color::cyan(), bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
 				}
 			}
 		}
@@ -102,10 +101,10 @@ namespace scone
 			if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
 				// #todo: add support for other shapes (i.e. planes)
-				contact_geoms.push_back( vis::mesh( parent_node, vis::shape_info{ cg->GetShape(), xo::color::cyan(), xo::vec3f::zero(), 0.75f } ) );
 				bool use_bone_mat = cg->GetPos().is_null() && parent_node.size() <= 3;
-				contact_geoms.back().set_material( use_bone_mat ? bone_mat : contact_mat ); // use bone_mat if shape is at (0,0,0)
-				contact_geoms.back().pos_ori( vis::vec3f( cg->GetPos() ), vis::quatf( cg->GetOri() ) );
+				contact_geoms.push_back( MakeMesh(
+					parent_node, cg->GetShape(), xo::color::cyan(), use_bone_mat ? bone_mat : contact_mat,
+					cg->GetPos(), cg->GetOri() ) );
 			}
 		}
 
@@ -242,6 +241,16 @@ namespace scone
 			vis.ce.set_points( p.begin() + i1, p.begin() + i2 + 1 );
 			vis.ten2.set_points( p.begin() + i2, p.end() );
 		} else vis.ce.set_points( p.begin(), p.end() );
+	}
+
+	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::shape& sh, const xo::color& col, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
+	{
+		auto msh = vis::mesh( parent, vis::shape_info{ sh, col, xo::vec3f::zero(), 0.75f } );
+		msh.set_material( mat );
+		auto y_to_z = std::holds_alternative<xo::capsule>( sh ) || std::holds_alternative<xo::cylinder>( sh ) || std::holds_alternative<xo::cone>( sh );
+		auto fixed_ori = y_to_z ? vis::quatf( ori ) * xo::quat_from_x_angle( vis::degreef( 90 ) ) : vis::quatf( ori );
+		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
+		return msh;
 	}
 
 	void ModelVis::ApplyViewSettings( const ViewSettings& f )

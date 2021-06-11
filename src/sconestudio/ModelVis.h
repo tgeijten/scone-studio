@@ -51,6 +51,10 @@ namespace scone
 		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force );
 		void UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis );
 
+		vis::mesh MakeMesh( vis::node& parent,
+			const xo::shape& sh, const xo::color& col, const vis::material& mat,
+			const Vec3& pos, const Quat& ori, const Vec3& scale = Vec3::diagonal( 1.0 ) );
+
 		// view settings
 		ViewSettings view_flags;
 		vis::plane ground_;
