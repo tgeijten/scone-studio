@@ -476,7 +476,8 @@ void SconeStudio::fileOpenTriggered()
 	if ( auto* s = getActiveScenario() )
 		default_path = to_qt( path( s->fileName.toStdString() ).parent_path() );
 
-	QString filename = QFileDialog::getOpenFileName( this, "Open Scenario", default_path, "Supported file formats (*.scone *.xml *.zml *.lua *.hfd *.osim);;SCONE Scenarios (*.scone *.xml *.zml);;Lua Scripts (*.lua)" );
+	QString filename = QFileDialog::getOpenFileName( this, "Open Scenario", default_path,
+		"Supported file formats (*.scone *.xml *.zml *.lua *.hfd *.osim *.bp);;SCONE Scenarios (*.scone *.xml *.zml);;Lua Scripts (*.lua);;Models (*.osim *.hfd *.bp)" );
 	if ( !filename.isEmpty() )
 		openFile( filename );
 }
