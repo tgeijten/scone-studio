@@ -108,13 +108,19 @@ namespace scone
 			}
 		}
 
+		const auto auto_muscle_width = GetStudioSetting<bool>( "viewer.auto_muscle_width" );
+		const auto auto_muscle_width_factor = GetStudioSetting<float>( "viewer.auto_muscle_width_factor" );
+		const auto muscle_width = GetStudioSetting<float>( "viewer.muscle_width" );
+		const auto relative_tendon_width = GetStudioSetting<float>( "viewer.relative_tendon_width" );
+		const auto muscle_position = GetStudioSetting<float>( "viewer.muscle_position" );
+
 		for ( auto& muscle : model.GetMuscles() )
 		{
-			float muscle_radius = GetStudioSetting<bool>( "viewer.auto_muscle_width" ) ?
-				GetStudioSetting<float>( "viewer.auto_muscle_width_factor" ) * float( sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) ) :
-				GetStudioSetting<float>( "viewer.muscle_width" );
+			float muscle_radius = auto_muscle_width ?
+				auto_muscle_width_factor * float( sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) ) :
+				muscle_width;
 
-			float tendon_radius = GetStudioSetting<float>( "viewer.relative_tendon_width" ) * muscle_radius;
+			float tendon_radius = relative_tendon_width * muscle_radius;
 
 			// add path
 			MuscleVis mv;
@@ -125,13 +131,14 @@ namespace scone
 			mv.ce = vis::trail( root_node_, vis::trail_info{ muscle_radius, xo::color::red(), 0.5f } );
 			mv.mat = muscle_mat.clone();
 			mv.ce.set_material( mv.mat );
-			mv.ce_pos = GetStudioSetting<float>( "viewer.muscle_position" );
+			mv.ce_pos = muscle_position;
 			muscles.push_back( std::move( mv ) );
 		}
 
+		const auto joint_radius = GetStudioSetting<float>( "viewer.joint_radius" );
 		for ( auto& j : model.GetJoints() )
 		{
-			joints.push_back( vis::mesh( root_node_, vis::shape_info{ xo::sphere( 0.02f ), xo::color::red(), xo::vec3f::zero(), 0.75f } ) );
+			joints.push_back( vis::mesh( root_node_, vis::shape_info{ xo::sphere( joint_radius ), xo::color::red(), xo::vec3f::zero(), 0.75f } ) );
 			joints.back().set_material( joint_mat );
 		}
 
