@@ -88,7 +88,7 @@ namespace scone
 				}
 				else {
 					// shape
-					contact_geoms.push_back( MakeMesh(
+					body_meshes.push_back( MakeMesh(
 						bodies.back(), geom.shape_, xo::color::cyan(), bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
 				}
 			}
