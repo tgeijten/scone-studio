@@ -71,7 +71,7 @@ namespace scone
 						auto geom_file = xo::try_find_file( file_options );
 						if ( geom_file )
 						{
-							//log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
+							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
 							body_meshes.push_back( vis::mesh( bodies.back(), *geom_file ) );
 							body_meshes.back().set_material( bone_mat );
 							auto fix_obj_ori = geom_file->extension_no_dot() == "obj";
