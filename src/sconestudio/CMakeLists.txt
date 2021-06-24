@@ -40,6 +40,8 @@ set(STUDIOFILES
 	OptimizerTaskExternal.cpp
 	OptimizerTaskThreaded.h
 	OptimizerTaskThreaded.cpp
+	DofEditor.h
+	DofEditor.cpp
 	)
 	
 set(QTFILES
