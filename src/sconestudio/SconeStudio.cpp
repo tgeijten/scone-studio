@@ -54,7 +54,7 @@
 #include "studio_tools.h"
 
 using namespace scone;
-using namespace xo::literals;
+using namespace xo::time_literals;
 
 SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	QCompositeMainWindow( parent, flags ),
@@ -185,7 +185,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	connect( ui.viewerDock, &QDockWidget::topLevelChanged, this, &SconeStudio::fixViewerWindowSize );
 
-
 	addDockWidget( Qt::LeftDockWidgetArea, ui.resultsDock );
 	registerDockWidget( ui.resultsDock, "&Optimization Results" );
 
@@ -224,10 +223,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
 	reportDock->hide();
 
-	//// dof editor
-	//dofSliderGroup = new QFormGroup( this );
-	//auto* ddw = createDockWidget( "&State", dofSliderGroup, Qt::BottomDockWidgetArea );
-	//tabifyDockWidget( analysis_dock, ddw );
+	// dof editor
+	dofEditor = new DofEditor( this );
+	connect( dofEditor, &DofEditor::valueChanged, this, &SconeStudio::dofEditorValueChanged );
+	auto* dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( ui.messagesDock, dofDock );
 
 	// init scene
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
@@ -360,6 +360,18 @@ void SconeStudio::refreshAnalysis()
 	analysisView->refresh( current_time );
 }
 
+void SconeStudio::dofEditorValueChanged()
+{
+	log::info( "booty" );
+
+	if ( scenario_ && scenario_->HasModel() )
+	{
+		auto state = scenario_->GetModel().GetState();
+		dofEditor->setDofsFromSliders( scenario_->GetModel() );
+		scenario_->UpdateVis( 0.0 );
+	}
+}
+
 void SconeStudio::evaluate()
 {
 	SCONE_ASSERT( scenario_ );
@@ -466,6 +478,9 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 			ui.osgViewer->setFrameTime( current_time );
 			if ( analysisView->isVisible() ) // #todo: not update so much when not playing (it's slow)
 				analysisView->refresh( current_time, !ui.playControl->isPlaying() );
+
+			if ( dofEditor->isVisible() )
+				dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 		}
 	}
 }
@@ -637,9 +652,14 @@ bool SconeStudio::createScenario( const QString& any_file )
 		// create scenario and update viewer
 		currentFilename = any_file;
 		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ) );
+
+		// setup dof editor
+		dofEditor->init( scenario_->GetModel() );
+
+		// update view settings
 		updateViewSettings();
 
-		// update parview
+		// update parameter view
 		parModel->setObjectiveInfo( &scenario_->GetOjective().info() );
 		parViewDock->setWindowTitle( QString( "Optimization Parameters (%1)" ).arg( scenario_->GetOjective().info().size() ) );
 

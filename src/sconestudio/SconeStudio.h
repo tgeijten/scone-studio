@@ -44,6 +44,7 @@
 #include "xo/time/timer.h"
 #include "GaitAnalysis.h"
 #include "ParTableModel.h"
+#include "DofEditor.h"
 
 using scone::TimeInSeconds;
 
@@ -66,6 +67,7 @@ public slots:
 	void start();
 	void stop();
 	void refreshAnalysis();
+	void dofEditorValueChanged();
 
 	virtual void fileOpenTriggered() override;
 	virtual void fileReloadTriggered();
@@ -178,9 +180,8 @@ private:
 	QPropNodeItemModel* reportModel;
 	QDockWidget* reportDock;
 
-	//// dof editor
-	//QFormGroup* dofSliderGroup;
-	//std::vector< QValueSlider* > dofSliders;
+	// dof editor
+	scone::DofEditor* dofEditor;
 };
 
 #endif // SCONESTUDIO_H
