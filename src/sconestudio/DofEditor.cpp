@@ -35,6 +35,7 @@ namespace scone
 		{
 			auto* slider = new QValueSlider( this );
 			slider->setRange( dofToSliderValue( *dof, dof->GetRange().min ), dofToSliderValue( *dof, dof->GetRange().max ) );
+			slider->setValue( dofToSliderValue( *dof, dof->GetPos() ) );
 			dofSliders.emplace_back( slider );
 			dofSliderGroup->addRow( to_qt( dof->GetName() ), slider );
 			connect( slider, &QValueSlider::valueChanged, this, &DofEditor::valueChanged );
@@ -46,13 +47,7 @@ namespace scone
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofSliders.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-		{
-			if ( i == 0 )
-				xo::log::info( "slider value=", dofToSliderValue( *dofs[ i ], dofs[ i ]->GetPos() ) );
-
 			dofSliders[ i ]->setValue( dofToSliderValue( *dofs[ i ], dofs[ i ]->GetPos() ) );
-			dofSliders[ i ]->repaint();
-		}
 	}
 
 	void DofEditor::setDofsFromSliders( Model& model )
