@@ -1,5 +1,8 @@
 #include "DofEditor.h"
 
+#include <QBoxLayout>
+#include <QScrollArea>
+
 #include "scone/model/Dof.h"
 #include "qt_convert.h"
 #include "xo/system/log.h"
@@ -15,9 +18,6 @@ namespace scone
 		l->setMargin( 4 );
 		l->setSpacing( 4 );
 		setLayout( l );
-
-		auto* button = new QPushButton( "Hello!", this );
-		l->addWidget( button );
 
 		dofSliderGroup = new QFormGroup( this );
 		auto scrollWidget = new QScrollArea( this );
