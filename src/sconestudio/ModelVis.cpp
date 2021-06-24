@@ -12,6 +12,8 @@
 
 namespace scone
 {
+	using namespace xo::angle_literals;
+
 	ModelVis::ModelVis( const Model& model, vis::scene& s ) :
 		root_node_( &s ),
 		specular_( GetStudioSetting < float >( "viewer.specular" ) ),
