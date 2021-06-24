@@ -362,13 +362,12 @@ void SconeStudio::refreshAnalysis()
 
 void SconeStudio::dofEditorValueChanged()
 {
-	log::info( "booty" );
-
 	if ( scenario_ && scenario_->HasModel() )
 	{
-		auto state = scenario_->GetModel().GetState();
 		dofEditor->setDofsFromSliders( scenario_->GetModel() );
-		scenario_->UpdateVis( 0.0 );
+		scenario_->GetModel().UpdateStateFromDofs();
+		scenario_->UpdateVis( 0.0 ); // #todo: allow edits only when not evaluated?
+		ui.osgViewer->update();
 	}
 }
 
