@@ -182,6 +182,7 @@ private:
 
 	// dof editor
 	scone::DofEditor* dofEditor;
+	QDockWidget* dofDock;
 };
 
 #endif // SCONESTUDIO_H
