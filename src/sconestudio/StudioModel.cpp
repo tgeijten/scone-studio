@@ -109,7 +109,7 @@ namespace scone
 		state_data_index.resize( model_state.GetSize() );
 		for ( size_t state_idx = 0; state_idx < state_data_index.size(); state_idx++ )
 		{
-			auto data_idx = ( storage_.GetChannelIndex( model_state.GetName( state_idx ) ) );
+			auto data_idx = ( storage_.TryGetChannelIndex( model_state.GetName( state_idx ) ) );
 			SCONE_ASSERT_MSG( data_idx != NoIndex, "Could not find state channel " + model_state.GetName( state_idx ) );
 			state_data_index[ state_idx ] = data_idx;
 		}
