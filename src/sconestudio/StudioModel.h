@@ -42,6 +42,7 @@ namespace scone
 		ModelObjective& GetModelObjective() const { return *model_objective_; }
 
 		bool IsEvaluating() const { return status_ == Status::Evaluating; }
+		bool IsEvaluatingStart() const { return status_ == Status::Evaluating && GetTime() == 0.0; }
 		bool IsReady() const { return status_ == Status::Ready; }
 		bool IsValid() const { return status_ != Status::Error; }
 

@@ -226,8 +226,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// dof editor
 	dofEditor = new DofEditor( this );
 	connect( dofEditor, &DofEditor::valueChanged, this, &SconeStudio::dofEditorValueChanged );
-	auto* dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
+	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, dofDock );
+	dofDock->hide();
 
 	// init scene
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
@@ -362,11 +363,11 @@ void SconeStudio::refreshAnalysis()
 
 void SconeStudio::dofEditorValueChanged()
 {
-	if ( scenario_ && scenario_->HasModel() )
+	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
 	{
 		dofEditor->setDofsFromSliders( scenario_->GetModel() );
 		scenario_->GetModel().UpdateStateFromDofs();
-		scenario_->UpdateVis( 0.0 ); // #todo: allow edits only when not evaluated?
+		scenario_->UpdateVis( 0.0 );
 		ui.osgViewer->update();
 	}
 }
@@ -463,7 +464,10 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 		// update ui and visualization
 		if ( scenario_->IsEvaluating() )
+		{
 			scenario_->EvaluateTo( t );
+			dofEditor->setDisabled( true );
+		}
 
 		if ( update_vis && scenario_->HasModel() )
 		{
@@ -499,7 +503,10 @@ void SconeStudio::fileOpenTriggered()
 void SconeStudio::fileReloadTriggered()
 {
 	if ( auto* s = getActiveCodeEditor() )
+	{
 		s->reload();
+		createAndVerifyActiveScenario( true );
+	}
 }
 
 void SconeStudio::openFile( const QString& filename )
@@ -654,6 +661,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 		// setup dof editor
 		dofEditor->init( scenario_->GetModel() );
+		dofEditor->setDisabled( false );
 
 		// update view settings
 		updateViewSettings();
