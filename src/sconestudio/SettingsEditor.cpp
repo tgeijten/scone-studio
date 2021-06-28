@@ -74,11 +74,7 @@ namespace scone
 		auto hfd_license = scone_settings.get<String>( "hyfydy.license" );
 		ui.hfdEnabled->setCheckState( hfd_enabled ? Qt::Checked : Qt::Unchecked );
 		ui.hfdLicenseKey->setPlainText( to_qt( hfd_license ) );
-		QObject::connect( ui.hfdRequest, &QPushButton::clicked, []() {
-			auto hid = to_qt( GetHardwareId() );
-			QApplication::clipboard()->setText( hid );
-			auto message = "Please send the following hardware ID along with your request (copied to clipboard):\n\n" + hid;
-			QMessageBox::information( NULL, "Hyfydy License Request", message ); } );
+		QObject::connect( ui.hfdRequest, &QPushButton::clicked, []() { ShowRequestLicenseDialog(); } );
 #else
 		ui.tabWidget->removeTab( ui.tabWidget->indexOf( ui.hfdTab ) );
 #endif
@@ -163,5 +159,19 @@ namespace scone
 
 		// Hyfydy is either disabled or the agreement is invalid
 		return QDialog::Rejected;
+	}
+
+	void ShowRequestLicenseDialog()
+	{
+		auto hid = to_qt( GetHardwareId() );
+		QApplication::clipboard()->setText( hid );
+		auto message = "This is your Hardware ID (copied to clipboard):<br><br><b>" + hid + "</b><br><br>";
+		message += "Please navigate to <a href='https://hyfydy.com/trial'>hyfydy.com/trial</a> to complete your request.";
+		QMessageBox msgBox;
+		msgBox.setWindowTitle( "Hyfydy License Request" );
+		msgBox.setTextFormat( Qt::RichText );   //this is what makes the links clickable
+		msgBox.setText( message );
+		msgBox.setIcon( QMessageBox::Information );
+		msgBox.exec();
 	}
 }

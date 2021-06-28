@@ -14,4 +14,5 @@ namespace scone
 {
 	int ShowPreferencesDialog( QWidget* parent );
 	int ShowLicenseDialog( QWidget* parent );
+	void ShowRequestLicenseDialog();
 }
