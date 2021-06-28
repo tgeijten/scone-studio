@@ -169,7 +169,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// Help menu
 	auto helpMenu = menuBar()->addMenu( ( "&Help" ) );
 	helpMenu->addAction( "View &Help...", this, &SconeStudio::helpSearch, QKeySequence( "F1" ) );
-	helpMenu->addAction( "User &Forum...", this, &SconeStudio::helpSearch );
+	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
+	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
+	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", this, &SconeStudio::helpAbout );
 
@@ -590,24 +592,30 @@ void SconeStudio::helpAbout()
 {
 	QString title = "<b>" + to_qt( "SCONE version " + xo::to_str( GetSconeVersion() ) ) + "</b><br><br>";
 	QString author = "Copyright (C) 2013 - 2021 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
-	QString license =
-		"SCONE is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>.<br>"
-		"SCONE-studio is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU Public License 3.0</a>.<br><br>"
-		"The following external libraries are used by SCONE:<ul>"
+	QString scone_license =
+		"<b>SCONE</b> is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>. "
+		"It uses the following external libraries:<ul>"
 		"<li>OpenSim 3.3 (Apache 2.0)"
 		"<li>Simbody (Apache 2.0)"
+		"<li>Lua (MIT)"
+		"<li>Sol 3 (MIT)"
+		"<li>TCLAP (MIT)"
+		"<li>xo (Apache 2.0)"
+		"<li>spot (Apache 2.0)"
+		"</ul><br>";
+	QString studio_license =
+		"<b>SCONE Studio</b> is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU Public License 3.0</a>. "
+		"It uses the following external libraries:<ul>"
 		"<li>Qt (GPL / LGPL)"
 		"<li>QCustomPlot (GPL v3)"
 		"<li>OpenSceneGraph (OSGPL)"
-		"<li>Lua (MIT)"
-		"<li>Sol 3 (MIT)"
 		"<li>TCLAP (MIT)"
 		"<li>xo (Apache 2.0)"
 		"<li>spot (Apache 2.0)"
 		"<li>vis (Apache 2.0)"
 		"<li>qtfx (Apache 2.0)"
 		"</ul>";
-	information( "About SCONE", title + author + license );
+	information( "About SCONE", title + author + scone_license + studio_license );
 }
 
 bool SconeStudio::tryExit()
