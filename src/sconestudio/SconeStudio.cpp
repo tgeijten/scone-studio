@@ -588,10 +588,26 @@ void SconeStudio::helpForum()
 
 void SconeStudio::helpAbout()
 {
-	QString title = to_qt( "SCONE version " + xo::to_str( GetSconeVersion() ) );
-	QString author = "Copyright (C) 2013 - 2020 Thomas Geijtenbeek and contributors. All rights reserved.";
-	QString license = "SCONE is licensed under the GNU General Public License V3.\n\nThe following external libraries are used by SCONE:\n - OpenSim 3.3 (Apache 2.0)\n - Simbody (Apache 2.0)\n - Qt (GPL / LGPL)\n - QCustomPlot (GPL v3)\n - OpenSceneGraph (OSGPL)\n - Lua (MIT)\n - Sol 3 (MIT)\n - TCLAP (MIT)\n - xo (Apache 2.0)\n - spot (Apache 2.0)\n - vis (Apache 2.0)\n - qtfx (Apache 2.0)";
-	information( "About SCONE", title + "\n\n" + author + "\n\n" + license );
+	QString title = "<b>" + to_qt( "SCONE version " + xo::to_str( GetSconeVersion() ) ) + "</b><br><br>";
+	QString author = "Copyright (C) 2013 - 2021 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
+	QString license =
+		"SCONE is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>.<br>"
+		"SCONE-studio is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU Public License 3.0</a>.<br><br>"
+		"The following external libraries are used by SCONE:<ul>"
+		"<li>OpenSim 3.3 (Apache 2.0)"
+		"<li>Simbody (Apache 2.0)"
+		"<li>Qt (GPL / LGPL)"
+		"<li>QCustomPlot (GPL v3)"
+		"<li>OpenSceneGraph (OSGPL)"
+		"<li>Lua (MIT)"
+		"<li>Sol 3 (MIT)"
+		"<li>TCLAP (MIT)"
+		"<li>xo (Apache 2.0)"
+		"<li>spot (Apache 2.0)"
+		"<li>vis (Apache 2.0)"
+		"<li>qtfx (Apache 2.0)"
+		"</ul>";
+	information( "About SCONE", title + author + license );
 }
 
 bool SconeStudio::tryExit()
@@ -677,9 +693,19 @@ bool SconeStudio::createScenario( const QString& any_file )
 				updateModelDataWidgets();
 		}
 	}
+	catch ( FactoryNotFoundException& e )
+	{
+		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd" } ) )
+			error( "Error creating scenario",
+				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
+				"Please check Tools -> Preferences -> Hyfydy, or visit <a href = 'https://hyfydy.com'>hyfydy.com</a> for more information." );
+		else error( "Error creating scenario", e.what() );
+		scenario_.reset();
+		return false;
+	}
 	catch ( std::exception& e )
 	{
-		error( "Error loading scenario", e.what() );
+		error( "Error creating scenario", e.what() );
 		scenario_.reset();
 		return false;
 	}
