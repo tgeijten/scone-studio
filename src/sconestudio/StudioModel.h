@@ -37,9 +37,9 @@ namespace scone
 		bool HasModel() const { return bool( model_ ) && IsValid(); }
 		bool HasData() const { return !storage_.IsEmpty() && !state_data_index.empty(); }
 
-		Model& GetModel() { return *model_; }
-		const Objective& GetOjective() const { return *objective_; }
-		ModelObjective& GetModelObjective() const { return *model_objective_; }
+		Model& GetModel() { SCONE_ASSERT( model_ ); return *model_; }
+		const Objective& GetObjective() const { return optimizer_->GetObjective(); }
+		ModelObjective* TryGetModelObjective() const { return model_objective_; }
 
 		bool IsEvaluating() const { return status_ == Status::Evaluating; }
 		bool IsEvaluatingStart() const { return status_ == Status::Evaluating && GetTime() == 0.0; }
@@ -72,7 +72,6 @@ namespace scone
 		// model / scenario data
 		Storage<> storage_;
 		OptimizerUP optimizer_;
-		Objective* objective_;
 		ModelObjective* model_objective_;
 		ModelUP model_;
 		path filename_;
