@@ -659,20 +659,23 @@ bool SconeStudio::createScenario( const QString& any_file )
 		currentFilename = any_file;
 		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ) );
 
-		// setup dof editor
-		dofEditor->init( scenario_->GetModel() );
-		dofEditor->setDisabled( false );
-
 		// update view settings
 		updateViewSettings();
 
-		// update parameter view
-		parModel->setObjectiveInfo( &scenario_->GetOjective().info() );
-		parViewDock->setWindowTitle( QString( "Optimization Parameters (%1)" ).arg( scenario_->GetOjective().info().size() ) );
+		if ( scenario_->HasModel() )
+		{
+			// update parameter view
+			parModel->setObjectiveInfo( &scenario_->GetObjective().info() );
+			parViewDock->setWindowTitle( QString( "Optimization Parameters (%1)" ).arg( scenario_->GetObjective().info().size() ) );
 
-		// set data, in case the file was an sto
-		if ( scenario_->HasData() )
-			updateModelDataWidgets();
+			// setup dof editor
+			dofEditor->init( scenario_->GetModel() );
+			dofEditor->setDisabled( false );
+
+			// set data, in case the file was an sto
+			if ( scenario_->HasData() )
+				updateModelDataWidgets();
+		}
 	}
 	catch ( std::exception& e )
 	{
@@ -871,28 +874,31 @@ void SconeStudio::performanceTest( bool write_stats )
 	{
 		auto filename = xo::path( currentFilename.toStdString() );
 		bool is_par_file = filename.extension_no_dot() == "par";
-		auto& inf = scenario_->GetModelObjective().info();
-		auto par = is_par_file ? SearchPoint( inf, filename ) : SearchPoint( inf );
+		if ( auto* mo = scenario_->TryGetModelObjective() )
+		{
+			auto& inf = mo->info();
+			auto par = is_par_file ? SearchPoint( inf, filename ) : SearchPoint( inf );
 
-		if ( !write_stats )
-		{
-			xo::timer real_time;
-			auto model = scenario_->GetModelObjective().CreateModelFromParams( par );
-			model->SetStoreData( false );
-			model->AdvanceSimulationTo( model->GetSimulationEndTime() );
-			auto real_dur = real_time().secondsd();
-			auto sim_time = model->GetTime();
-			if ( model->GetProfiler().enabled() )
-				model->GetProfiler().log_results();
-			log::info( "fitness = ", scenario_->GetModelObjective().GetResult( *model ) );
-			if ( auto sim_report = model->GetSimulationReport(); !sim_report.empty() )
-				log::info( sim_report );
-			log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
-		}
-		else
-		{
-			auto f = scenario_->GetFileName();
-			scone::BenchmarkScenario( scenario_->GetScenarioProps(), f, f.parent_path() / "perf", 8 );
+			if ( !write_stats )
+			{
+				xo::timer real_time;
+				auto model = mo->CreateModelFromParams( par );
+				model->SetStoreData( false );
+				model->AdvanceSimulationTo( model->GetSimulationEndTime() );
+				auto real_dur = real_time().secondsd();
+				auto sim_time = model->GetTime();
+				if ( model->GetProfiler().enabled() )
+					model->GetProfiler().log_results();
+				log::info( "fitness = ", mo->GetResult( *model ) );
+				if ( auto sim_report = model->GetSimulationReport(); !sim_report.empty() )
+					log::info( sim_report );
+				log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
+			}
+			else
+			{
+				auto f = scenario_->GetFileName();
+				scone::BenchmarkScenario( scenario_->GetScenarioProps(), f, f.parent_path() / "perf", 8 );
+			}
 		}
 	}
 }

@@ -42,8 +42,7 @@ namespace scone
 		scenario_filename_ = FindScenario( file );
 		scenario_pn_ = xo::load_file_with_include( FindScenario( file ), "INCLUDE" );
 		optimizer_ = CreateOptimizer( scenario_pn_, file.parent_path() );
-		objective_ = &optimizer_->GetObjective();
-		model_objective_ = dynamic_cast<ModelObjective*>( objective_ );
+		model_objective_ = dynamic_cast<ModelObjective*>( &optimizer_->GetObjective() );
 
 		if ( model_objective_ )
 		{
@@ -94,7 +93,7 @@ namespace scone
 			log::warning( "Not a model objective, disabling visualization" );
 		}
 
-		log::info( "Loaded ", file.filename(), "; dim=", objective_->dim(), "; time=", load_time() );
+		log::info( "Loaded ", file.filename(), "; dim=", GetObjective().dim(), "; time=", load_time() );
 	}
 
 	StudioModel::~StudioModel()
@@ -141,11 +140,13 @@ namespace scone
 
 	void StudioModel::EvaluateTo( TimeInSeconds t )
 	{
-		if ( model_ && IsEvaluating() )
+		if ( model_ && model_objective_ && IsEvaluating() )
 		{
 			try
 			{
 				model_objective_->AdvanceSimulationTo( *model_, t );
+				auto te = model_->GetSimulationEndTime();
+				auto t = model_->GetTime();
 				if ( model_->HasSimulationEnded() )
 					FinalizeEvaluation();
 			}
@@ -174,9 +175,12 @@ namespace scone
 	PropNode StudioModel::GetResult() const
 	{
 		PropNode report;
-		report.add_child( "Result", model_objective_->GetReport( *model_ ) );
-		if ( auto simpn = model_->GetSimulationReport(); !simpn.empty() )
-			report.add_child( "Simulation", model_->GetSimulationReport() );
+		if ( model_objective_ )
+		{
+			report.add_child( "Result", model_objective_->GetReport( *model_ ) );
+			if ( auto simpn = model_->GetSimulationReport(); !simpn.empty() )
+				report.add_child( "Simulation", model_->GetSimulationReport() );
+		}
 		return report;
 	}
 
