@@ -10,6 +10,7 @@
 
 #include <QDialog>
 #include <QMessageBox>
+#include <QClipboard>
 #include "qt_convert.h"
 #include "QPropNodeItemModel.h"
 
@@ -163,6 +164,7 @@ namespace scone
 
 	void ShowRequestLicenseDialog()
 	{
+#if SCONE_HYFYDY_ENABLED
 		auto hid = to_qt( GetHardwareId() );
 		QApplication::clipboard()->setText( hid );
 		auto message = "This is your Hardware ID (copied to clipboard):<br><br><b>" + hid + "</b><br><br>";
@@ -173,5 +175,6 @@ namespace scone
 		msgBox.setText( message );
 		msgBox.setIcon( QMessageBox::Information );
 		msgBox.exec();
+#endif
 	}
 }
