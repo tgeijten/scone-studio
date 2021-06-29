@@ -126,7 +126,7 @@ namespace scone
 
 	void DofEditorGroup::init( const Model& model )
 	{
-		dofEdits.clear();
+		dofEditors.clear();
 		qDeleteAll( dofGrid->findChildren<QWidget*>( "", Qt::FindDirectChildrenOnly ) );
 
 		createHeader( "<b>Name</b>", 0, Qt::AlignLeft );
@@ -136,8 +136,8 @@ namespace scone
 		for ( auto& dof : model.GetDofs() )
 		{
 			auto* edit = new DofEditor( *dof );
-			edit->addToGrid( gridLayout, dofEdits.size() + 1 );
-			dofEdits.push_back( edit );
+			edit->addToGrid( gridLayout, dofEditors.size() + 1 );
+			dofEditors.push_back( edit );
 			connect( edit, &DofEditor::valueChanged, this, &DofEditorGroup::valueChanged );
 		}
 	}
@@ -145,17 +145,17 @@ namespace scone
 	void DofEditorGroup::setSlidersFromDofs( const Model& model )
 	{
 		const auto& dofs = model.GetDofs();
-		SCONE_ASSERT( dofs.size() == dofEdits.size() );
+		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofEdits[ i ]->setValue( *dofs[ i ] );
+			dofEditors[ i ]->setValue( *dofs[ i ] );
 	}
 
 	void DofEditorGroup::setDofsFromSliders( Model& model )
 	{
 		const auto& dofs = model.GetDofs();
-		SCONE_ASSERT( dofs.size() == dofEdits.size() );
+		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofEdits[ i ]->updateDofFromWidget( *dofs[ i ] );
+			dofEditors[ i ]->updateDofFromWidget( *dofs[ i ] );
 	}
 
 	void DofEditorGroup::setEnableEditing( bool enable )

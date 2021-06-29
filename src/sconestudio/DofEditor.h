@@ -4,6 +4,7 @@
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QSlider>
+#include <QGridLayout>
 
 #include "scone/model/Model.h"
 
@@ -64,6 +65,6 @@ namespace scone
 		void createHeader( const char* str, int col, Qt::Alignment align = Qt::AlignCenter );
 		QWidget* dofGrid;
 		QGridLayout* gridLayout;
-		std::vector<DofEditor*> dofEdits;
+		std::vector<DofEditor*> dofEditors;
 	};
 }
