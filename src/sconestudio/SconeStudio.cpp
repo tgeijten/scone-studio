@@ -109,10 +109,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	viewActions[ ModelVis::ShowModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::updateViewSettings );
 	viewMenu->addSeparator();
 	viewActions[ ModelVis::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::updateViewSettings );
+	auto uncheckedViewSettings = { ModelVis::ShowBodyAxes, ModelVis::ShowJoints, ModelVis::ShowBodyCom, ModelVis::ShowModelComHeading, ModelVis::StaticCamera };
 	for ( auto& va : viewActions )
 	{
 		va.second->setCheckable( true );
-		va.second->setChecked( va.first != ModelVis::ShowBodyAxes && va.first != ModelVis::ShowJoints && va.first != ModelVis::ShowBodyCom );
+		va.second->setChecked( xo::find( uncheckedViewSettings, va.first ) == uncheckedViewSettings.end() );
 	}
 
 	// Scenario menu
@@ -163,8 +164,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// Window menu
 	auto windowMenu = createWindowMenu();
-	windowMenu->addSeparator();
-	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
 
 	// Help menu
 	auto helpMenu = menuBar()->addMenu( ( "&Help" ) );
@@ -231,6 +230,10 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, dofDock );
 	dofDock->hide();
+
+	// finalize windows menu
+	windowMenu->addSeparator();
+	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
 
 	// init scene
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
@@ -1033,9 +1036,12 @@ void SconeStudio::updateTabTitles()
 
 void SconeStudio::resetWindowLayout()
 {
-	GetStudioSettings().set( "ui.reset_layout", true );
-	GetStudioSettings().save();
-	information( "Reset Window Layout", "Please restart SCONE for the changes to take effect" );
+	if ( question( "Reset Window Layout", "Are you sure you want to reset the window layout? This action cannot be undone." ) )
+	{
+		GetStudioSettings().set( "ui.reset_layout", true );
+		GetStudioSettings().save();
+		information( "Reset Window Layout", "Please restart SCONE for the changes to take effect" );
+	}
 }
 
 void SconeStudio::fixViewerWindowSize()
