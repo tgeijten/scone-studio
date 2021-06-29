@@ -226,8 +226,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	reportDock->hide();
 
 	// dof editor
-	dofEditor = new DofEditor( this );
-	connect( dofEditor, &DofEditor::valueChanged, this, &SconeStudio::dofEditorValueChanged );
+	dofEditor = new DofEditorGroup( this );
+	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
 	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, dofDock );
 	dofDock->hide();
@@ -468,7 +468,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 		if ( scenario_->IsEvaluating() )
 		{
 			scenario_->EvaluateTo( t );
-			dofEditor->setDisabled( true );
+			dofEditor->setEnableEditing( false );
 		}
 
 		if ( update_vis && scenario_->HasModel() )
@@ -694,7 +694,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 			// setup dof editor
 			dofEditor->init( scenario_->GetModel() );
-			dofEditor->setDisabled( false );
+			dofEditor->setEnableEditing( true );
 
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )

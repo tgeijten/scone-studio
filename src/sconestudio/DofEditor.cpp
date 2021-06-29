@@ -9,62 +9,165 @@
 
 namespace scone
 {
-	DofEditor::DofEditor( QWidget* parent ) :
+	inline double degToRadIf( double v, bool conv ) { return conv ? xo::deg_to_rad( v ) : v; }
+	inline double radToDegIf( double v, bool conv ) { return conv ? xo::rad_to_deg( v ) : v; }
+
+	DofEditor::DofEditor( const Dof& dof ) : 
+		useDegrees( dof.IsRotational() ),
+		stepSize_( 0.01 )
+	{
+
+		QHBoxLayout* l = new QHBoxLayout;
+		setLayout( l );
+
+		label_ = new QLabel( to_qt( dof.GetName() ) );
+
+		const auto r = dof.GetRange();
+		auto pos = radToDegIf( dof.GetPos(), useDegrees );
+		auto min = radToDegIf( r.min, useDegrees );
+		auto max = radToDegIf( r.max, useDegrees );
+
+		spin_ = new QDoubleSpinBox( this );
+		spin_->setSingleStep( useDegrees ? 1.0 : 0.01 );
+		spin_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
+		spin_->setRange( min, max );
+		spin_->setAlignment( Qt::AlignRight );
+		connect( spin_, SIGNAL( valueChanged( double ) ), this, SLOT( spinValueChanged( double ) ) );
+		l->addWidget( spin_ );
+
+		min_ = new QLabel( this );
+		min_->setDisabled( true );
+		min_->setText( QString::asprintf( "%g", min ) );
+		min_->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+		l->addWidget( min_ );
+
+		slider_ = new QSlider( Qt::Horizontal, this );
+		slider_->setRange( to_int( min ), to_int( max ) );
+		slider_->setSingleStep( useDegrees ? to_int( 1 ) : to_int( 0.01 ) );
+		slider_->setPageStep( useDegrees ? to_int( 10 ) : to_int( 0.1 ) );
+		slider_->setTickInterval( useDegrees ? to_int( 10 ) : to_int( 1 ) );
+		slider_->setTickPosition( QSlider::NoTicks );
+		connect( slider_, SIGNAL( actionTriggered( int ) ), this, SLOT( sliderAction( int ) ) );
+		l->addWidget( slider_ );
+
+		max_ = new QLabel( this );
+		max_->setDisabled( true );
+		max_->setText( QString::asprintf( "%g", max ) );
+		max_->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
+		l->addWidget( max_ );
+
+		velocity_ = new QDoubleSpinBox( this );
+		velocity_->setSingleStep( useDegrees ? 10.0 : 0.1 );
+		velocity_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
+		velocity_->setRange( -999.99, 999.99 );
+		velocity_->setAlignment( Qt::AlignRight );
+		connect( velocity_, SIGNAL( valueChanged( double ) ), this, SLOT( spinValueChanged( double ) ) );
+		l->addWidget( velocity_ );
+
+		setValue( dof );
+	}
+
+	void DofEditor::spinValueChanged( double d )
+	{
+		slider_->setValue( to_int( spin_->value() ) );
+		emit valueChanged( d );
+	}
+
+	void DofEditor::setValue( const Dof& dof )
+	{
+		blockSignals( true );
+		auto pos = radToDegIf( dof.GetPos(), useDegrees );
+		spin_->setValue( pos );
+		slider_->setValue( to_int( pos ) );
+		velocity_->setValue( radToDegIf( dof.GetVel(), useDegrees ) );
+		blockSignals( false );
+	}
+
+	void DofEditor::updateDofFromWidget( Dof& dof )
+	{
+		dof.SetPos( degToRadIf( spin_->value(), useDegrees ) );
+		dof.SetVel( degToRadIf( velocity_->value(), useDegrees ) );
+	}
+
+	void DofEditor::addToGrid( QGridLayout* l, int row )
+	{
+		l->addWidget( label_, row, 0 );
+		l->addWidget( spin_, row, 1 );
+		l->addWidget( min_, row, 2 );
+		l->addWidget( slider_, row, 3 );
+		l->addWidget( max_, row, 4 );
+		l->addWidget( velocity_, row, 5 );
+	}
+
+	void DofEditor::sliderAction( int i )
+	{
+		spin_->setValue( to_double( slider_->sliderPosition() ) );
+	}
+
+	DofEditorGroup::DofEditorGroup( QWidget* parent ) :
 		QWidget( parent ),
-		useDegrees( true ),
-		dofSliderGroup( nullptr )
+		dofGrid( nullptr )
 	{
 		QVBoxLayout* l = new QVBoxLayout;
 		l->setMargin( 4 );
 		l->setSpacing( 4 );
 		setLayout( l );
 
-		dofSliderGroup = new QFormGroup( this );
+		dofGrid = new QWidget( this );
+		gridLayout = new QGridLayout();
+		dofGrid->setLayout( gridLayout );
+
 		auto scrollWidget = new QScrollArea( this );
-		scrollWidget->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
+		//scrollWidget->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
 		scrollWidget->setWidgetResizable( true ); // very important
-		scrollWidget->setWidget( dofSliderGroup );
+		scrollWidget->setWidget( dofGrid );
 		l->addWidget( scrollWidget );
 	}
 
-	void DofEditor::init( const Model& model )
+	void DofEditorGroup::init( const Model& model )
 	{
-		dofSliders.clear();
-		dofSliderGroup->clear();
+		dofEdits.clear();
+		qDeleteAll( dofGrid->findChildren<QWidget*>( "", Qt::FindDirectChildrenOnly ) );
+
+		createHeader( "<b>Name</b>", 0, Qt::AlignLeft );
+		createHeader( "<b>Value</b>", 1 );
+		createHeader( "<b>Velocity</b>", 5 );
+
 		for ( auto& dof : model.GetDofs() )
 		{
-			auto* slider = new QValueSlider( this );
-			slider->setRange( dofToSliderValue( *dof, dof->GetRange().min ), dofToSliderValue( *dof, dof->GetRange().max ) );
-			slider->setValue( dofToSliderValue( *dof, dof->GetPos() ) );
-			dofSliders.emplace_back( slider );
-			dofSliderGroup->addRow( to_qt( dof->GetName() ), slider );
-			connect( slider, &QValueSlider::valueChanged, this, &DofEditor::valueChanged );
+			auto* edit = new DofEditor( *dof );
+			edit->addToGrid( gridLayout, dofEdits.size() + 1 );
+			dofEdits.push_back( edit );
+			connect( edit, &DofEditor::valueChanged, this, &DofEditorGroup::valueChanged );
 		}
 	}
 
-	void DofEditor::setSlidersFromDofs( const Model& model )
+	void DofEditorGroup::setSlidersFromDofs( const Model& model )
 	{
 		const auto& dofs = model.GetDofs();
-		SCONE_ASSERT( dofs.size() == dofSliders.size() );
+		SCONE_ASSERT( dofs.size() == dofEdits.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofSliders[ i ]->setValue( dofToSliderValue( *dofs[ i ], dofs[ i ]->GetPos() ) );
+			dofEdits[ i ]->setValue( *dofs[ i ] );
 	}
 
-	void DofEditor::setDofsFromSliders( Model& model )
+	void DofEditorGroup::setDofsFromSliders( Model& model )
 	{
 		const auto& dofs = model.GetDofs();
-		SCONE_ASSERT( dofs.size() == dofSliders.size() );
+		SCONE_ASSERT( dofs.size() == dofEdits.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofs[ i ]->SetPos( sliderToDofValue( *dofs[ i ], dofSliders[ i ]->value() ) );
+			dofEdits[ i ]->updateDofFromWidget( *dofs[ i ] );
 	}
 
-	double DofEditor::dofToSliderValue( const Dof& d, double value )
+	void DofEditorGroup::setEnableEditing( bool enable )
 	{
-		return d.IsRotational() && useDegrees ? xo::rad_to_deg( value ) : value;
+		dofGrid->setDisabled( !enable );
 	}
 
-	double DofEditor::sliderToDofValue( const Dof& d, double value )
+	void DofEditorGroup::createHeader( const char* str, int col, Qt::Alignment align )
 	{
-		return d.IsRotational() && useDegrees ? xo::deg_to_rad( value ) : value;
+		auto label = new QLabel( str );
+		label->setAlignment( align );
+		label->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Fixed );
+		gridLayout->addWidget( label, 0, col );
 	}
 }

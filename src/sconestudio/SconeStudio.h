@@ -181,7 +181,7 @@ private:
 	QDockWidget* reportDock;
 
 	// dof editor
-	scone::DofEditor* dofEditor;
+	scone::DofEditorGroup* dofEditor;
 	QDockWidget* dofDock;
 };
 

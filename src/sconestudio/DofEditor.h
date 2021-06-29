@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QWidget>
-#include "QGroup.h"
-#include "QValueSlider.h"
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QSlider>
+
 #include "scone/model/Model.h"
 
 namespace scone
@@ -12,24 +14,56 @@ namespace scone
 		Q_OBJECT
 
 	public:
-		DofEditor( QWidget* parent );
-		~DofEditor() = default;
+		DofEditor( const Dof& dof );
+		void setValue( const Dof& dof );
+		void updateDofFromWidget( Dof& dof );
+		void addToGrid( QGridLayout* l, int row );
+
+		double position() { return spin_->value(); }
+		double velocity() { return velocity_->value(); }
+
+	signals:
+		void valueChanged( double d );
+
+	private slots:
+		void spinValueChanged( double d );
+		void sliderAction( int i );
+
+	private:
+		int to_int( double d ) { return int( d / stepSize_ ); }
+		double to_double( int i ) { return stepSize_ * i; }
+
+		QLabel* label_;
+		QDoubleSpinBox* spin_;
+		QLabel* min_;
+		QSlider* slider_;
+		QLabel* max_;
+		QDoubleSpinBox* velocity_;
+
+		bool useDegrees;
+		double stepSize_;
+	};
+
+	class DofEditorGroup : public QWidget
+	{
+		Q_OBJECT
+
+	public:
+		DofEditorGroup( QWidget* parent );
+		~DofEditorGroup() = default;
 
 		void init( const Model& model );
 		void setSlidersFromDofs( const Model& model );
 		void setDofsFromSliders( Model& model );
-
-		bool useDegrees;
+		void setEnableEditing( bool enable );
 
 	signals:
 		void valueChanged();
 
 	private:
-		std::vector<std::string> dofNames;
-		QFormGroup* dofSliderGroup;
-		std::vector<QValueSlider*> dofSliders;
-
-		double dofToSliderValue( const Dof& d, double value );
-		double sliderToDofValue( const Dof& d, double value );
+		void createHeader( const char* str, int col, Qt::Alignment align = Qt::AlignCenter );
+		QWidget* dofGrid;
+		QGridLayout* gridLayout;
+		std::vector<DofEditor*> dofEdits;
 	};
 }
