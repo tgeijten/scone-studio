@@ -28,9 +28,12 @@
 #include "scone/sconelib_config.h"
 #include "scone/core/Exception.h"
 #include "studio_tools.h"
+#include "StudioSettings.h"
 
 int main( int argc, char *argv[] )
 {
+	xo::timer boot_timer;
+
 	// Qt setup, required before creating QApplication
 	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 	QApplication::setStyle( "fusion" );
@@ -72,6 +75,10 @@ int main( int argc, char *argv[] )
 
 		// close splash screen
 		splash.close(); // DO NOT USE QSplashScreen::finish() because it's slow
+
+		// show startup time (optional)
+		if ( scone::GetStudioSetting<bool>( "ui.show_startup_time") )
+			xo::log::debug( "SCONE startup time: ", boot_timer().secondsd(), "s" );
 
 		return a.exec();
 	}

@@ -64,4 +64,5 @@ ui {
 	label = "User Interface Settings"
 	reset_layout { type = bool default = 0 label = "Reset window layout on start" }
 	last_version_run { type = string default = "" label = "Last version run" }
+	show_startup_time { type = bool default = 0 label = "Show startup time" }
 }
