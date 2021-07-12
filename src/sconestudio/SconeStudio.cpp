@@ -171,6 +171,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
 	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
+	helpMenu->addAction( "Reinstall &Tutorials...", this, []() { scone::tryInstallTutorials(); } );
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", this, &SconeStudio::helpAbout );
 
