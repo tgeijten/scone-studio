@@ -57,10 +57,13 @@ int main( int argc, char *argv[] )
 
 		// init main window
 		SconeStudio w;
-		QThread::sleep( 0 ); // sleep a while so people can enjoy the splash screen :-)
-		w.init();
+		splash.finish( &w );
 		w.show();
-		scone::log::info( "SCONE version ", scone::GetSconeVersion() );
+
+		a.processEvents();
+		w.init();
+
+
 
 #if SCONE_HYFYDY_ENABLED
 		// check if license agreement has been updated
@@ -72,8 +75,6 @@ int main( int argc, char *argv[] )
 		// init scone file format and libraries
 		scone::Initialize();
 
-		splash.close();
-		
 		return a.exec();
 	}
 	catch ( std::exception& e )

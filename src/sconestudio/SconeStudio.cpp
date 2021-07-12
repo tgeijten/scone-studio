@@ -69,7 +69,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	xo::log::debug( "Constructing UI elements" );
 	ui.setupUi( this );
 
-	// analysis
+	// Analysis
 	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
 	analysisView->setObjectName( "Analysis" );
 	analysisView->setMinSeriesInterval( 0 );
@@ -171,12 +171,35 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
 	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
-	helpMenu->addAction( "Reinstall &Tutorials...", this, []() { scone::tryInstallTutorials(); } );
+	helpMenu->addAction( "Repair &Tutorials...", this, []() { scone::installTutorials(); } );
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", this, &SconeStudio::helpAbout );
 
+	// Results Browser
+	auto results_folder = scone::GetFolder( SCONE_RESULTS_FOLDER );
+	xo::create_directories( results_folder );
+	resultsModel = new ResultsFileSystemModel( nullptr );
+	ui.resultsBrowser->setModel( resultsModel );
+	ui.resultsBrowser->setNumColumns( 1 );
+	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto" );
+	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
+	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
+	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
+	ui.resultsBrowser->setContextMenuPolicy( Qt::CustomContextMenu );
+	connect( ui.resultsBrowser, SIGNAL( customContextMenuRequested( const QPoint& ) ), this, SLOT( onResultBrowserCustomContextMenu( const QPoint& ) ) );
+	connect( ui.resultsBrowser->selectionModel(),
+		SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
+		this, SLOT( selectBrowserItem( const QModelIndex&, const QModelIndex& ) ) );
+
+	// Play Control
 	ui.stackedWidget->setCurrentIndex( 0 );
 	ui.playControl->setDigits( 6, 3 );
+	ui.playControl->setRange( 0, 100 );
+	connect( ui.playControl, &QPlayControl::playTriggered, this, &SconeStudio::start );
+	connect( ui.playControl, &QPlayControl::stopTriggered, this, &SconeStudio::stop );
+	connect( ui.playControl, &QPlayControl::timeChanged, this, &SconeStudio::setPlaybackTime );
+	connect( ui.playControl, &QPlayControl::sliderReleased, this, &SconeStudio::refreshAnalysis );
+	connect( analysisView, &QDataAnalysisView::timeChanged, ui.playControl, &QPlayControl::setTimeStop );
 
 	// docking
 	setDockNestingEnabled( true );
@@ -236,51 +259,12 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	windowMenu->addSeparator();
 	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
 
-	// init scene
+	// init viewer / scene
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
-}
-
-bool SconeStudio::init()
-{
-	// init file model and browser widget
-	auto results_folder = scone::GetFolder( SCONE_RESULTS_FOLDER );
-	xo::create_directories( results_folder );
-
-	resultsModel = new ResultsFileSystemModel( nullptr );
-	ui.resultsBrowser->setModel( resultsModel );
-	ui.resultsBrowser->setNumColumns( 1 );
-	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto" );
-	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
-	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
-	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
-
-	ui.resultsBrowser->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(ui.resultsBrowser, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(onResultBrowserCustomContextMenu(const QPoint &)));
-
-	connect( ui.resultsBrowser->selectionModel(),
-		SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
-		this, SLOT( selectBrowserItem( const QModelIndex&, const QModelIndex& ) ) );
-
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
 	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
-	//ui.tabWidget->tabBar()->tabButton( 0, QTabBar::RightSide )->resize( 0, 0 );
 
-	ui.playControl->setRange( 0, 100 );
-	connect( ui.playControl, &QPlayControl::playTriggered, this, &SconeStudio::start );
-	connect( ui.playControl, &QPlayControl::stopTriggered, this, &SconeStudio::stop );
-	connect( ui.playControl, &QPlayControl::timeChanged, this, &SconeStudio::setPlaybackTime );
-	connect( ui.playControl, &QPlayControl::sliderReleased, this, &SconeStudio::refreshAnalysis );
-	connect( analysisView, &QDataAnalysisView::timeChanged, ui.playControl, &QPlayControl::setTimeStop );
-
-	// start timer for viewer
-	connect( &backgroundUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateBackgroundTimer() ) );
-	backgroundUpdateTimer.start( 500 );
-
-	// add outputText to global sinks (only *after* the ui has been initialized)
-	xo::log::add_sink( ui.outputText );
-	ui.outputText->set_sink_mode( xo::log::sink_mode::current_thread );
-	ui.outputText->set_log_level( XO_IS_DEBUG_BUILD ? xo::log::level::trace : xo::log::level::debug );
-
+	// reset layout if requested
 	createSettings( "SCONE", "SconeStudio" );
 	if ( GetStudioSetting<bool>( "ui.reset_layout" ) )
 	{
@@ -288,6 +272,28 @@ bool SconeStudio::init()
 		GetStudioSettings().save();
 	}
 	else restoreSettings();
+}
+
+bool SconeStudio::init()
+{
+	// add outputText to global sinks (only *after* the ui has been initialized)
+	xo::log::add_sink( ui.outputText );
+	ui.outputText->set_sink_mode( xo::log::sink_mode::current_thread );
+	ui.outputText->set_log_level( XO_IS_DEBUG_BUILD ? xo::log::level::trace : xo::log::level::debug );
+
+	// start timer for viewer
+	connect( &backgroundUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateBackgroundTimer() ) );
+	backgroundUpdateTimer.start( 500 );
+
+	// see if this is a new version of SCONE
+	auto version = xo::to_str( scone::GetSconeVersion() );
+	scone::log::info( "SCONE version ", version );
+	if ( GetStudioSetting<std::string>( "ui.last_version_run" ) != version )
+	{
+		GetStudioSettings().set( "ui.last_version_run", version );
+		GetStudioSettings().save();
+		scone::installTutorials();
+	}
 
 	ui.messagesDock->raise();
 

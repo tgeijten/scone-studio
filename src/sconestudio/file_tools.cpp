@@ -1,17 +1,19 @@
 #include "file_tools.h"
 
-#include "QDirIterator"
-#include "scone/core/system_tools.h"
-#include "xo/system/log.h"
+#include <QDirIterator>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <filesystem>
-#include "QMessageBox"
+
+#include "scone/core/system_tools.h"
+#include "scone/core/Log.h"
 #include "xo/filesystem/filesystem.h"
 
 namespace fs = std::filesystem;
 
 namespace scone
 {
-	std::pair<int, double> scone::extractGenBestFromParFile( const QFileInfo& parFile )
+	std::pair<int, double> extractGenBestFromParFile( const QFileInfo& parFile )
 	{
 		auto s = parFile.completeBaseName().split( "_" );
 		if ( s.size() > 2 )
@@ -38,7 +40,7 @@ namespace scone
 		return bestFile;
 	}
 
-	void tryInstallTutorials()
+	void installTutorials()
 	{
 		auto sconeDir = scone::GetFolder( scone::SCONE_SCENARIO_FOLDER );
 		auto tutDir = sconeDir / "Tutorials";
@@ -47,15 +49,17 @@ namespace scone
 		auto fsInst = fs::path( instDir.str() );
 		if ( fs::exists( fsScone / "Tutorials/Tutorial 1 - Introduction.scone" ) )
 		{
+			// backup 1.X tutorials
 			auto tutBackupDir = tutDir + "Backup";
-			QString msg = QString( "Existing tutorials will be copied to\n\n" ) + tutBackupDir.c_str();
-			if ( QMessageBox::question( nullptr, "Rename Tutorials", msg ) != QMessageBox::Yes )
+			QString msg = QString( "A previous version of the SCONE Tutorials was detected and will be moved to:\n\n" ) + tutBackupDir.c_str();
+			if ( QMessageBox::question( nullptr, "Rename Existing Tutorials", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Cancel )
 				return;
 			auto sconeTutBackup = fs::path( xo::find_unique_directory( tutDir + "Backup" ).str() );
 			fs::rename( fsScone / "Tutorials", sconeTutBackup );
 		}
 
 		auto options = fs::copy_options::update_existing | fs::copy_options::recursive;
+		log::debug( "Updating Tutorials and Examples" );
 		fs::copy( fsInst / "Tutorials", fsScone / "Tutorials", options );
 		fs::copy( fsInst / "Examples", fsScone / "Examples", options );
 	}
