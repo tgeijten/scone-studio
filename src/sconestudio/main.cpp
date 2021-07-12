@@ -57,13 +57,8 @@ int main( int argc, char *argv[] )
 
 		// init main window
 		SconeStudio w;
-		splash.finish( &w );
 		w.show();
-
-		a.processEvents();
 		w.init();
-
-
 
 #if SCONE_HYFYDY_ENABLED
 		// check if license agreement has been updated
@@ -74,6 +69,9 @@ int main( int argc, char *argv[] )
 
 		// init scone file format and libraries
 		scone::Initialize();
+
+		// close splash screen
+		splash.close(); // DO NOT USE QSplashScreen::finish() because it's slow
 
 		return a.exec();
 	}
