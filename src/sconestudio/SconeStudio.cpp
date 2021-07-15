@@ -292,7 +292,8 @@ bool SconeStudio::init()
 	{
 		GetStudioSettings().set( "ui.last_version_run", version );
 		GetStudioSettings().save();
-		scone::installTutorials();
+		if ( GetStudioSetting<bool>( "ui.install_tutorials" ) )
+			scone::installTutorials();
 	}
 
 	ui.messagesDock->raise();
