@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QSlider>
 #include <QGridLayout>
+#include <QPushButton>
 
 #include "scone/model/Model.h"
 

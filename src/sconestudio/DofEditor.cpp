@@ -2,6 +2,7 @@
 
 #include <QBoxLayout>
 #include <QScrollArea>
+#include <QStyle>
 
 #include "scone/model/Dof.h"
 #include "qt_convert.h"
