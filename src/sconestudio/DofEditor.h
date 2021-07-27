@@ -60,10 +60,12 @@ namespace scone
 
 	signals:
 		void valueChanged();
+		void exportCoordinates();
 
 	private:
 		void createHeader( const char* str, int col, Qt::Alignment align = Qt::AlignCenter );
 		QWidget* dofGrid;
+		QPushButton* exportButton;
 		QGridLayout* gridLayout;
 		std::vector<DofEditor*> dofEditors;
 	};

@@ -33,6 +33,7 @@
 #include "scone/model/muscle_tools.h"
 #include "scone/optimization/Optimizer.h"
 #include "scone/optimization/opt_tools.h"
+#include "scone/model/Dof.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -138,6 +139,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
 	toolsMenu->addAction( "Fil&ter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
+	toolsMenu->addSeparator();
+	toolsMenu->addAction( "&Export Coordinates...", this, &SconeStudio::exportCoordinates );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
 	toolsMenu->addAction( "&Convert Model...", [=]() { ShowModelConversionDialog( this ); } );
@@ -251,6 +254,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// dof editor
 	dofEditor = new DofEditorGroup( this );
 	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
+	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
 	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, dofDock );
 	dofDock->hide();
@@ -1059,6 +1063,22 @@ void SconeStudio::fixViewerWindowSize()
 		auto borderSize = ui.viewerDock->size() - ui.osgViewer->size();
 		auto videoSize = QSize( GetStudioSettings().get<int>( "video.width" ), GetStudioSettings().get<int>( "video.height" ) );
 		ui.viewerDock->resize( borderSize + videoSize + QSize( 2, 2 ) );
+	}
+}
+
+void SconeStudio::exportCoordinates()
+{
+	if ( scenario_ && scenario_->HasModel() )
+	{
+		PropNode pn;
+		for ( const auto& dof : scenario_->GetModel().GetDofs() )
+		{
+			pn[ "values" ].set( dof->GetName(), dof->GetPos() );
+			pn[ "velocities" ].set( dof->GetName(), dof->GetVel() );
+		}
+		auto filename = QFileDialog::getSaveFileName( this, "State Filename", to_qt( scenario_->GetFileName().parent_path() ), "zml files (*.zml)" );
+		if ( !filename.isEmpty() )
+			xo::save_file( pn, path_from_qt( filename ) );
 	}
 }
 
