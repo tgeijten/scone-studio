@@ -74,12 +74,7 @@ namespace scone
 						if ( geom_file )
 						{
 							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
-							body_meshes.push_back( vis::mesh( bodies.back(), *geom_file ) );
-							body_meshes.back().set_material( bone_mat );
-							auto fix_obj_ori = geom_file->extension_no_dot() == "obj";
-							auto ori = fix_obj_ori ? xo::quat_from_x_angle( -90_degf ) * vis::quatf( geom.ori_ ) : vis::quatf( geom.ori_ );
-							body_meshes.back().pos_ori( vis::vec3f( geom.pos_ ), ori );
-							body_meshes.back().scale( vis::vec3f( geom.scale_ ) );
+							body_meshes.push_back( MakeMesh( bodies.back(), *geom_file, bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
 						}
 						else log::warning( "Could not find ", geom.filename_ );
 					}
@@ -100,7 +95,13 @@ namespace scone
 		{
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b.get(); } );
 			auto& parent_node = idx != NoIndex ? bodies[ idx ] : root_node_;
-			if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
+			if ( cg->HasFileName() )
+			{
+				auto model_folder = model.GetModelFile().parent_path();
+				auto geom_file = FindFile( model_folder / cg->GetFileName() );
+				contact_geoms.push_back( MakeMesh( parent_node, geom_file, contact_mat, cg->GetPos(), cg->GetOri() ) );
+			}
+			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
 				// #todo: add support for other shapes (i.e. planes)
 				bool use_bone_mat = cg->GetPos().is_null() && parent_node.size() <= 3;
@@ -259,6 +260,17 @@ namespace scone
 		auto y_to_z = std::holds_alternative<xo::capsule>( sh ) || std::holds_alternative<xo::cylinder>( sh ) || std::holds_alternative<xo::cone>( sh );
 		auto fixed_ori = y_to_z ? vis::quatf( ori ) * xo::quat_from_x_angle( vis::degreef( 90 ) ) : vis::quatf( ori );
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
+		return msh;
+	}
+
+	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::path& file, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
+	{
+		auto msh = vis::mesh( parent, file );
+		msh.set_material( mat  );
+		auto fix_obj_ori = file.extension_no_dot() == "obj";
+		auto fixed_ori = fix_obj_ori ? xo::quat_from_x_angle( -90_degf ) * vis::quatf( ori ) : vis::quatf( ori );
+		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
+		msh.scale( vis::vec3f( scale ) );
 		return msh;
 	}
 
