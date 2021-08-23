@@ -63,4 +63,59 @@ namespace scone
 		fs::copy( fsInst / "Tutorials", fsScone / "Tutorials", options );
 		fs::copy( fsInst / "Examples", fsScone / "Examples", options );
 	}
+
+	bool moveFilesToTrash( const QStringList& files )
+	{
+#ifdef _MSC_VER
+		std::vector<char> buf;
+		for ( const auto& f : files ) {
+			auto fstr = f.toStdString();
+			buf.insert( buf.end(), fstr.begin(), fstr.end() );
+			buf.push_back( '\0' );
+		}
+		buf.push_back( '\0' );
+
+		SHFILEOPSTRUCT FileOp = { 0 };
+		FileOp.hwnd = NULL;
+		FileOp.wFunc = FO_DELETE;
+		FileOp.fFlags = FOF_ALLOWUNDO;
+		FileOp.pFrom = &buf[ 0 ];
+		FileOp.pTo = NULL;
+
+		auto ret = SHFileOperation( &FileOp );
+		if ( ret != 0 )
+			log::warning( "Could not move files to the recycle bin, error=", ret );
+		return ret == 0;
+#else
+		int num_deleted = 0;
+		for ( const auto& f : files )
+			if ( moveToTrash( f ) )
+				++num_deleted;
+		return num_deleted == files.size();
+#endif
+	}
+
+	bool moveToTrash( const QString& path )
+	{
+#ifdef _MSC_VER
+		auto file_str = path.toStdString();
+		xo::replace_char( file_str, '/', '\\' );
+		if ( file_str.back() == '\\' )
+			file_str.pop_back();
+		file_str.push_back( '\0' ); // strings must be double-null-terminated
+
+		SHFILEOPSTRUCT FileOp = { 0 };
+		FileOp.hwnd = NULL;
+		FileOp.wFunc = FO_DELETE;
+		FileOp.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR | FOF_ALLOWUNDO;
+		FileOp.pFrom = file_str.c_str();
+		FileOp.pTo = NULL;
+		auto ret = SHFileOperation( &FileOp );
+		if ( ret != 0 )
+			log::warning( "Could not recycle ", path.toStdString(), "; error=", ret );
+		return ret == 0;
+#else
+		return QFile::moveToTrash( path );
+#endif
+	}
 }

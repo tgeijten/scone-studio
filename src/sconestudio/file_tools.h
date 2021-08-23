@@ -10,4 +10,7 @@ namespace scone
 	QFileInfo findBestPar( const QDir& dir );
 
 	void installTutorials();
+
+	bool moveToTrash( const QString& path );
+	bool moveFilesToTrash( const QStringList& files );
 }

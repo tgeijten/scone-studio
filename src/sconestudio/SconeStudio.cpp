@@ -1169,26 +1169,24 @@ void SconeStudio::finalizeCapture()
 
 void SconeStudio::deleteSelectedFileOrFolder()
 {
-	auto selection = ui.resultsBrowser->selectionModel()->selectedRows();
 	auto msgTitle = tr( "Remove files or folders" );
-
+	auto selection = ui.resultsBrowser->selectionModel()->selectedRows();
 	if ( selection.empty() )
 		return information( msgTitle, tr( "No files or folders selected" ) );
-	QString fileNames;
-	for ( auto idx : selection )
-		fileNames += ui.resultsBrowser->fileSystemModel()->fileName( idx ) + '\n';
+
+	QStringList fileList;
+	for ( const auto& idx : selection )
+		fileList.push_back( ui.resultsBrowser->fileSystemModel()->fileInfo( idx ).filePath() );
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	// Qt >= 15.5? Move items to thrash, display warning with default Ok
-	auto msgBody = tr( "The following item(s) will be moved to the recycle bin:\n\n" ) + fileNames;
-	if ( QMessageBox::warning( this, msgTitle, msgBody, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok ) == QMessageBox::Cancel )
+	auto msgBody = tr( "The following item(s) will be moved to the recycle bin:\n\n" ) + fileList.join( '\n' );
+	if ( QMessageBox::warning( nullptr, msgTitle, msgBody, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok ) == QMessageBox::Cancel )
 		return;
-	for ( auto idx : selection )
-	{
-		auto item = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
-		if ( !QFile::moveToTrash( item.filePath() ) )
-			warning( msgTitle, tr( "Could not remove " ) + item.filePath() );
-	}
+
+	xo::timer t;
+	if ( moveFilesToTrash( fileList ) )
+		log::info( "Recycled ", fileList.size(), " files in ", t().secondsd(), " seconds" );
 #else
 	// Qt < 15.5? Remove items, display warning with default Cancel
 	auto msgBody = tr( "The following item(s) will be permanently deleted:\n\n" ) + fileNames;
@@ -1196,7 +1194,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 	if ( QMessageBox::Cancel == QMessageBox::warning( this, msgTitle, msgBody, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel ) )
 		return;
 
-	for ( auto idx : selection )
+	for ( const auto& idx : selection )
 	{
 		bool success = false;
 		auto item = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
