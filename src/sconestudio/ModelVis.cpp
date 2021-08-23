@@ -38,7 +38,12 @@ namespace scone
 		if ( auto* gp = model.GetGroundPlane() )
 		{
 			auto& plane = std::get<xo::plane>( gp->GetShape() );
-			ground_ = vis::plane( root_node_, 128, 128, 0.5f, GetStudioSetting< xo::color >( "viewer.tile1" ), GetStudioSetting< xo::color >( "viewer.tile2" ) );
+			auto col1 = GetStudioSetting<xo::color>( "viewer.tile1" );
+			auto col2 = GetStudioSetting<xo::color>( "viewer.tile2" );
+			auto tile_size = GetStudioSetting<float>( "viewer.tile_size" );
+			auto tile_count_x = GetStudioSetting<int>( "viewer.tile_count_x" );
+			auto tile_count_z = GetStudioSetting<int>( "viewer.tile_count_z" );
+			ground_ = vis::plane( root_node_, tile_count_x, tile_count_z, tile_size, col1, col2 );
 			auto normal_rot = xo::quat_from_directions( xo::vec3f::unit_y(), plane.normal_ );
 			//ground_plane = scene_.add< vis::plane >( xo::vec3f( 64, 0, 0 ), xo::vec3f( 0, 0, -64 ), GetFolder( SCONE_UI_RESOURCE_FOLDER ) / "stile160.png", 64, 64 );
 			ground_.pos_ori( vis::vec3f( gp->GetPos() ), normal_rot * xo::quatf( gp->GetOri() ) );
