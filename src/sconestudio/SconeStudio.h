@@ -45,6 +45,7 @@
 #include "GaitAnalysis.h"
 #include "ParTableModel.h"
 #include "DofEditor.h"
+#include "ViewSettings.h"
 
 using scone::TimeInSeconds;
 
@@ -120,6 +121,7 @@ private:
 	QCodeEditor* getActiveScenario();
 	void restoreCustomSettings( QSettings& settings ) override;
 	void saveCustomSettings( QSettings& settings ) override;
+	scone::ViewSettings getViewSettingsFromMenu() const;
 
 	void performanceTest( bool write_stats );
 	void evaluate();
@@ -150,7 +152,7 @@ private:
 	std::vector< QCodeEditor* > codeEditors;
 
 	// viewer
-	xo::flat_map< scone::ModelVis::VisOpt, QAction* > viewActions;
+	xo::flat_map< scone::ViewOption, QAction* > viewActions;
 	vis::scene scene_;
 	QTimer backgroundUpdateTimer;
 	double slomo_factor;

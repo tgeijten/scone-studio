@@ -14,7 +14,8 @@ namespace scone
 {
 	using namespace xo::angle_literals;
 
-	ModelVis::ModelVis( const Model& model, vis::scene& s ) :
+	ModelVis::ModelVis( const Model& model, vis::scene& s, const ViewSettings& settings ) :
+		view_flags( settings ),
 		root_node_( &s ),
 		specular_( GetStudioSetting < float >( "viewer.specular" ) ),
 		shininess_( GetStudioSetting< float >( "viewer.shininess" ) ),
@@ -31,9 +32,6 @@ namespace scone
 			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
 			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } )
 	{
-		// #todo: don't reset this every time, keep view_flags outside ModelVis
-		view_flags.set( { ShowForces, ShowMuscles, ShowTendons, ShowBodyGeom, EnableShadows, ShowModelComHeading } );
-
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
 		{
@@ -190,12 +188,12 @@ namespace scone
 		{
 			auto pos = model_joints[ i ]->GetPos();
 			joints[ i ].pos( vis::vec3f( pos ) );
-			if ( view_flags.get< ShowJoints >() )
+			if ( view_flags.get< ViewOption::ShowJoints >() )
 				UpdateForceVis( force_count++, pos, -model_joints[ i ]->GetReactionForce() );
 		}
 
 		// update forces
-		if ( view_flags.get< ShowForces >() )
+		if ( view_flags.get< ViewOption::ShowForces >() )
 		{
 			auto fvec = model.GetContactForceValues();
 			for ( auto& cf : fvec )
@@ -205,7 +203,7 @@ namespace scone
 			forces.pop_back();
 
 		// update com / heading
-		if ( view_flags.get<ShowModelComHeading>() )
+		if ( view_flags.get<ViewOption::ShowModelComHeading>() )
 		{
 			if ( auto* root = model.GetRootBody() )
 			{
@@ -222,7 +220,7 @@ namespace scone
 		{
 			forces.emplace_back( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::yellow(), 0.3f } );
 			forces.back().set_material( arrow_mat );
-			forces.back().show( view_flags.get< ShowForces >() );
+			forces.back().show( view_flags.get< ViewOption::ShowForces >() );
 		}
 		forces[ force_idx ].pos( vis::vec3f( cop ), vis::vec3f( cop + 0.001 * force ) );
 	}
@@ -247,7 +245,7 @@ namespace scone
 		vis.mat.emissive( vis::color() );
 		vis.mat.ambient( c );
 
-		if ( view_flags.get<ShowTendons>() )
+		if ( view_flags.get<ViewOption::ShowTendons>() )
 		{
 			auto i1 = insert_path_point( p, tlen );
 			auto i2 = insert_path_point( p, tlen + mlen );
@@ -283,33 +281,33 @@ namespace scone
 	{
 		view_flags = f;
 		for ( auto& f : forces )
-			f.show( view_flags.get<ShowForces>() );
+			f.show( view_flags.get<ViewOption::ShowForces>() );
 
 		for ( auto& m : muscles )
 		{
-			m.ce.show( view_flags.get<ShowMuscles>() );
-			m.ten1.show( view_flags.get<ShowMuscles>() && view_flags.get<ShowTendons>() );
-			m.ten2.show( view_flags.get<ShowMuscles>() && view_flags.get<ShowTendons>() );
+			m.ce.show( view_flags.get<ViewOption::ShowMuscles>() );
+			m.ten1.show( view_flags.get<ViewOption::ShowMuscles>() && view_flags.get<ViewOption::ShowTendons>() );
+			m.ten2.show( view_flags.get<ViewOption::ShowMuscles>() && view_flags.get<ViewOption::ShowTendons>() );
 		}
 
 		for ( auto& e : joints )
-			e.show( view_flags.get<ShowJoints>() );
+			e.show( view_flags.get<ViewOption::ShowJoints>() );
 
 		for ( auto& e : body_meshes )
-			e.show( view_flags.get<ShowBodyGeom>() );
+			e.show( view_flags.get<ViewOption::ShowBodyGeom>() );
 
 		for ( auto& e : body_axes )
-			e.show( view_flags.get<ShowBodyAxes>() );
+			e.show( view_flags.get<ViewOption::ShowBodyAxes>() );
 
 		for ( auto& e : body_com )
-			e.show( view_flags.get<ShowBodyCom>() );
+			e.show( view_flags.get<ViewOption::ShowBodyCom>() );
 
 		for ( auto& e : contact_geoms )
-			e.show( view_flags.get<ShowContactGeom>() );
+			e.show( view_flags.get<ViewOption::ShowContactGeom>() );
 
 		if ( ground_.node_id() )
-			ground_.show( view_flags.get<ShowGroundPlane>() );
+			ground_.show( view_flags.get<ViewOption::ShowGroundPlane>() );
 
-		heading_.show( view_flags.get<ShowModelComHeading>() );
+		heading_.show( view_flags.get<ViewOption::ShowModelComHeading>() );
 	}
 }

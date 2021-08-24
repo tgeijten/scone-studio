@@ -33,7 +33,7 @@
 
 namespace scone
 {
-	StudioModel::StudioModel( vis::scene& s, const path& file ) :
+	StudioModel::StudioModel( vis::scene& s, const path& file, const ViewSettings& vs ) :
 		status_( Status::Initializing )
 	{
 		// create the objective from par file or config file
@@ -80,7 +80,7 @@ namespace scone
 				}
 
 				// create and init visualizer
-				vis_ = std::make_unique<ModelVis>( *model_, s );
+				vis_ = std::make_unique<ModelVis>( *model_, s, vs );
 				UpdateVis( 0 );
 			}
 			catch ( const std::exception& e )
@@ -236,7 +236,7 @@ namespace scone
 		else return 0.0;
 	}
 
-	void StudioModel::ApplyViewSettings( const ModelVis::ViewSettings& flags )
+	void StudioModel::ApplyViewSettings( const ViewSettings& flags )
 	{
 		if ( vis_ )
 		{
@@ -245,7 +245,7 @@ namespace scone
 		}
 	}
 
-	const ModelVis::ViewSettings& StudioModel::GetViewSettings() const
+	const ViewSettings& StudioModel::GetViewSettings() const
 	{
 		SCONE_ASSERT( vis_ );
 		return vis_->GetViewSettings();

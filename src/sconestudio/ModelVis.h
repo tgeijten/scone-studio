@@ -7,33 +7,17 @@
 #include "vis/axes.h"
 #include "vis/arrow.h"
 #include "xo/utility/color_gradient.h"
+#include "ViewSettings.h"
 
 namespace scone
 {
 	class ModelVis
 	{
 	public:
-		ModelVis( const Model& model, vis::scene& s );
+		ModelVis( const Model& model, vis::scene& s, const ViewSettings& view_settings );
 		~ModelVis();
 
 		void Update( const Model& model );
-
-		// IMPORTANT: Always add new settings at the end, to preserve load/save settings
-		enum VisOpt {
-			ShowForces,
-			ShowMuscles,
-			ShowTendons,
-			ShowBodyGeom,
-			ShowJoints,
-			ShowBodyAxes,
-			ShowContactGeom,
-			ShowGroundPlane,
-			EnableShadows,
-			ShowBodyCom,
-			ShowModelComHeading,
-			StaticCamera
-		};
-		using ViewSettings = xo::flag_set< VisOpt >;
 
 		void ApplyViewSettings( const ViewSettings& f );
 		const ViewSettings& GetViewSettings() const { return view_flags; }
