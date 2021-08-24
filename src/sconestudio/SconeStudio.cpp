@@ -476,14 +476,14 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 {
 	if ( scenario_ )
 	{
-		// update current time and stop when done
 		current_time = t;
 
 		// update ui and visualization
 		if ( scenario_->IsEvaluating() )
 		{
 			scenario_->EvaluateTo( t );
-			dofEditor->setEnableEditing( false );
+			if ( t > 0.0 )
+				dofEditor->setEnableEditing( false );
 		}
 
 		if ( update_vis && scenario_->HasModel() )
@@ -711,7 +711,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 			if ( scenario_->HasData() )
 				updateModelDataWidgets();
 
-			// update view settings
+			// reset play control -- this triggers setTime( 0 ) and updates com_delta
 			ui.playControl->reset();
 			ui.playControl->setRange( 0, 0 );
 		}
