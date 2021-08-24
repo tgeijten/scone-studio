@@ -33,7 +33,7 @@
 
 namespace scone
 {
-	StudioModel::StudioModel( vis::scene& s, const path& file, const ViewSettings& vs ) :
+	StudioModel::StudioModel( vis::scene& s, const path& file, const ViewOptions& vs ) :
 		status_( Status::Initializing )
 	{
 		// create the objective from par file or config file
@@ -236,19 +236,19 @@ namespace scone
 		else return 0.0;
 	}
 
-	void StudioModel::ApplyViewSettings( const ViewSettings& flags )
+	void StudioModel::ApplyViewOptions( const ViewOptions& flags )
 	{
 		if ( vis_ )
 		{
-			vis_->ApplyViewSettings( flags );
+			vis_->ApplyViewOptions( flags );
 			vis_->Update( *model_ );
 		}
 	}
 
-	const ViewSettings& StudioModel::GetViewSettings() const
+	const ViewOptions& StudioModel::GetViewOptions() const
 	{
 		SCONE_ASSERT( vis_ );
-		return vis_->GetViewSettings();
+		return vis_->GetViewOptions();
 	}
 
 	Vec3 StudioModel::GetFollowPoint() const

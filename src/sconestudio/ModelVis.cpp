@@ -14,10 +14,10 @@ namespace scone
 {
 	using namespace xo::angle_literals;
 
-	ModelVis::ModelVis( const Model& model, vis::scene& s, const ViewSettings& settings ) :
+	ModelVis::ModelVis( const Model& model, vis::scene& s, const ViewOptions& settings ) :
 		view_flags( settings ),
 		root_node_( &s ),
-		specular_( GetStudioSetting < float >( "viewer.specular" ) ),
+		specular_( GetStudioSetting< float >( "viewer.specular" ) ),
 		shininess_( GetStudioSetting< float >( "viewer.shininess" ) ),
 		ambient_( GetStudioSetting< float >( "viewer.ambient" ) ),
 		bone_mat( { GetStudioSetting< xo::color >( "viewer.bone" ), specular_, shininess_, ambient_ } ),
@@ -151,7 +151,7 @@ namespace scone
 		heading_ = vis::arrow( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::green() } );
 		heading_.set_material( com_mat );
 
-		ApplyViewSettings( view_flags );
+		ApplyViewOptions( view_flags );
 	}
 
 	ModelVis::~ModelVis()
@@ -277,7 +277,7 @@ namespace scone
 		return msh;
 	}
 
-	void ModelVis::ApplyViewSettings( const ViewSettings& f )
+	void ModelVis::ApplyViewOptions( const ViewOptions& f )
 	{
 		view_flags = f;
 		for ( auto& f : forces )

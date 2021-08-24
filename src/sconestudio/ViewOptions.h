@@ -20,9 +20,9 @@ namespace scone
 		StaticCamera
 	};
 
-	using ViewSettings = xo::flag_set<ViewOption>;
+	using ViewOptions = xo::flag_set<ViewOption>;
 
-	inline ViewSettings MakeDefaultViewSettings() {
-		return ViewSettings( { ViewOption::ShowForces, ViewOption::ShowMuscles, ViewOption::ShowTendons, ViewOption::ShowBodyGeom, ViewOption::EnableShadows, ViewOption::ShowModelComHeading } );
+	inline ViewOptions MakeDefaultViewOptions() {
+		return ViewOptions( { ViewOption::ShowForces, ViewOption::ShowMuscles, ViewOption::ShowTendons, ViewOption::ShowBodyGeom, ViewOption::EnableShadows, ViewOption::ShowModelComHeading } );
 	}
 }

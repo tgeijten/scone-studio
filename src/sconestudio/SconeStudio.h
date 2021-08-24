@@ -45,7 +45,7 @@
 #include "GaitAnalysis.h"
 #include "ParTableModel.h"
 #include "DofEditor.h"
-#include "ViewSettings.h"
+#include "ViewOptions.h"
 
 using scone::TimeInSeconds;
 
@@ -94,7 +94,7 @@ public slots:
 	void updateGaitAnalysis();
 	void activateAnalysisFilter();
 	void tabCloseRequested( int idx );
-	void updateViewSettings();
+	void applyViewOptions();
 	void showSettingsDialog();
 	void setPlaybackTime( TimeInSeconds t ) { setTime( t, true ); }
 	void updateTabTitles();
@@ -121,7 +121,7 @@ private:
 	QCodeEditor* getActiveScenario();
 	void restoreCustomSettings( QSettings& settings ) override;
 	void saveCustomSettings( QSettings& settings ) override;
-	scone::ViewSettings getViewSettingsFromMenu() const;
+	scone::ViewOptions getViewOptionsFromMenu() const;
 
 	void performanceTest( bool write_stats );
 	void evaluate();

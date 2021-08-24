@@ -98,23 +98,23 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// View menu
 	auto viewMenu = menuBar()->addMenu( "&View" );
-	viewActions[ ViewOption::ShowForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowMuscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowTendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowBodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowBodyAxes ] = viewMenu->addAction( "Show Body &Axes", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowBodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowJoints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowGroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::updateViewSettings );
-	viewActions[ ViewOption::ShowModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::updateViewSettings );
+	viewActions[ ViewOption::ShowForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowMuscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowTendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowBodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowBodyAxes ] = viewMenu->addAction( "Show Body &Axes", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowBodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowJoints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowGroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ShowModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
 	viewMenu->addSeparator();
-	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::updateViewSettings );
-	auto uncheckedViewSettings = { ViewOption::ShowBodyAxes, ViewOption::ShowJoints, ViewOption::ShowBodyCom, ViewOption::ShowModelComHeading, ViewOption::StaticCamera };
+	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
+	auto uncheckedViewOptions = { ViewOption::ShowBodyAxes, ViewOption::ShowJoints, ViewOption::ShowBodyCom, ViewOption::ShowModelComHeading, ViewOption::StaticCamera };
 	for ( auto& va : viewActions )
 	{
 		va.second->setCheckable( true );
-		va.second->setChecked( xo::find( uncheckedViewSettings, va.first ) == uncheckedViewSettings.end() );
+		va.second->setChecked( xo::find( uncheckedViewOptions, va.first ) == uncheckedViewOptions.end() );
 	}
 
 	// Scenario menu
@@ -312,7 +312,7 @@ void SconeStudio::restoreCustomSettings( QSettings& settings )
 {
 	if ( settings.contains( "viewSettings" ) )
 	{
-		ViewSettings f( settings.value( "viewSettings" ).toULongLong() );
+		ViewOptions f( settings.value( "viewSettings" ).toULongLong() );
 		for ( auto& va : viewActions )
 			va.second->setChecked( f.get( va.first ) );
 	}
@@ -320,7 +320,7 @@ void SconeStudio::restoreCustomSettings( QSettings& settings )
 
 void SconeStudio::saveCustomSettings( QSettings& settings )
 {
-	ViewSettings f;
+	ViewOptions f;
 	for ( auto& va : viewActions )
 		f.set( va.first, va.second->isChecked() );
 	settings.setValue( "viewSettings", QVariant( uint( f.data() ) ) );
@@ -489,7 +489,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 		if ( update_vis && scenario_->HasModel() )
 		{
 			scenario_->UpdateVis( t );
-			if ( !scenario_->GetViewSettings().get<ViewOption::StaticCamera>() )
+			if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() )
 			{
 				auto d = com_delta( scenario_->GetFollowPoint() );
 				ui.osgViewer->moveCamera( osg::Vec3( d.x, d.y, d.z ) );
@@ -695,7 +695,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 	{
 		// create scenario and update viewer
 		currentFilename = any_file;
-		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ), getViewSettingsFromMenu() );
+		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ), getViewOptionsFromMenu() );
 
 		if ( scenario_->HasModel() )
 		{
@@ -1022,19 +1022,19 @@ void SconeStudio::tabCloseRequested( int idx )
 	ui.tabWidget->removeTab( idx );
 }
 
-scone::ViewSettings SconeStudio::getViewSettingsFromMenu() const
+scone::ViewOptions SconeStudio::getViewOptionsFromMenu() const
 {
-	ViewSettings f;
+	ViewOptions f;
 	for ( auto& va : viewActions )
 		f.set( va.first, va.second->isChecked() );
 	return f;
 }
 
-void SconeStudio::updateViewSettings()
+void SconeStudio::applyViewOptions()
 {
 	if ( scenario_ )
 	{
-		scenario_->ApplyViewSettings( getViewSettingsFromMenu() );
+		scenario_->ApplyViewOptions( getViewOptionsFromMenu() );
 		ui.osgViewer->repaint();
 	}
 }

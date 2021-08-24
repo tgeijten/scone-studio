@@ -25,7 +25,7 @@ namespace scone
 	class StudioModel
 	{
 	public:
-		StudioModel( vis::scene& s, const path& filename, const ViewSettings& vs );
+		StudioModel( vis::scene& s, const path& filename, const ViewOptions& vs );
 		virtual ~StudioModel();
 
 		void UpdateVis( TimeInSeconds t );
@@ -49,8 +49,8 @@ namespace scone
 		TimeInSeconds GetTime() const { return model_ ? model_->GetTime() : 0.0; }
 		TimeInSeconds GetMaxTime() const;
 
-		void ApplyViewSettings( const ViewSettings& f );
-		const ViewSettings& GetViewSettings() const;
+		void ApplyViewOptions( const ViewOptions& f );
+		const ViewOptions& GetViewOptions() const;
 		Vec3 GetFollowPoint() const;
 
 		const path& GetFileName() const { return filename_; }

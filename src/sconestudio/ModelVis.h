@@ -7,20 +7,20 @@
 #include "vis/axes.h"
 #include "vis/arrow.h"
 #include "xo/utility/color_gradient.h"
-#include "ViewSettings.h"
+#include "ViewOptions.h"
 
 namespace scone
 {
 	class ModelVis
 	{
 	public:
-		ModelVis( const Model& model, vis::scene& s, const ViewSettings& view_settings );
+		ModelVis( const Model& model, vis::scene& s, const ViewOptions& view_settings );
 		~ModelVis();
 
 		void Update( const Model& model );
 
-		void ApplyViewSettings( const ViewSettings& f );
-		const ViewSettings& GetViewSettings() const { return view_flags; }
+		void ApplyViewOptions( const ViewOptions& f );
+		const ViewOptions& GetViewOptions() const { return view_flags; }
 
 	private:
 		struct MuscleVis
@@ -43,7 +43,7 @@ namespace scone
 			const Vec3& pos, const Quat& ori, const Vec3& scale = Vec3::diagonal( 1.0 ) );
 
 		// view settings
-		ViewSettings view_flags;
+		ViewOptions view_flags;
 		vis::plane ground_;
 		vis::node root_node_;
 		vis::arrow heading_;
