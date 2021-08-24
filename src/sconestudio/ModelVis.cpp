@@ -263,6 +263,7 @@ namespace scone
 		auto y_to_z = std::holds_alternative<xo::capsule>( sh ) || std::holds_alternative<xo::cylinder>( sh ) || std::holds_alternative<xo::cone>( sh );
 		auto fixed_ori = y_to_z ? vis::quatf( ori ) * xo::quat_from_x_angle( vis::degreef( 90 ) ) : vis::quatf( ori );
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
+		msh.scale_enable_normalize( vis::vec3f( scale ) );
 		return msh;
 	}
 
@@ -273,7 +274,7 @@ namespace scone
 		auto fix_obj_ori = file.extension_no_dot() == "obj";
 		auto fixed_ori = fix_obj_ori ? xo::quat_from_x_angle( -90_degf ) * vis::quatf( ori ) : vis::quatf( ori );
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
-		msh.scale( vis::vec3f( scale ) );
+		msh.scale_enable_normalize( vis::vec3f( scale ) );
 		return msh;
 	}
 
