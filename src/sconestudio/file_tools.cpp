@@ -3,8 +3,8 @@
 #include <QDirIterator>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QFile>
 #include <filesystem>
-
 #include "scone/core/system_tools.h"
 #include "scone/core/Log.h"
 #include "xo/filesystem/filesystem.h"
@@ -66,7 +66,7 @@ namespace scone
 
 	bool moveFilesToTrash( const QStringList& files )
 	{
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 		std::vector<char> buf;
 		for ( const auto& f : files ) {
 			auto fstr = f.toStdString();
@@ -97,7 +97,7 @@ namespace scone
 
 	bool moveToTrash( const QString& path )
 	{
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 		auto file_str = path.toStdString();
 		xo::replace_char( file_str, '/', '\\' );
 		if ( file_str.back() == '\\' )
@@ -114,8 +114,11 @@ namespace scone
 		if ( ret != 0 )
 			log::warning( "Could not recycle ", path.toStdString(), "; error=", ret );
 		return ret == 0;
-#else
+#elif (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		return QFile::moveToTrash( path );
+#else
+		log::warning( "Moving files to trash is not supported on this platform" );
+		return false;
 #endif
 	}
 }
