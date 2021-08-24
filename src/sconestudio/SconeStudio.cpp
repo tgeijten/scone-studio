@@ -1189,7 +1189,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 		log::info( "Recycled ", fileList.size(), " files in ", t().secondsd(), " seconds" );
 #else
 	// Qt < 15.5? Remove items, display warning with default Cancel
-	auto msgBody = tr( "The following item(s) will be permanently deleted:\n\n" ) + fileNames;
+	auto msgBody = tr( "The following item(s) will be permanently deleted:\n\n" ) + fileList.join( '\n' );
 	msgBody += tr( "\nWARNING: this cannot be recovered!" );
 	if ( QMessageBox::Cancel == QMessageBox::warning( this, msgTitle, msgBody, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel ) )
 		return;
