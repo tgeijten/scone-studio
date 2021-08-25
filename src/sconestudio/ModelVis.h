@@ -33,6 +33,7 @@ namespace scone
 		};
 
 		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force );
+		void UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment );
 		void UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis );
 
 		vis::mesh MakeMesh( vis::node& parent,
@@ -56,12 +57,15 @@ namespace scone
 		vis::material muscle_mat;
 		vis::material tendon_mat;
 		vis::material arrow_mat;
+		vis::material moment_mat;
 		vis::material contact_mat;
+		vis::material static_mat;
 		xo::color_gradient muscle_gradient;
 		std::vector< vis::mesh > body_meshes;
 		std::vector< vis::mesh > joints;
 		std::vector< MuscleVis > muscles;
 		std::vector< vis::arrow > forces;
+		std::vector< vis::arrow > moments;
 		std::vector< vis::axes > body_axes;
 		std::vector< vis::mesh > body_com;
 		std::vector< vis::node > bodies;

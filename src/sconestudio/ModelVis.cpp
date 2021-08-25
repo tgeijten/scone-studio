@@ -26,12 +26,16 @@ namespace scone
 		muscle_mat( { GetStudioSetting< xo::color >( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
 		tendon_mat( { GetStudioSetting< xo::color >( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
 		arrow_mat( { GetStudioSetting< xo::color >( "viewer.force" ), specular_, shininess_, ambient_ } ),
+		moment_mat( { GetStudioSetting< xo::color >( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting< xo::color >( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
+		static_mat( { GetStudioSetting< xo::color >( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
 		muscle_gradient( {
 			{ 0.0f, GetStudioSetting< xo::color >( "viewer.muscle_0" ) },
 			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
 			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } )
 	{
+		log::info( "static=", xo::stringf( "%x", hex_rgb_from_color( GetStudioSetting< xo::color >( "viewer.static" ) ) ) );
+
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
 		{
@@ -98,18 +102,19 @@ namespace scone
 		{
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b.get(); } );
 			auto& parent_node = idx != NoIndex ? bodies[ idx ] : root_node_;
+			bool is_static = idx == 0 || idx == NoIndex;
 			if ( cg->HasFileName() )
 			{
 				auto model_folder = model.GetModelFile().parent_path();
 				auto geom_file = FindFile( model_folder / cg->GetFileName() );
-				contact_geoms.push_back( MakeMesh( parent_node, geom_file, contact_mat, cg->GetPos(), cg->GetOri() ) );
+				contact_geoms.push_back( MakeMesh( parent_node, geom_file, is_static ? static_mat : contact_mat, cg->GetPos(), cg->GetOri() ) );
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
-				// #todo: add support for other shapes (i.e. planes)
 				bool use_bone_mat = cg->GetPos().is_null() && parent_node.size() <= 3;
+				auto& mat = is_static ? static_mat : ( use_bone_mat ? bone_mat : contact_mat );
 				contact_geoms.push_back( MakeMesh(
-					parent_node, cg->GetShape(), xo::color::cyan(), use_bone_mat ? bone_mat : contact_mat,
+					parent_node, cg->GetShape(), xo::color::cyan(), mat,
 					cg->GetPos(), cg->GetOri() ) );
 			}
 		}
@@ -160,6 +165,7 @@ namespace scone
 	void ModelVis::Update( const Model& model )
 	{
 		index_t force_count = 0;
+		index_t moment_count = 0;
 
 		// update bodies
 		auto& model_bodies = model.GetBodies();
@@ -174,7 +180,7 @@ namespace scone
 
 			// external moments
 			if ( auto m = b->GetExternalMoment(); !m.is_null() )
-				UpdateForceVis( force_count++, b->GetComPos(), m );
+				UpdateMomentVis( moment_count++, b->GetComPos(), m );
 		}
 
 		// update muscle paths
@@ -189,18 +195,19 @@ namespace scone
 			auto pos = model_joints[ i ]->GetPos();
 			joints[ i ].pos( vis::vec3f( pos ) );
 			if ( view_flags.get< ViewOption::ShowJoints >() )
+			{
 				UpdateForceVis( force_count++, pos, -model_joints[ i ]->GetReactionForce() );
+				UpdateMomentVis( moment_count++, pos, -model_joints[ i ]->GetLimitTorque() );
+			}
 		}
 
-		// update forces
+		// update contact forces
 		if ( view_flags.get< ViewOption::ShowForces >() )
 		{
 			auto fvec = model.GetContactForceValues();
 			for ( auto& cf : fvec )
 				UpdateForceVis( force_count++, cf.point, cf.force );
 		}
-		while ( force_count < forces.size() )
-			forces.pop_back();
 
 		// update com / heading
 		if ( view_flags.get<ViewOption::ShowModelComHeading>() )
@@ -212,6 +219,12 @@ namespace scone
 				heading_.pos_ofs( pos, dir );
 			}
 		}
+
+		// finalize update: remove remaining arrows
+		while ( force_count < forces.size() )
+			forces.pop_back();
+		while ( moment_count < moments.size() )
+			moments.pop_back();
 	}
 
 	void ModelVis::UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force )
@@ -223,6 +236,17 @@ namespace scone
 			forces.back().show( view_flags.get< ViewOption::ShowForces >() );
 		}
 		forces[ force_idx ].pos( vis::vec3f( cop ), vis::vec3f( cop + 0.001 * force ) );
+	}
+
+	void ModelVis::UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment )
+	{
+		while ( moments.size() <= moment_idx )
+		{
+			moments.emplace_back( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::blue(), 0.3f } );
+			moments.back().set_material( moment_mat );
+			moments.back().show( view_flags.get< ViewOption::ShowForces >() );
+		}
+		moments[ moment_idx ].pos( vis::vec3f( pos ), vis::vec3f( pos + 0.01 * moment ) );
 	}
 
 	void ModelVis::UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis )
@@ -283,6 +307,8 @@ namespace scone
 		view_flags = f;
 		for ( auto& f : forces )
 			f.show( view_flags.get<ViewOption::ShowForces>() );
+		for ( auto& m : moments )
+			m.show( view_flags.get<ViewOption::ShowForces>() );
 
 		for ( auto& m : muscles )
 		{
