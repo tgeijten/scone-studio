@@ -242,12 +242,12 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	parViewDock->hide();
 
 	// evaluation report
-	reportView = new QTreeView( this );
 	reportModel = new QPropNodeItemModel();
+	reportModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
+	reportView = new QTreeView( this );
 	reportView->setModel( reportModel );
 	reportView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	reportView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-	reportView->setIndentation( 12 );
 	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
 	reportDock->hide();
 

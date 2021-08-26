@@ -178,7 +178,7 @@ private:
 	ParTableModel* parModel;
 	QDockWidget* parViewDock;
 
-	// results
+	// evaluation report
 	QTreeView* reportView;
 	QPropNodeItemModel* reportModel;
 	QDockWidget* reportDock;
