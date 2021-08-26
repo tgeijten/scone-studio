@@ -245,11 +245,26 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	reportModel = new QPropNodeItemModel();
 	reportModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
 	reportView = new QTreeView( this );
+	reportView->setIndentation( 16 );
 	reportView->setModel( reportModel );
 	reportView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	reportView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
 	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
 	reportDock->hide();
+
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	// evaluation report
+	inspectorModel = new QPropNodeItemModel();
+	inspectorModel->setMaxPreviewChildren( 3 );
+	//inspectorModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
+	inspectorView = new QTreeView( this );
+	inspectorView->setIndentation( 16 );
+	inspectorView->setModel( inspectorModel );
+	inspectorView->setEditTriggers( QAbstractItemView::NoEditTriggers );
+	inspectorView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
+	inspectorDock = createDockWidget( "Model &Inspector", inspectorView, Qt::BottomDockWidgetArea );
+	inspectorDock->hide();
+#endif // SCONE_EXPERIMENTAL_FEATURES_ENABLED
 
 	// dof editor
 	dofEditor = new DofEditorGroup( this );
@@ -501,6 +516,11 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 			if ( dofEditor->isVisible() )
 				dofEditor->setSlidersFromDofs( scenario_->GetModel() );
+
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+			inspectorModel->setData( scenario_->GetModel().GetInfo() );
+			inspectorView->expandToDepth( 0 );
+#endif
 		}
 	}
 }

@@ -183,6 +183,13 @@ private:
 	QPropNodeItemModel* reportModel;
 	QDockWidget* reportDock;
 
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	// model inspector
+	QTreeView* inspectorView;
+	QPropNodeItemModel* inspectorModel;
+	QDockWidget* inspectorDock;
+#endif
+
 	// dof editor
 	scone::DofEditorGroup* dofEditor;
 	QDockWidget* dofDock;
