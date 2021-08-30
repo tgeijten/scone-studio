@@ -34,8 +34,6 @@ namespace scone
 			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
 			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } )
 	{
-		log::info( "static=", xo::stringf( "%x", hex_rgb_from_color( GetStudioSetting< xo::color >( "viewer.static" ) ) ) );
-
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
 		{
