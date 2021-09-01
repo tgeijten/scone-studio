@@ -53,11 +53,14 @@
           </item>
           <item row="7" column="0" colspan="2">
            <widget class="QLabel" name="label_2">
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
             <property name="text">
-             <string>For optimal performance, please avoid folders located on network drives!</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Important&lt;/span&gt;: please avoid folders located on network drives for optimal performance&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -116,6 +119,13 @@
        <item>
         <widget class="QTreeView" name="advancedTree"/>
        </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Tip&lt;/span&gt;: enter an empty value to restore a setting to its default&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="studioTab">
@@ -133,6 +143,17 @@
          </attribute>
         </widget>
        </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Tip&lt;/span&gt;: enter an empty value to restore a setting to its default&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="hfdTab">
@@ -143,7 +164,7 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Hyfydy is state-of-the-art software for high-performance musculoskeletal simulation. A valid license key is required in order to use Hyfydy in SCONE.</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hyfydy is a state-of-the-art musculoskeletal simulation engine that provides a &lt;span style=&quot; font-weight:600;&quot;&gt;50-100x speedup&lt;/span&gt; over OpenSim. Please visit &lt;a href=&quot;https://hyfydy.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;hyfydy.com&lt;/span&gt;&lt;/a&gt; for more information and a &lt;span style=&quot; font-weight:600;&quot;&gt;free trial license&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::RichText</enum>
