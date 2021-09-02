@@ -517,11 +517,6 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 			if ( dofEditor->isVisible() )
 				dofEditor->setSlidersFromDofs( scenario_->GetModel() );
-
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-			inspectorModel->setData( scenario_->GetModel().GetInfo() );
-			inspectorView->expandToDepth( 0 );
-#endif
 		}
 	}
 }
@@ -731,6 +726,12 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )
 				updateModelDataWidgets();
+
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+			// update model inspector
+			inspectorModel->setData( scenario_->GetModel().GetInfo() );
+			inspectorView->expandToDepth( 0 );
+#endif
 
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
 			ui.playControl->reset();
