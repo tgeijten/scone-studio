@@ -54,8 +54,6 @@ namespace scone
 				QStringList args;
 				args << to_qt( inputFile ) << "-o" << to_qt( outputFile );
 				args << "--remote";
-				if ( ui.fixCheckbox->isChecked() )
-					args << "-f";
 
 				auto proc = new QProcess( parent );
 				proc->start( program, args );

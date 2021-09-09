@@ -62,16 +62,6 @@
       <item>
        <widget class="QFileEdit" name="outputFileHfd" native="true"/>
       </item>
-      <item>
-       <widget class="QCheckBox" name="fixCheckbox">
-        <property name="text">
-         <string>Merge calcn and toe segments</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
