@@ -18,7 +18,7 @@ namespace scone
 		QDialog dlg( parent );
 		Ui::ModelTool ui;
 		ui.setupUi( &dlg );
-		ui.inputFile->init( QFileEdit::OpenFile, "OpenSim Models (*.osim)", "", to_qt( GetFolder( SCONE_SCENARIO_FOLDER ) ) );
+		ui.inputFile->init( QFileEdit::OpenFile, "OpenSim 3 Models (*.osim)", "", to_qt( GetFolder( SCONE_SCENARIO_FOLDER ) ) );
 		auto updateInputFile = [&]() {
 			const auto inputFile = xo::path( ui.inputFile->text().toStdString() );
 			ui.buttonBox->button( QDialogButtonBox::Ok )->setEnabled( !inputFile.empty() );
@@ -76,7 +76,7 @@ namespace scone
 				}
 				else
 				{
-					QString title = "Error converting " + ui.inputFile->text() + "\n\n" + output;
+					QString title = "Error converting " + ui.inputFile->text();
 					log::error( title.toStdString() );
 					log::error( output.toStdString() );
 					QMessageBox::critical( parent, title, output );
