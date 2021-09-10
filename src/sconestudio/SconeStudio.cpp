@@ -577,11 +577,13 @@ void SconeStudio::fileSaveAsTriggered()
 			// apparently, the mess below is needed to setup the (trivially) correct file filter in Qt
 			QString scone_file = "SCONE scenario (*.scone *.xml)";
 			QString lua_file = "Lua script (*.lua)";
+			QString model_file = "Model file (*.hfd *.osim *.bp)";
 			QString ext = QFileInfo( s->fileName ).suffix();
-			QString filter = scone_file + ";;" + lua_file;
+			QString filter = scone_file + ";;" + lua_file + ";;" + model_file;
 			QString* default_filter = nullptr;
-			if ( ext == "scone" ) default_filter = &scone_file;
+			if ( ext == "scone" || ext == "zml" ) default_filter = &scone_file;
 			else if ( ext == "lua" ) default_filter = &lua_file;
+			else if ( ext == "hfd" || ext == "osim" || ext == "bp" ) default_filter = &model_file;
 
 			// we can finally make the actual call
 			QString filename = QFileDialog::getSaveFileName( this, "Save File As", s->fileName, filter, default_filter );
