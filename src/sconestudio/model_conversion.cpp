@@ -69,14 +69,14 @@ namespace scone
 				QString output = proc->readAllStandardOutput();
 				if ( proc->exitCode() == 0 )
 				{
-					QString title = "Successfully converted " + ui.inputFile->text();
+					QString title = "Successfully converted " + to_qt( inputFile.filename() );
 					log::info( title.toStdString() );
 					log::info( output.toStdString() );
 					QMessageBox::information( parent, title, output );
 				}
 				else
 				{
-					QString title = "Error converting " + ui.inputFile->text();
+					QString title = "Error converting " + to_qt( inputFile.filename() );
 					log::error( title.toStdString() );
 					log::error( output.toStdString() );
 					QMessageBox::critical( parent, title, output );
