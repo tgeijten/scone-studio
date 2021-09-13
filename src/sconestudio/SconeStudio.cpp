@@ -708,6 +708,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 	parModel->setObjectiveInfo( nullptr );
 	gaitAnalysis->reset();
 	parViewDock->setWindowTitle( "Optimization Parameters" );
+	ui.playControl->setRange( 0, 0 );
 
 	try
 	{
@@ -737,7 +738,6 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
 			ui.playControl->reset();
-			ui.playControl->setRange( 0, 0 );
 		}
 	}
 	catch ( FactoryNotFoundException& e )
