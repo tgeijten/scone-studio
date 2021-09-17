@@ -109,7 +109,7 @@ namespace scone
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
-				bool use_bone_mat = cg->GetPos().is_null() && parent_node.size() <= 3;
+				bool use_bone_mat = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
 				auto& mat = is_static ? static_mat : ( use_bone_mat ? bone_mat : contact_mat );
 				contact_geoms.push_back( MakeMesh(
 					parent_node, cg->GetShape(), xo::color::cyan(), mat,
