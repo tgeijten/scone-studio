@@ -7,6 +7,7 @@
 #include "vis/axes.h"
 #include "vis/arrow.h"
 #include "xo/utility/color_gradient.h"
+#include "xo/utility/memoize.h"
 #include "ViewOptions.h"
 
 namespace scone
@@ -51,6 +52,7 @@ namespace scone
 		float specular_;
 		float shininess_;
 		float ambient_;
+
 		vis::material bone_mat;
 		vis::material joint_mat;
 		vis::material com_mat;
@@ -70,5 +72,6 @@ namespace scone
 		std::vector< vis::mesh > body_com;
 		std::vector< vis::node > bodies;
 		std::vector< vis::mesh > contact_geoms;
+		xo::memoize< vis::material( xo::color ) > color_materials_;
 	};
 }

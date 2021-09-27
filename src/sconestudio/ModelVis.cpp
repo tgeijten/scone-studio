@@ -32,7 +32,8 @@ namespace scone
 		muscle_gradient( {
 			{ 0.0f, GetStudioSetting< xo::color >( "viewer.muscle_0" ) },
 			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
-			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } )
+			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } ),
+			color_materials_( [&]( const xo::color& c ) { return vis::material( { c, specular_, shininess_, ambient_, c.a } ); } )
 	{
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
@@ -90,8 +91,9 @@ namespace scone
 				}
 				else {
 					// shape
+					const vis::material& mat = geom.color_.is_null() ? bone_mat : color_materials_( geom.color_ );
 					body_meshes.push_back( MakeMesh(
-						bodies.back(), geom.shape_, xo::color::cyan(), bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
+						bodies.back(), geom.shape_, xo::color::cyan(), mat, geom.pos_, geom.ori_, geom.scale_ ) );
 				}
 			}
 		}

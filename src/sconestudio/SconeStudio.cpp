@@ -53,6 +53,7 @@
 #include "model_conversion.h"
 #include "scone/sconelib_config.h"
 #include "studio_tools.h"
+#include "xo/time/stopwatch.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -280,6 +281,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
 
 	// init viewer / scene
+	if ( GetStudioSetting<bool>( "viewer.enable_object_cache" ) )
+		ui.osgViewer->enableObjectCache( true );
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
 	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
