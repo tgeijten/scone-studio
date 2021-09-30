@@ -2,6 +2,7 @@
 
 #include <QUrl>
 #include <QString>
+#include <QWidget>
 
 namespace scone
 {
