@@ -3,6 +3,7 @@
 #include <QBoxLayout>
 #include <QScrollArea>
 #include <QStyle>
+#include <QtGlobal>
 
 #include "scone/model/Dof.h"
 #include "qt_convert.h"
@@ -13,93 +14,69 @@ namespace scone
 	inline double degToRadIf( double v, bool conv ) { return conv ? xo::deg_to_rad( v ) : v; }
 	inline double radToDegIf( double v, bool conv ) { return conv ? xo::rad_to_deg( v ) : v; }
 
-	DofEditor::DofEditor( const Dof& dof ) : 
+	DofWidgets::DofWidgets( const Dof& dof, DofEditorGroup* deg, int row ) :
 		useDegrees( dof.IsRotational() ),
 		stepSize_( 0.01 )
 	{
-		QHBoxLayout* l = new QHBoxLayout;
-		setLayout( l );
-		l->setMargin( 0 );
-
 		label_ = new QLabel( to_qt( dof.GetName() ) );
+		deg->grid()->addWidget( label_, row, 0 );
 
 		const auto r = dof.GetRange();
 		auto pos = radToDegIf( dof.GetPos(), useDegrees );
 		auto min = radToDegIf( r.min, useDegrees );
 		auto max = radToDegIf( r.max, useDegrees );
 
-		spin_ = new QDoubleSpinBox( this );
+		spin_ = new QDoubleSpinBox();
 		spin_->setSingleStep( useDegrees ? 1.0 : 0.01 );
 		spin_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
 		spin_->setRange( min, max );
 		spin_->setAlignment( Qt::AlignRight );
-		connect( spin_, SIGNAL( valueChanged( double ) ), this, SLOT( spinValueChanged( double ) ) );
-		l->addWidget( spin_ );
+		QObject::connect( spin_, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), deg,
+			[=]( double d ) { slider_->setValue( to_int( d ) ); emit deg->valueChanged(); } );
+		deg->grid()->addWidget( spin_, row, 1 );
 
-		min_ = new QLabel( this );
+		min_ = new QLabel( QString::asprintf( "%g", min ) );
 		min_->setDisabled( true );
-		min_->setText( QString::asprintf( "%g", min ) );
 		min_->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-		l->addWidget( min_ );
+		deg->grid()->addWidget( min_, row, 2 );
 
-		slider_ = new QSlider( Qt::Horizontal, this );
+		slider_ = new QSlider( Qt::Horizontal );
 		slider_->setRange( to_int( min ), to_int( max ) );
 		slider_->setSingleStep( useDegrees ? to_int( 1 ) : to_int( 0.01 ) );
 		slider_->setPageStep( useDegrees ? to_int( 10 ) : to_int( 0.1 ) );
 		slider_->setTickInterval( useDegrees ? to_int( 10 ) : to_int( 1 ) );
 		slider_->setTickPosition( QSlider::NoTicks );
-		connect( slider_, &QSlider::actionTriggered, this, [this]() { spin_->setValue( to_double( slider_->sliderPosition() ) ); } );
-		l->addWidget( slider_ );
+		QObject::connect( slider_, &QSlider::actionTriggered, deg,
+			[=]() { spin_->setValue( to_double( slider_->sliderPosition() ) ); } );
+		deg->grid()->addWidget( slider_, row, 3 );
 
-		max_ = new QLabel( this );
+		max_ = new QLabel( QString::asprintf( "%g", max ) );
 		max_->setDisabled( true );
-		max_->setText( QString::asprintf( "%g", max ) );
 		max_->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
-		l->addWidget( max_ );
+		deg->grid()->addWidget( max_, row, 4 );
 
-		velocity_ = new QDoubleSpinBox( this );
+		velocity_ = new QDoubleSpinBox();
 		velocity_->setSingleStep( useDegrees ? 10.0 : 0.1 );
 		velocity_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
 		velocity_->setRange( -999.99, 999.99 );
 		velocity_->setAlignment( Qt::AlignRight );
-		connect( velocity_, SIGNAL( valueChanged( double ) ), this, SIGNAL( valueChanged() ) );
-		l->addWidget( velocity_ );
+		QObject::connect( velocity_, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), deg,
+			[=]() { emit deg->valueChanged(); } );
+		deg->grid()->addWidget( velocity_, row, 5 );
 
-		setValue( dof );
+		setWidgetValues( dof );
 	}
 
-	void DofEditor::spinValueChanged( double d )
+	void DofWidgets::setWidgetValues( const Dof& dof )
 	{
-		blockSignals( true );
-		slider_->setValue( to_int( d ) );
-		blockSignals( false );
-		emit valueChanged();
-	}
-
-	void DofEditor::setValue( const Dof& dof )
-	{
-		blockSignals( true );
-		auto pos = radToDegIf( dof.GetPos(), useDegrees );
-		spin_->setValue( pos );
-		slider_->setValue( to_int( pos ) );
+		spin_->setValue( radToDegIf( dof.GetPos(), useDegrees ) );
 		velocity_->setValue( radToDegIf( dof.GetVel(), useDegrees ) );
-		blockSignals( false );
 	}
 
-	void DofEditor::updateDofFromWidget( Dof& dof )
+	void DofWidgets::updateDof( Dof& dof ) const
 	{
 		dof.SetPos( degToRadIf( spin_->value(), useDegrees ) );
 		dof.SetVel( degToRadIf( velocity_->value(), useDegrees ) );
-	}
-
-	void DofEditor::addToGrid( QGridLayout* l, int row )
-	{
-		l->addWidget( label_, row, 0 );
-		l->addWidget( spin_, row, 1 );
-		l->addWidget( min_, row, 2 );
-		l->addWidget( slider_, row, 3 );
-		l->addWidget( max_, row, 4 );
-		l->addWidget( velocity_, row, 5 );
 	}
 
 	DofEditorGroup::DofEditorGroup( QWidget* parent ) :
@@ -114,6 +91,7 @@ namespace scone
 		QVBoxLayout* vl = new QVBoxLayout( group );
 		vl->setMargin( 8 );
 		vl->setSpacing( 16 );
+
 		dofGrid = new QWidget( group );
 		gridLayout = new QGridLayout();
 		gridLayout->setMargin( 0 );
@@ -121,7 +99,7 @@ namespace scone
 		vl->addWidget( dofGrid );
 
 		exportButton = new QPushButton( "Export Coordinates...", this );
-		exportButton->setIcon( style()->standardIcon( QStyle::SP_DirOpenIcon) );
+		exportButton->setIcon( style()->standardIcon( QStyle::SP_DirOpenIcon ) );
 		connect( exportButton, &QPushButton::pressed, this, &DofEditorGroup::exportCoordinates );
 		vl->addWidget( exportButton );
 		exportButton->hide();
@@ -139,27 +117,26 @@ namespace scone
 		dofEditors.clear();
 		qDeleteAll( dofGrid->findChildren<QWidget*>( "", Qt::FindDirectChildrenOnly ) );
 
-		createHeader( "<b>Name</b>", 0, Qt::AlignLeft );
-		createHeader( "<b>Value</b>", 1 );
-		createHeader( "<b>Velocity</b>", 5 );
+		createLabel( "<b>Name</b>", 0, 0, Qt::AlignLeft );
+		createLabel( "<b>Value</b>", 0, 1 );
+		createLabel( "<b>Velocity</b>", 0, 5 );
 
-		for ( auto& dof : model.GetDofs() )
-		{
-			auto* edit = new DofEditor( *dof );
-			edit->addToGrid( gridLayout, dofEditors.size() + 1 );
-			dofEditors.push_back( edit );
-			connect( edit, &DofEditor::valueChanged, this, &DofEditorGroup::valueChanged );
-		}
+		blockSignals( true );
+		for ( int idx = 0; idx < model.GetDofs().size(); ++idx )
+			dofEditors.push_back( new DofWidgets( *model.GetDofs()[ idx ], this, idx + 1 ) );
+		blockSignals( false );
 
 		exportButton->show();
 	}
 
 	void DofEditorGroup::setSlidersFromDofs( const Model& model )
 	{
+		blockSignals( true );
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofEditors[ i ]->setValue( *dofs[ i ] );
+			dofEditors[ i ]->setWidgetValues( *dofs[ i ] );
+		blockSignals( false );
 	}
 
 	void DofEditorGroup::setDofsFromSliders( Model& model )
@@ -167,7 +144,7 @@ namespace scone
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofEditors[ i ]->updateDofFromWidget( *dofs[ i ] );
+			dofEditors[ i ]->updateDof( *dofs[ i ] );
 	}
 
 	void DofEditorGroup::setEnableEditing( bool enable )
@@ -175,11 +152,11 @@ namespace scone
 		dofGrid->setDisabled( !enable );
 	}
 
-	void DofEditorGroup::createHeader( const char* str, int col, Qt::Alignment align )
+	void DofEditorGroup::createLabel( const char* str, int row, int col, Qt::Alignment align )
 	{
 		auto label = new QLabel( str );
 		label->setAlignment( align );
 		label->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Fixed );
-		gridLayout->addWidget( label, 0, col );
+		gridLayout->addWidget( label, row, col );
 	}
 }

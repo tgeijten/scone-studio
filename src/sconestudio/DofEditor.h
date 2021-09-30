@@ -11,27 +11,13 @@
 
 namespace scone
 {
-	class DofEditor : public QWidget
+	struct DofWidgets
 	{
-		Q_OBJECT
+		DofWidgets( const Dof& dof, class DofEditorGroup* deg, int row );
 
-	public:
-		DofEditor( const Dof& dof );
+		void setWidgetValues( const Dof& dof );
+		void updateDof( Dof& dof ) const;
 
-		void setValue( const Dof& dof );
-		void updateDofFromWidget( Dof& dof );
-		void addToGrid( QGridLayout* l, int row );
-
-		double position() { return spin_->value(); }
-		double velocity() { return velocity_->value(); }
-
-	signals:
-		void valueChanged();
-
-	private slots:
-		void spinValueChanged( double d );
-
-	private:
 		int to_int( double d ) { return int( d / stepSize_ ); }
 		double to_double( int i ) { return stepSize_ * i; }
 
@@ -58,16 +44,17 @@ namespace scone
 		void setSlidersFromDofs( const Model& model );
 		void setDofsFromSliders( Model& model );
 		void setEnableEditing( bool enable );
+		QGridLayout* grid() { return gridLayout; }
 
 	signals:
 		void valueChanged();
 		void exportCoordinates();
 
 	private:
-		void createHeader( const char* str, int col, Qt::Alignment align = Qt::AlignCenter );
+		void createLabel( const char* str, int row, int col, Qt::Alignment align = Qt::AlignCenter );
 		QWidget* dofGrid;
 		QPushButton* exportButton;
 		QGridLayout* gridLayout;
-		std::vector<DofEditor*> dofEditors;
+		std::vector<DofWidgets*> dofEditors;
 	};
 }
