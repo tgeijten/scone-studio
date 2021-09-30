@@ -78,7 +78,6 @@ public slots:
 
 	void helpSearch();
 	void helpForum();
-	void helpAbout();
 	void evaluateActiveScenario();
 	void performanceTestNormal() { performanceTest( false ); }
 	void performanceTestWriteStats() { performanceTest( true ); }
