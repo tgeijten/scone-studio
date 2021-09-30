@@ -48,7 +48,7 @@ namespace scone
 		slider_->setPageStep( useDegrees ? to_int( 10 ) : to_int( 0.1 ) );
 		slider_->setTickInterval( useDegrees ? to_int( 10 ) : to_int( 1 ) );
 		slider_->setTickPosition( QSlider::NoTicks );
-		connect( slider_, SIGNAL( actionTriggered( int ) ), this, SLOT( sliderAction( int ) ) );
+		connect( slider_, &QSlider::actionTriggered, this, [this]() { spin_->setValue( to_double( slider_->sliderPosition() ) ); } );
 		l->addWidget( slider_ );
 
 		max_ = new QLabel( this );
@@ -62,7 +62,7 @@ namespace scone
 		velocity_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
 		velocity_->setRange( -999.99, 999.99 );
 		velocity_->setAlignment( Qt::AlignRight );
-		connect( velocity_, SIGNAL( valueChanged( double ) ), this, SLOT( spinValueChanged( double ) ) );
+		connect( velocity_, SIGNAL( valueChanged( double ) ), this, SIGNAL( valueChanged() ) );
 		l->addWidget( velocity_ );
 
 		setValue( dof );
@@ -70,8 +70,10 @@ namespace scone
 
 	void DofEditor::spinValueChanged( double d )
 	{
-		slider_->setValue( to_int( spin_->value() ) );
-		emit valueChanged( d );
+		blockSignals( true );
+		slider_->setValue( to_int( d ) );
+		blockSignals( false );
+		emit valueChanged();
 	}
 
 	void DofEditor::setValue( const Dof& dof )
@@ -98,11 +100,6 @@ namespace scone
 		l->addWidget( slider_, row, 3 );
 		l->addWidget( max_, row, 4 );
 		l->addWidget( velocity_, row, 5 );
-	}
-
-	void DofEditor::sliderAction( int i )
-	{
-		spin_->setValue( to_double( slider_->sliderPosition() ) );
 	}
 
 	DofEditorGroup::DofEditorGroup( QWidget* parent ) :

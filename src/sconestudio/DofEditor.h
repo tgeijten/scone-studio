@@ -17,6 +17,7 @@ namespace scone
 
 	public:
 		DofEditor( const Dof& dof );
+
 		void setValue( const Dof& dof );
 		void updateDofFromWidget( Dof& dof );
 		void addToGrid( QGridLayout* l, int row );
@@ -25,11 +26,10 @@ namespace scone
 		double velocity() { return velocity_->value(); }
 
 	signals:
-		void valueChanged( double d );
+		void valueChanged();
 
 	private slots:
 		void spinValueChanged( double d );
-		void sliderAction( int i );
 
 	private:
 		int to_int( double d ) { return int( d / stepSize_ ); }
