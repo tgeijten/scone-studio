@@ -254,6 +254,14 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
 	reportDock->hide();
 
+	// dof editor
+	dofEditor = new DofEditorGroup( this );
+	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
+	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
+	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( ui.messagesDock, dofDock );
+	dofDock->hide();
+
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// evaluation report
 	inspectorModel = new QPropNodeItemModel();
@@ -266,15 +274,14 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	inspectorView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
 	inspectorDock = createDockWidget( "Model &Inspector", inspectorView, Qt::BottomDockWidgetArea );
 	inspectorDock->hide();
-#endif // SCONE_EXPERIMENTAL_FEATURES_ENABLED
 
 	// dof editor
-	dofEditor = new DofEditorGroup( this );
-	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
-	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
-	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
-	tabifyDockWidget( ui.messagesDock, dofDock );
-	dofDock->hide();
+	userInputEditor = new UserInputEditor( this );
+	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
+	auto userInputDock = createDockWidget( "&User Inputs", userInputEditor, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( parViewDock, userInputDock );
+	userInputDock->hide();
+#endif // SCONE_EXPERIMENTAL_FEATURES_ENABLED
 
 	// finalize windows menu
 	windowMenu->addSeparator();
@@ -350,7 +357,6 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 	auto info = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
 	if ( info.isDir() )
 		info = scone::findBestPar( QDir( info.absoluteFilePath() ) );
-	auto str = info.path().toStdString();
 	if ( info.exists() )
 	{
 		if ( createScenario( info.absoluteFilePath() ) )
@@ -408,9 +414,25 @@ void SconeStudio::dofEditorValueChanged()
 	}
 }
 
+void SconeStudio::userInputValueChanged()
+{
+	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
+	{
+		scenario_->GetModel().UpdateModelFromUserInputs();
+		scenario_->UpdateVis( 0.0 );
+		ui.osgViewer->update();
+	}
+}
+
 void SconeStudio::evaluate()
 {
 	SCONE_ASSERT( scenario_ );
+
+	// disable dof editor and user input editor
+	dofEditor->setEnableEditing( false );
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	userInputEditor->setEnableEditing( false );
+#endif
 
 	QProgressDialog dlg( ( "Evaluating " + scenario_->GetFileName().str() ).c_str(), "Abort", 0, 1000, this );
 	dlg.setWindowModality( Qt::WindowModal );
@@ -499,11 +521,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 		// update ui and visualization
 		if ( scenario_->IsEvaluating() )
-		{
 			scenario_->EvaluateTo( t );
-			if ( t > 0.0 )
-				dofEditor->setEnableEditing( false );
-		}
 
 		if ( update_vis && scenario_->HasModel() )
 		{
@@ -515,7 +533,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 			}
 
 			ui.osgViewer->setFrameTime( current_time );
-			if ( analysisView->isVisible() ) // #todo: not update so much when not playing (it's slow)
+			if ( analysisView->isVisible() ) // #todo: isVisible() returns true if the tab is hidden
 				analysisView->refresh( current_time, !ui.playControl->isPlaying() );
 
 			if ( dofEditor->isVisible() )
@@ -697,7 +715,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 			// setup dof editor
 			dofEditor->init( scenario_->GetModel() );
-			dofEditor->setEnableEditing( true );
+			dofEditor->setEnableEditing( scenario_->IsEvaluatingStart() );
 
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )
@@ -707,6 +725,10 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// update model inspector
 			inspectorModel->setData( scenario_->GetModel().GetInfo() );
 			inspectorView->expandToDepth( 0 );
+
+			// setup user inputs
+			userInputEditor->init( scenario_->GetModel() );
+			userInputEditor->setEnableEditing( scenario_->IsEvaluatingStart() );
 #endif
 
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
@@ -1206,7 +1228,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 			success = ui.resultsBrowser->fileSystemModel()->remove( idx );
 		if ( !success )
 			warning( msgTitle, tr( "Could not remove " ) + item.filePath() );
-		}
+	}
 #endif
 }
 
@@ -1220,12 +1242,12 @@ void SconeStudio::sortResultsByName()
 	ui.resultsBrowser->fileSystemModel()->sort( 0 );
 }
 
-void SconeStudio::onResultBrowserCustomContextMenu(const QPoint &pos)
+void SconeStudio::onResultBrowserCustomContextMenu( const QPoint& pos )
 {
 	QMenu menu;
 	menu.addAction( "Sort by &Name", this, &SconeStudio::sortResultsByName );
 	menu.addAction( "Sort by &Date", this, &SconeStudio::sortResultsByDate );
 	menu.addSeparator();
 	menu.addAction( "&Remove", this, &SconeStudio::deleteSelectedFileOrFolder );
-	menu.exec(ui.resultsBrowser->mapToGlobal(pos));
+	menu.exec( ui.resultsBrowser->mapToGlobal( pos ) );
 }

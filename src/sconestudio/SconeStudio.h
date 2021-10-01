@@ -46,6 +46,7 @@
 #include "ParTableModel.h"
 #include "DofEditor.h"
 #include "ViewOptions.h"
+#include "UserInputEditor.h"
 
 using scone::TimeInSeconds;
 
@@ -69,6 +70,7 @@ public slots:
 	void stop();
 	void refreshAnalysis();
 	void dofEditorValueChanged();
+	void userInputValueChanged();
 
 	virtual void fileOpenTriggered() override;
 	virtual void fileReloadTriggered();
@@ -182,16 +184,19 @@ private:
 	QPropNodeItemModel* reportModel;
 	QDockWidget* reportDock;
 
+	// dof editor
+	scone::DofEditorGroup* dofEditor;
+	QDockWidget* dofDock;
+
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model inspector
 	QTreeView* inspectorView;
 	QPropNodeItemModel* inspectorModel;
 	QDockWidget* inspectorDock;
-#endif
 
-	// dof editor
-	scone::DofEditorGroup* dofEditor;
-	QDockWidget* dofDock;
+	// UserInput editor
+	scone::UserInputEditor* userInputEditor;
+#endif
 };
 
 #endif // SCONESTUDIO_H

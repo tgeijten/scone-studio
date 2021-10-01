@@ -43,6 +43,8 @@ set(STUDIOFILES
 	OptimizerTaskThreaded.cpp
 	DofEditor.h
 	DofEditor.cpp
+	UserInputEditor.h
+	UserInputEditor.cpp
 	)
 	
 set(QTFILES
