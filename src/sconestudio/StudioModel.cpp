@@ -172,16 +172,15 @@ namespace scone
 		}
 	}
 
-	PropNode StudioModel::GetResult() const
+	const PropNode& StudioModel::GetResult()
 	{
-		PropNode report;
-		if ( model_objective_ )
+		if ( model_objective_ && result_pn_.empty() )
 		{
-			report.add_child( "Result", model_objective_->GetReport( *model_ ) );
-			if ( auto simpn = model_->GetSimulationReport(); !simpn.empty() )
-				report.add_child( "Simulation", model_->GetSimulationReport() );
+			result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
+			if ( auto sim_pn = model_->GetSimulationReport(); !sim_pn.empty() )
+				result_pn_.add_child( "Simulation", sim_pn );
 		}
-		return report;
+		return result_pn_;
 	}
 
 	void StudioModel::FinalizeEvaluation()
@@ -197,8 +196,7 @@ namespace scone
 				// show fitness results
 				auto fitness = model_objective_->GetResult( *model_ );
 				//log::info( "fitness = ", fitness );
-				PropNode results = GetResult();
-				log::info( results );
+				log::info( GetResult() );
 
 				// write results to file(s)
 				xo::timer t;
@@ -263,5 +261,12 @@ namespace scone
 		}
 		else com.y = 0;
 		return com;
+	}
+
+	void StudioModel::ResetModelVis(vis::scene& s, const ViewOptions& f )
+	{
+		vis_.reset( nullptr );
+		vis_ = std::make_unique<ModelVis>( *model_, s, f );
+		UpdateVis( 0 );
 	}
 }

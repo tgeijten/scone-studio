@@ -419,7 +419,7 @@ void SconeStudio::userInputValueChanged()
 	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
 	{
 		scenario_->GetModel().UpdateModelFromUserInputs();
-		scenario_->UpdateVis( 0.0 );
+		scenario_->ResetModelVis( scene_, getViewOptionsFromMenu() );
 		ui.osgViewer->update();
 	}
 }

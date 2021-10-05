@@ -52,6 +52,7 @@ namespace scone
 		void ApplyViewOptions( const ViewOptions& f );
 		const ViewOptions& GetViewOptions() const;
 		Vec3 GetFollowPoint() const;
+		void ResetModelVis( vis::scene& s, const ViewOptions& f );
 
 		const path& GetFileName() const { return filename_; }
 		QString GetScenarioFileName() const { return to_qt( scenario_filename_ ); }
@@ -60,7 +61,7 @@ namespace scone
 		enum class Status { Initializing, Evaluating, Ready, Aborted, Error };
 		Status GetStatus() const { return status_; }
 
-		PropNode GetResult() const;
+		const PropNode& GetResult();
 
 	private:
 		void FinalizeEvaluation();
@@ -77,6 +78,7 @@ namespace scone
 		path filename_;
 		path scenario_filename_;
 		PropNode scenario_pn_;
+		PropNode result_pn_;
 
 		Status status_;
 
