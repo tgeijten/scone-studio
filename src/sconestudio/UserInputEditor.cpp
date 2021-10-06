@@ -16,7 +16,7 @@ namespace scone
 	UserInputItem::UserInputItem( UserInput& input, class UserInputEditor* editor, int row ) :
 		input_( input )
 	{
-		label_ = new QLabel( to_qt( input_.GetName() ) );
+		label_ = new QLabel( to_qt( input_.GetLabel() ) );
 		editor->grid()->addWidget( label_, row, 0 );
 
 		spin_ = new QDoubleSpinBox();
@@ -104,14 +104,6 @@ namespace scone
 		blockSignals( false );
 
 		exportButton->show();
-	}
-
-	void UserInputEditor::setSlidersFromDofs( const Model& model )
-	{
-		blockSignals( true );
-		for ( auto& item : items )
-			item->updateWidgetValues();
-		blockSignals( false );
 	}
 
 	void UserInputEditor::setEnableEditing( bool enable )

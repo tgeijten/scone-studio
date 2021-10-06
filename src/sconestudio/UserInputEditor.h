@@ -40,8 +40,6 @@ namespace scone
 		~UserInputEditor() = default;
 
 		void init( const Model& model );
-		void setSlidersFromDofs( const Model& model );
-		void setDofsFromSliders( Model& model );
 		void setEnableEditing( bool enable );
 		QGridLayout* grid() { return gridLayout; }
 
