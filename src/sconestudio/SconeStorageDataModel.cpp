@@ -44,9 +44,14 @@ void SconeStorageDataModel::setStorage( const scone::Storage<>* s )
 	}
 }
 
-size_t SconeStorageDataModel::seriesCount() const
+int SconeStorageDataModel::channelCount() const
 {
 	return storage ? storage->GetChannelCount() : 0;
+}
+
+int SconeStorageDataModel::frameCount() const
+{
+	return storage ? storage->GetFrameCount() : 0;
 }
 
 QString SconeStorageDataModel::label( int idx ) const
@@ -57,6 +62,11 @@ QString SconeStorageDataModel::label( int idx ) const
 double SconeStorageDataModel::value( int idx, double time ) const
 {
 	return storage ? storage->GetFrame( timeIndex( time ) )[ idx ] : 0;
+}
+
+double SconeStorageDataModel::value( int channel, int frame ) const
+{
+	return storage ? storage->GetFrame( frame )[ channel ] : 0;
 }
 
 std::vector< std::pair< float, float > > SconeStorageDataModel::getSeries( int idx, double min_interval ) const
@@ -89,24 +99,24 @@ double SconeStorageDataModel::timeStart() const
 	return 0.0;
 }
 
-xo::index_t SconeStorageDataModel::timeIndex( double time ) const
+int SconeStorageDataModel::timeIndex( double time ) const
 {
 	if ( !storage || storage->IsEmpty() )
-		return xo::no_index;
+		return -1;
 
 	if ( index_cache.first == time )
 		return index_cache.second;
 
-	xo::index_t idx = xo::no_index;
+	int idx = -1;
 	if ( equidistant_delta_time )
 	{
 		double reltime = time / storage->Back().GetTime();
-		idx = xo::index_t( xo::clamped( int( reltime * ( storage->GetFrameCount() - 1 ) + 0.5 ), 0, int( storage->GetFrameCount() - 1 ) ) );
+		idx = xo::clamped( int( reltime * ( storage->GetFrameCount() - 1 ) + 0.5 ), 0, int( storage->GetFrameCount() - 1 ) );
 	}
 	else 
 	{
 		// real binary search to find closest index
-		idx = storage->GetClosestFrameIndex( time );
+		idx = static_cast<int>( storage->GetClosestFrameIndex( time ) );
 		scone::log::trace( "located time ", time, " at index=", idx, " time=", storage->GetFrame( idx ).GetTime() );
 	}
 
@@ -114,7 +124,7 @@ xo::index_t SconeStorageDataModel::timeIndex( double time ) const
 	return idx;
 }
 
-double SconeStorageDataModel::timeValue( xo::index_t idx ) const
+double SconeStorageDataModel::timeValue( int idx ) const
 {
 	return storage && idx != xo::no_index ? storage->GetFrame( idx ).GetTime() : 0.0;
 }

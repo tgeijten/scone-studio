@@ -74,8 +74,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// Analysis
 	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
 	analysisView->setObjectName( "Analysis" );
-	analysisView->setMinSeriesInterval( 0 );
-	analysisView->setLineWidth( scone::GetStudioSettings().get< float >( "analysis.line_width" ) );
+	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
+	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
 
 	// File menu
 	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
