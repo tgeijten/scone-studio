@@ -94,11 +94,8 @@ namespace scone
 		items.clear();
 		qDeleteAll( dofGrid->findChildren<QWidget*>( "", Qt::FindDirectChildrenOnly ) );
 
-		createLabel( "<b>Name</b>", 0, 0, Qt::AlignLeft );
-		createLabel( "<b>Value</b>", 0, 1 );
-
 		blockSignals( true );
-		int row = 1;
+		int row = 0;
 		for ( auto& input : model.GetUserInputs() )
 			items.push_back( new UserInputItem( *input, this, row++ ) );
 		blockSignals( false );
