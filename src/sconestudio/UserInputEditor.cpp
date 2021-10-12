@@ -95,9 +95,14 @@ namespace scone
 		qDeleteAll( dofGrid->findChildren<QWidget*>( "", Qt::FindDirectChildrenOnly ) );
 
 		blockSignals( true );
+		String groupName;
 		int row = 0;
 		for ( auto& input : model.GetUserInputs() )
+		{
+			if ( input->GetGroupName() != groupName )
+				createLabel( groupName = input->GetGroupName(), row++, Qt::AlignLeft );
 			items.push_back( new UserInputItem( *input, this, row++ ) );
+		}
 		blockSignals( false );
 
 		exportButton->show();
@@ -108,11 +113,12 @@ namespace scone
 		dofGrid->setDisabled( !enable );
 	}
 
-	void UserInputEditor::createLabel( const char* str, int row, int col, Qt::Alignment align )
+	void UserInputEditor::createLabel( const String& str, int row, Qt::Alignment align )
 	{
-		auto label = new QLabel( str );
+		auto label = new QLabel( ( "<b>" + str + "</b>" ).c_str() );
+		label->setStyleSheet("QLabel { background-color : white; color : black; }");
 		label->setAlignment( align );
 		label->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Fixed );
-		gridLayout->addWidget( label, row, col );
+		gridLayout->addWidget( label, row, 0, 1, 5 );
 	}
 }

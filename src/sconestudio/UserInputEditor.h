@@ -48,7 +48,7 @@ namespace scone
 		void exportCoordinates();
 
 	private:
-		void createLabel( const char* str, int row, int col, Qt::Alignment align = Qt::AlignCenter );
+		void createLabel( const String& str, int row, Qt::Alignment align = Qt::AlignCenter );
 		QWidget* dofGrid;
 		QPushButton* exportButton;
 		QGridLayout* gridLayout;
