@@ -27,8 +27,7 @@ namespace scone
 		QSlider* slider_;
 		QLabel* max_;
 		QDoubleSpinBox* velocity_;
-
-		static constexpr double stepSize = 0.01;
+		double stepSize;
 	};
 
 	class UserInputEditor : public QWidget

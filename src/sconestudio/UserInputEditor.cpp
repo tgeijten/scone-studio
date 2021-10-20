@@ -7,6 +7,7 @@
 
 #include "qt_convert.h"
 #include "xo/system/log.h"
+#include <cmath>
 
 namespace scone
 {
@@ -16,12 +17,16 @@ namespace scone
 	UserInputItem::UserInputItem( UserInput& input, class UserInputEditor* editor, int row ) :
 		input_( input )
 	{
+		auto r = input.GetRange();
+		auto decimals = std::min( 2, static_cast<int>( std::ceil( std::log10( 50.0 / r.GetLength() ) ) ) );
+		stepSize = 1.0 / std::pow( 10, decimals );
+
 		label_ = new QLabel( to_qt( input_.GetLabel() ) );
 		editor->grid()->addWidget( label_, row, 0 );
 
 		spin_ = new QDoubleSpinBox();
 		spin_->setSingleStep( stepSize );
-		spin_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize ) ) );
+		spin_->setDecimals( decimals );
 		spin_->setRange( input_.GetRange().min, input_.GetRange().max );
 		spin_->setAlignment( Qt::AlignRight );
 		QObject::connect( spin_, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), editor,
