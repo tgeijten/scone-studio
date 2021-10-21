@@ -174,11 +174,17 @@ namespace scone
 
 	const PropNode& StudioModel::GetResult()
 	{
-		if ( model_objective_ && result_pn_.empty() )
+		if ( result_pn_.empty() )
 		{
-			result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
-			if ( auto sim_pn = model_->GetSimulationReport(); !sim_pn.empty() )
-				result_pn_.add_child( "Simulation", sim_pn );
+			if ( model_objective_ && model_->GetMeasure() )
+			{
+				auto fitness = model_objective_->GetResult( *model_ ); // this calls ComputeResult which fills report
+				auto& result = result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
+				result.set_value( fitness ); // this is done so Measures don't have to
+				if ( auto sim_pn = model_->GetSimulationReport(); !sim_pn.empty() )
+					result_pn_.add_child( "Simulation", sim_pn );
+			}
+			else log::warning( "Model does not have a Measure" );
 		}
 		return result_pn_;
 	}
@@ -193,9 +199,7 @@ namespace scone
 				storage_ = model_->GetData();
 				InitStateDataIndices();
 
-				// show fitness results
-				auto fitness = model_objective_->GetResult( *model_ );
-				//log::info( "fitness = ", fitness );
+				// compute and show fitness results
 				log::info( GetResult() );
 
 				// write results to file(s)
