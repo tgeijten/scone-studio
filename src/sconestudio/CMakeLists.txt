@@ -78,6 +78,7 @@ set(QTFILES
 	${QTFX_PATH}/QCompositeMainWindow.cpp
 	${QTFX_PATH}/QPropNodeItemModel.h
 	${QTFX_PATH}/QPropNodeItemModel.cpp
+	${QTFX_PATH}/QSafeApplication.h
 	${QTFX_PATH}/QSettingsItemModel.h
 	${QTFX_PATH}/QSettingsItemModel.cpp
 	../../contrib/qcustomplot/qcustomplot.h

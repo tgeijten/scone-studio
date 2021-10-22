@@ -80,11 +80,11 @@ namespace scone
 		dofGrid->setLayout( gridLayout );
 		vl->addWidget( dofGrid );
 
-		exportButton = new QPushButton( "Export Coordinates...", this );
-		exportButton->setIcon( style()->standardIcon( QStyle::SP_DirOpenIcon ) );
-		connect( exportButton, &QPushButton::pressed, this, &UserInputEditor::exportCoordinates );
-		vl->addWidget( exportButton );
-		exportButton->hide();
+		saveButton = new QPushButton( "Save UserInputs to ", this );
+		saveButton->setIcon( style()->standardIcon( QStyle::SP_DirOpenIcon ) );
+		connect( saveButton, &QPushButton::pressed, this, &UserInputEditor::savePressed );
+		vl->addWidget( saveButton );
+		saveButton->hide();
 
 		vl->insertStretch( -1 );
 
@@ -110,7 +110,7 @@ namespace scone
 		}
 		blockSignals( false );
 
-		exportButton->show();
+		saveButton->show();
 	}
 
 	void UserInputEditor::setEnableEditing( bool enable )

@@ -54,6 +54,7 @@
 #include "scone/sconelib_config.h"
 #include "studio_tools.h"
 #include "xo/time/stopwatch.h"
+#include "scone/model/model_tools.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -86,6 +87,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "&Save", this, &SconeStudio::fileSaveTriggered, QKeySequence( "Ctrl+S" ) );
 	fileMenu->addAction( "Save &As...", this, &SconeStudio::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
 	fileMenu->addAction( "&Close", this, &SconeStudio::fileCloseTriggered, QKeySequence( "Ctrl+W" ) );
+	fileMenu->addSeparator();
+	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	fileMenu->addAction( "Export &User Inputs...", this, [=]() { saveUserInputs( true ); } );
+#endif
 	fileMenu->addSeparator();
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
 
@@ -142,8 +148,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "Fil&ter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addSeparator();
-	toolsMenu->addAction( "&Export Coordinates...", this, &SconeStudio::exportCoordinates );
-	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
 	toolsMenu->addAction( "&Convert Model...", [=]() { ShowModelConversionDialog( this ); } );
 	toolsMenu->addSeparator();
@@ -176,9 +180,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
 	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
-	helpMenu->addAction( "Repair &Tutorials...", this, []() { scone::installTutorials(); } );
+	helpMenu->addAction( "Repair &Tutorials...", this, []() { installTutorials(); } );
 	helpMenu->addSeparator();
-	helpMenu->addAction( "&About...", this, [=]() { scone::showAbout( this ); } );
+	helpMenu->addAction( "&About...", this, [=]() { showAbout( this ); } );
 
 	// Results Browser
 	auto results_folder = scone::GetFolder( SCONE_RESULTS_FOLDER );
@@ -278,6 +282,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// dof editor
 	userInputEditor = new UserInputEditor( this );
 	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
+	connect( userInputEditor, &UserInputEditor::savePressed, this, [=]() { saveUserInputs( true ); } );
 	auto userInputDock = createDockWidget( "&User Inputs", userInputEditor, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( parViewDock, userInputDock );
 	userInputDock->hide();
@@ -585,6 +590,7 @@ void SconeStudio::fileSaveTriggered()
 	{
 		s->save();
 		ui.tabWidget->setTabText( getTabIndex( s ), s->getTitle() );
+		saveUserInputs( false );
 		createAndVerifyActiveScenario( true );
 	}
 }
@@ -1094,15 +1100,35 @@ void SconeStudio::exportCoordinates()
 {
 	if ( scenario_ && scenario_->HasModel() )
 	{
-		PropNode pn;
-		for ( const auto& dof : scenario_->GetModel().GetDofs() )
-		{
-			pn[ "values" ].set( dof->GetName(), dof->GetPos() );
-			pn[ "velocities" ].set( dof->GetName(), dof->GetVel() );
-		}
-		auto filename = QFileDialog::getSaveFileName( this, "State Filename", to_qt( scenario_->GetFileName().parent_path() ), "zml files (*.zml)" );
+		const auto& sif = scenario_->GetModel().state_init_file;
+		auto default_file = to_qt( sif.empty() ? scenario_->GetFileName().parent_path() : sif );
+		auto filename = QFileDialog::getSaveFileName( this, "State Filename", default_file, "zml files (*.zml)" );
 		if ( !filename.isEmpty() )
+		{
+			PropNode pn;
+			for ( const auto& dof : scenario_->GetModel().GetDofs() )
+			{
+				pn[ "values" ].set( dof->GetName(), dof->GetPos() );
+				pn[ "velocities" ].set( dof->GetName(), dof->GetVel() );
+			}
 			xo::save_file( pn, path_from_qt( filename ) );
+		}
+	}
+}
+
+void SconeStudio::saveUserInputs( bool show_dialog )
+{
+	if ( scenario_ && scenario_->HasModel() )
+	{
+		path filename = scenario_->GetModel().user_input_file;
+		if ( show_dialog )
+		{
+			auto default_file = to_qt( filename.empty() ? scenario_->GetFileName().parent_path() : filename );
+			filename = path_from_qt( QFileDialog::getSaveFileName( this, "Filename", default_file, "zml files (*.zml)" ) );
+		}
+
+		if ( !filename.empty() )
+			xo::save_file( MakePropNode( scenario_->GetModel().GetUserInputs() ), filename );
 	}
 }
 

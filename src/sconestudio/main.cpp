@@ -29,6 +29,7 @@
 #include "scone/core/Exception.h"
 #include "studio_tools.h"
 #include "StudioSettings.h"
+#include "QSafeApplication.h"
 
 int main( int argc, char *argv[] )
 {
@@ -39,7 +40,7 @@ int main( int argc, char *argv[] )
 	QApplication::setStyle( "fusion" );
 
 	// create application
-	QApplication a( argc, argv );
+	QSafeApplication app( argc, argv );
 
 	try
 	{
@@ -56,7 +57,7 @@ int main( int argc, char *argv[] )
 		QPixmap splash_pm( to_qt( GetSconeStudioFolder() / "resources/ui/scone_splash.png" ) );
 		QSplashScreen splash( splash_pm );
 		splash.show();
-		a.processEvents();
+		app.processEvents();
 
 		// init main window
 		SconeStudio w;
@@ -80,15 +81,15 @@ int main( int argc, char *argv[] )
 		if ( scone::GetStudioSetting<bool>( "ui.show_startup_time") )
 			xo::log::debug( "SCONE startup time: ", boot_timer().secondsd(), "s" );
 
-		return a.exec();
+		return app.exec();
 	}
 	catch ( std::exception& e )
 	{
-		QMessageBox::critical( 0, "Exception", e.what() );
+		QMessageBox::critical( nullptr, "Exception", e.what() );
 	}
 	catch ( ... )
 	{
-		QMessageBox::critical( 0, "Exception", "Unknown Exception" );
+		QMessageBox::critical( nullptr, "Exception", "Unknown Exception" );
 	}
 }
 

@@ -44,12 +44,12 @@ namespace scone
 
 	signals:
 		void valueChanged();
-		void exportCoordinates();
+		void savePressed();
 
 	private:
 		void createLabel( const String& str, int row, Qt::Alignment align = Qt::AlignCenter );
 		QWidget* dofGrid;
-		QPushButton* exportButton;
+		QPushButton* saveButton;
 		QGridLayout* gridLayout;
 		std::vector<UserInputItem*> items;
 	};

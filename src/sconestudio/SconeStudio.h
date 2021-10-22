@@ -120,13 +120,17 @@ public:
 private:
 	QCodeEditor* getActiveCodeEditor();
 	QCodeEditor* getActiveScenario();
+
 	void restoreCustomSettings( QSettings& settings ) override;
 	void saveCustomSettings( QSettings& settings ) override;
 	scone::ViewOptions getViewOptionsFromMenu() const;
 
 	void performanceTest( bool write_stats );
+	void saveUserInputs( bool show_dialog );
+
 	void evaluate();
 	void setTime( TimeInSeconds t, bool update_vis );
+
 	std::vector< QCodeEditor* > changedDocuments();
 	bool requestSaveChanges( const std::vector<QCodeEditor*>& modified_docs );
 	bool requestSaveChanges( QCodeEditor* s );
