@@ -181,10 +181,11 @@ namespace scone
 				auto fitness = model_objective_->GetResult( *model_ ); // this calls ComputeResult which fills report
 				auto& result = result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
 				result.set_value( fitness ); // this is done so Measures don't have to
-				if ( auto sim_pn = model_->GetSimulationReport(); !sim_pn.empty() )
-					result_pn_.add_child( "Simulation", sim_pn );
 			}
 			else log::warning( "Model does not have a Measure" );
+
+			if ( auto sim_pn = model_->GetSimulationReport(); !sim_pn.empty() )
+				result_pn_.add_child( "Simulation", sim_pn );
 		}
 		return result_pn_;
 	}
