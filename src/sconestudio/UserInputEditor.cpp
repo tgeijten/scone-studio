@@ -15,10 +15,12 @@ namespace scone
 	inline double radToDegIf( double v, bool conv ) { return conv ? xo::rad_to_deg( v ) : v; }
 
 	UserInputItem::UserInputItem( UserInput& input, class UserInputEditor* editor, int row ) :
-		input_( input )
+		input_( input ),
+		range_( input.GetRange() ),
+		animatePeriod( 10 ),
+		animateOffset( 0 )
 	{
-		auto r = input.GetRange();
-		auto decimals = std::min( 2, static_cast<int>( std::ceil( std::log10( 50.0 / r.GetLength() ) ) ) );
+		auto decimals = std::min( 2, static_cast<int>( std::ceil( std::log10( 50.0 / range_.GetLength() ) ) ) );
 		stepSize = 1.0 / std::pow( 10, decimals );
 
 		label_ = new QLabel( to_qt( input_.GetLabel() ) );
@@ -53,12 +55,26 @@ namespace scone
 		max_->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 		editor->grid()->addWidget( max_, row, 4 );
 
+		animate_ = new QCheckBox();
+		animate_->setCheckState( Qt::Unchecked );
+		editor->grid()->addWidget( animate_, row, 5 );
+
 		updateWidgetValues();
 	}
 
 	void UserInputItem::updateWidgetValues()
 	{
 		spin_->setValue( input_.GetValue() );
+	}
+
+	void UserInputItem::animateValue( double t )
+	{
+		if ( animate_->isChecked() )
+		{
+			auto tw = xo::triangle_wave( animateOffset + ( t / animatePeriod ) );
+			auto r = input_.GetRange();
+			spin_->setValue( tw * r.GetLength() + r.min );
+		}
 	}
 
 	UserInputEditor::UserInputEditor( QWidget* parent ) :
@@ -72,7 +88,7 @@ namespace scone
 		QWidget* group = new QWidget( this );
 		QVBoxLayout* vl = new QVBoxLayout( group );
 		vl->setMargin( 8 );
-		vl->setSpacing( 16 );
+		vl->setSpacing( 8 );
 
 		dofGrid = new QWidget( group );
 		gridLayout = new QGridLayout();
@@ -80,11 +96,19 @@ namespace scone
 		dofGrid->setLayout( gridLayout );
 		vl->addWidget( dofGrid );
 
-		saveButton = new QPushButton( "Save UserInputs to ", this );
+		buttonGroup = new QWidget( this );
+		QHBoxLayout* buttonLayout = new QHBoxLayout( buttonGroup );
+		buttonLayout->setMargin( 0 );
+		buttonLayout->setSpacing( 4 );
+		auto animateButton = new QPushButton( "Toggle Animation", this );
+		connect( animateButton, &QPushButton::pressed, this, &UserInputEditor::toggleAnimation );
+		buttonLayout->addWidget( animateButton );
+		auto saveButton = new QPushButton( "Save UserInputs to ", this );
 		saveButton->setIcon( style()->standardIcon( QStyle::SP_DirOpenIcon ) );
 		connect( saveButton, &QPushButton::pressed, this, &UserInputEditor::savePressed );
-		vl->addWidget( saveButton );
-		saveButton->hide();
+		buttonLayout->addWidget( saveButton );
+		buttonGroup->hide();
+		vl->addWidget( buttonGroup );
 
 		vl->insertStretch( -1 );
 
@@ -92,6 +116,8 @@ namespace scone
 		scrollWidget->setWidgetResizable( true ); // very important
 		scrollWidget->setWidget( group );
 		wl->addWidget( scrollWidget );
+
+		connect( &qtimer_, &QTimer::timeout, this, &UserInputEditor::timeout );
 	}
 
 	void UserInputEditor::init( const Model& model )
@@ -110,12 +136,34 @@ namespace scone
 		}
 		blockSignals( false );
 
-		saveButton->show();
+		buttonGroup->show();
 	}
 
 	void UserInputEditor::setEnableEditing( bool enable )
 	{
 		dofGrid->setDisabled( !enable );
+	}
+
+	void UserInputEditor::timeout()
+	{
+		blockSignals( true );
+		auto t = timer_().secondsd();
+		for ( auto item : items )
+			item->animateValue( t );
+		blockSignals( false );
+		emit valueChanged();
+	}
+
+	void UserInputEditor::toggleAnimation()
+	{
+		if ( !qtimer_.isActive() )
+		{
+			for ( auto item : items )
+				item->animateOffset = ( item->spin_->value() - item->range_.min ) / item->range_.GetLength();
+			qtimer_.start( 20 );
+			timer_.restart();
+		}
+		else qtimer_.stop();
 	}
 
 	void UserInputEditor::createLabel( const String& str, int row, Qt::Alignment align )

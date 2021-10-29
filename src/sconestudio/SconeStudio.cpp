@@ -90,7 +90,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	fileMenu->addAction( "Export &User Inputs...", this, [=]() { saveUserInputs( true ); } );
+	fileMenu->addAction( "Save &User Inputs", this, [=]() { saveUserInputs( false ); } );
+	fileMenu->addAction( "Save User &Inputs As...", this, [=]() { saveUserInputs( true ); } );
 #endif
 	fileMenu->addSeparator();
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
@@ -590,7 +591,7 @@ void SconeStudio::fileSaveTriggered()
 	{
 		s->save();
 		ui.tabWidget->setTabText( getTabIndex( s ), s->getTitle() );
-		saveUserInputs( false );
+		//saveUserInputs( false );
 		createAndVerifyActiveScenario( true );
 	}
 }
