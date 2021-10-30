@@ -7,6 +7,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QTimer>
+#include <QCheckBox>
 
 #include "scone/model/Model.h"
 #include "scone/model/UserInput.h"
