@@ -1122,7 +1122,7 @@ void SconeStudio::saveUserInputs( bool show_dialog )
 	if ( scenario_ && scenario_->HasModel() )
 	{
 		path filename = scenario_->GetModel().user_input_file;
-		if ( show_dialog )
+		if ( show_dialog || filename.empty() )
 		{
 			auto default_file = to_qt( filename.empty() ? scenario_->GetFileName().parent_path() : filename );
 			filename = path_from_qt( QFileDialog::getSaveFileName( this, "Filename", default_file, "zml files (*.zml)" ) );
