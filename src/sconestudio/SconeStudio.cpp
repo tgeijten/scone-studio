@@ -425,6 +425,7 @@ void SconeStudio::userInputValueChanged()
 	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
 	{
 		scenario_->GetModel().UpdateModelFromUserInputs();
+		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 		scenario_->ResetModelVis( scene_, getViewOptionsFromMenu() );
 		ui.osgViewer->update();
 	}
