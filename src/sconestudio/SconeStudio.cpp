@@ -300,12 +300,13 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
 	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
 
-	// reset layout if requested
 	createSettings( "SCONE", "SconeStudio" );
 	if ( GetStudioSetting<bool>( "ui.reset_layout" ) )
 	{
+		// reset layout if requested
 		GetStudioSettings().set( "ui.reset_layout", false );
 		GetStudioSettings().save();
+		restoreSettings( true );
 	}
 	else restoreSettings();
 }
@@ -669,8 +670,8 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 	{
 		// stack below results
 		addDockWidget( Qt::LeftDockWidgetArea, pdw );
-		for ( index_t r = 0; r < optimizations.size(); ++r )
-			splitDockWidget( r == 0 ? ui.resultsDock : optimizations[ r - 1 ], optimizations[ r ], Qt::Vertical );
+		//for ( index_t r = 0; r < optimizations.size(); ++r )
+		//	splitDockWidget( r == 0 ? ui.resultsDock : optimizations[ r - 1 ], optimizations[ r ], Qt::Vertical );
 	}
 	else
 	{
@@ -680,6 +681,9 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 		auto columns = std::max<int>( 1, ( optimizations.size() + 5 ) / 6 );
 		auto rows = ( optimizations.size() + columns - 1 ) / columns;
 		log::debug( "Reorganizing windows, columns=", columns, " rows=", rows );
+
+		// keep this so we can restore later
+		auto tabDocks = tabifiedDockWidgets( ui.resultsDock );
 
 		// first column
 		splitDockWidget( optimizations[ 0 ], ui.resultsDock, Qt::Horizontal );
@@ -696,6 +700,10 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 					splitDockWidget( optimizations[ i - 1 ], optimizations[ i ], Qt::Horizontal );
 			}
 		}
+
+		// restore tabs
+		for ( auto* dw : tabDocks )
+			tabifyDockWidget( ui.resultsDock, dw );
 	}
 }
 
