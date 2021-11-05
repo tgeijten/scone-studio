@@ -244,8 +244,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		parView->horizontalHeader()->setSectionResizeMode( i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents );
 	parView->verticalHeader()->setSectionResizeMode( QHeaderView::Fixed );
 	parView->verticalHeader()->setDefaultSectionSize( 24 );
-	parViewDock = createDockWidget( "Optimization &Parameters", parView, Qt::BottomDockWidgetArea );
-	tabifyDockWidget( ui.messagesDock, parViewDock );
+	parViewDock = createDockWidget( "Optimization &Parameters", parView, Qt::LeftDockWidgetArea );
+	tabifyDockWidget( ui.resultsDock, parViewDock );
 	parViewDock->hide();
 
 	// evaluation report
@@ -263,8 +263,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	dofEditor = new DofEditorGroup( this );
 	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
 	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
-	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::BottomDockWidgetArea );
-	tabifyDockWidget( ui.messagesDock, dofDock );
+	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::LeftDockWidgetArea );
+	tabifyDockWidget( ui.resultsDock, dofDock );
 	dofDock->hide();
 
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
@@ -277,15 +277,16 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	inspectorView->setModel( inspectorModel );
 	inspectorView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	inspectorView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-	inspectorDock = createDockWidget( "Model &Inspector", inspectorView, Qt::BottomDockWidgetArea );
+	inspectorDock = createDockWidget( "Model &Inspector", inspectorView, Qt::LeftDockWidgetArea );
+	tabifyDockWidget( ui.resultsDock, inspectorDock );
 	inspectorDock->hide();
 
-	// dof editor
+	// user input editor
 	userInputEditor = new UserInputEditor( this );
 	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
 	connect( userInputEditor, &UserInputEditor::savePressed, this, [=]() { saveUserInputs( true ); } );
-	auto userInputDock = createDockWidget( "&User Inputs", userInputEditor, Qt::BottomDockWidgetArea );
-	tabifyDockWidget( parViewDock, userInputDock );
+	auto userInputDock = createDockWidget( "&User Inputs", userInputEditor, Qt::LeftDockWidgetArea );
+	tabifyDockWidget( ui.resultsDock, userInputDock );
 	userInputDock->hide();
 #endif // SCONE_EXPERIMENTAL_FEATURES_ENABLED
 

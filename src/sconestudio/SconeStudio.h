@@ -55,7 +55,7 @@ class SconeStudio : public QCompositeMainWindow
 	Q_OBJECT
 
 public:
-	SconeStudio(QWidget *parent = 0, Qt::WindowFlags flags = 0);
+	SconeStudio( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	~SconeStudio();
 
 	bool init();
@@ -110,7 +110,7 @@ public slots:
 	void deleteSelectedFileOrFolder();
 	void sortResultsByDate();
 	void sortResultsByName();
-	void onResultBrowserCustomContextMenu(const QPoint &);
+	void onResultBrowserCustomContextMenu( const QPoint& );
 
 public:
 	bool close_all;
