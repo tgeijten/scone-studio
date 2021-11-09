@@ -966,6 +966,7 @@ void SconeStudio::performanceTest( bool write_stats )
 
 			if ( !write_stats )
 			{
+				auto profiler_previously_enabled = SetProfilerEnabled( true );
 				xo::timer real_time;
 				auto model = mo->CreateModelFromParams( par );
 				model->SetStoreData( false );
@@ -978,6 +979,7 @@ void SconeStudio::performanceTest( bool write_stats )
 				if ( auto sim_report = model->GetSimulationReport(); !sim_report.empty() )
 					log::info( sim_report );
 				log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
+				SetProfilerEnabled( profiler_previously_enabled );
 			}
 			else
 			{
