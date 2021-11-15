@@ -485,7 +485,9 @@ void SconeStudio::evaluate()
 	dlg.setValue( 1000 );
 	scenario_->UpdateVis( scenario_->GetTime() );
 
-	reportModel->setData( scenario_->GetResult() );
+	PropNode report_pn = scenario_->GetResult();
+	report_pn.append( scenario_->GetModel().GetSimulationReport() );
+	reportModel->setData( std::move( report_pn ) );
 	reportView->expandToDepth( 0 );
 }
 
@@ -977,7 +979,7 @@ void SconeStudio::performanceTest( bool write_stats )
 					model->GetProfiler().log_results();
 				log::info( "fitness = ", mo->GetResult( *model ) );
 				if ( auto sim_report = model->GetSimulationReport(); !sim_report.empty() )
-					log::info( sim_report );
+					log::info( sim_report.front().second );
 				log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
 				SetProfilerEnabled( profiler_previously_enabled );
 			}

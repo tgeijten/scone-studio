@@ -183,9 +183,6 @@ namespace scone
 				result.set_value( fitness ); // this is done so Measures don't have to
 			}
 			else log::warning( "Model does not have a Measure" );
-
-			if ( auto sim_pn = model_->GetSimulationReport(); !sim_pn.empty() )
-				result_pn_.add_child( "Simulation", sim_pn );
 		}
 		return result_pn_;
 	}
