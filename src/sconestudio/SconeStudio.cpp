@@ -268,10 +268,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	dofDock->hide();
 
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	// evaluation report
+	// model inspector
 	inspectorModel = new QPropNodeItemModel();
-	inspectorModel->setMaxPreviewChildren( 3 );
-	//inspectorModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
+	inspectorModel->setMaxPreviewChildren( 5 );
 	inspectorView = new QTreeView( this );
 	inspectorView->setIndentation( 16 );
 	inspectorView->setModel( inspectorModel );
