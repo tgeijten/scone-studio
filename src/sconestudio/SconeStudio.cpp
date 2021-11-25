@@ -90,8 +90,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	fileMenu->addAction( "Save &User Inputs", this, [=]() { saveUserInputs( false ); } );
-	fileMenu->addAction( "Save User &Inputs As...", this, [=]() { saveUserInputs( true ); } );
+	fileMenu->addAction( "Save &Model Inputs", this, [=]() { saveUserInputs( false ); } );
+	fileMenu->addAction( "Save &Model Inputs As...", this, [=]() { saveUserInputs( true ); } );
 #endif
 	fileMenu->addSeparator();
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
@@ -224,7 +224,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	registerDockWidget( ui.resultsDock, "&Optimization Results" );
 
 	addDockWidget( Qt::BottomDockWidgetArea, ui.messagesDock );
-	registerDockWidget( ui.messagesDock, "&Messages" );
+	registerDockWidget( ui.messagesDock, "Me&ssages" );
 
 	analysisDock = createDockWidget( "&Analysis", analysisView, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, analysisDock );
@@ -277,15 +277,15 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	inspectorView->setModel( inspectorModel );
 	inspectorView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	inspectorView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-	inspectorDock = createDockWidget( "Model &Inspector", inspectorView, Qt::LeftDockWidgetArea );
+	inspectorDock = createDockWidget( "&Model Inspector", inspectorView, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, inspectorDock );
 	inspectorDock->hide();
 
-	// user input editor
+	// model input editor
 	userInputEditor = new UserInputEditor( this );
 	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
 	connect( userInputEditor, &UserInputEditor::savePressed, this, [=]() { saveUserInputs( true ); } );
-	auto userInputDock = createDockWidget( "&User Inputs", userInputEditor, Qt::LeftDockWidgetArea );
+	auto userInputDock = createDockWidget( "Model &Inputs", userInputEditor, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, userInputDock );
 	userInputDock->hide();
 #endif // SCONE_EXPERIMENTAL_FEATURES_ENABLED
@@ -437,7 +437,7 @@ void SconeStudio::evaluate()
 {
 	SCONE_ASSERT( scenario_ );
 
-	// disable dof editor and user input editor
+	// disable dof editor and model input editor
 	dofEditor->setEnableEditing( false );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	userInputEditor->setEnableEditing( false );
@@ -707,6 +707,7 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 		// restore tabs
 		for ( auto* dw : tabDocks )
 			tabifyDockWidget( ui.resultsDock, dw );
+		ui.resultsDock->raise();
 	}
 }
 
@@ -745,7 +746,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 			inspectorModel->setData( scenario_->GetModel().GetInfo() );
 			inspectorView->expandToDepth( 0 );
 
-			// setup user inputs
+			// setup model inputs
 			userInputEditor->init( scenario_->GetModel() );
 			userInputEditor->setEnableEditing( scenario_->IsEvaluatingStart() );
 #endif
