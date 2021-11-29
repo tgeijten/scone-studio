@@ -194,7 +194,9 @@ private:
 
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model inspector
+	QSplitter* inspectorSplitter;
 	QTreeView* inspectorView;
+	QTreeView* inspectorDetails;
 	QPropNodeItemModel* inspectorModel;
 	QDockWidget* inspectorDock;
 

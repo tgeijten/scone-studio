@@ -270,13 +270,26 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model inspector
 	inspectorModel = new QPropNodeItemModel();
-	inspectorModel->setMaxPreviewChildren( 5 );
+	inspectorModel->setMaxPreviewChildren( 3 );
 	inspectorView = new QTreeView( this );
 	inspectorView->setIndentation( 16 );
 	inspectorView->setModel( inspectorModel );
 	inspectorView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 	inspectorView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-	inspectorDock = createDockWidget( "&Model Inspector", inspectorView, Qt::LeftDockWidgetArea );
+
+	inspectorDetails = new QTreeView( this );
+	inspectorDetails->setModel( inspectorModel );
+	inspectorDetails->setEditTriggers( QAbstractItemView::NoEditTriggers );
+	inspectorDetails->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
+
+	inspectorSplitter = new QSplitter( Qt::Vertical, this );
+	inspectorSplitter->addWidget( inspectorView );
+	inspectorSplitter->addWidget( inspectorDetails );
+	inspectorSplitter->setStretchFactor( 0, 3 );
+	inspectorSplitter->setStretchFactor( 1, 1 );
+	connect( inspectorView->selectionModel(), &QItemSelectionModel::currentChanged, inspectorDetails, &QTreeView::setRootIndex );
+
+	inspectorDock = createDockWidget( "&Model Inspector", inspectorSplitter, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, inspectorDock );
 	inspectorDock->hide();
 
