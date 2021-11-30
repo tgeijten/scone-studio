@@ -312,6 +312,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
 	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
+	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerWindowClicked );
 
 	createSettings( "SCONE", "SconeStudio" );
 	if ( GetStudioSetting<bool>( "ui.reset_layout" ) )
@@ -1121,6 +1122,21 @@ void SconeStudio::fixViewerWindowSize()
 		auto borderSize = ui.viewerDock->size() - ui.osgViewer->size();
 		auto videoSize = QSize( GetStudioSettings().get<int>( "video.width" ), GetStudioSettings().get<int>( "video.height" ) );
 		ui.viewerDock->resize( borderSize + videoSize + QSize( 2, 2 ) );
+	}
+}
+
+void SconeStudio::viewerWindowClicked()
+{
+	if ( auto* is = ui.osgViewer->getIntersection() )
+	{
+		if ( auto* node = vis::top_named_node( is->nodePath ) )
+		{
+			auto name = to_qt( node->getName() );
+			QToolTip::showText( QCursor::pos(), name );
+			auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, QVariant::fromValue( name ), 2, Qt::MatchRecursive );
+			if ( !items.empty() )
+				inspectorView->setCurrentIndex( items.front() );
+		}
 	}
 }
 

@@ -105,6 +105,7 @@ public slots:
 	void toggleComments() { if ( auto* e = getActiveCodeEditor() ) e->toggleComments(); }
 	void resetWindowLayout();
 	void fixViewerWindowSize();
+	void viewerWindowClicked();
 	void exportCoordinates();
 
 	void deleteSelectedFileOrFolder();
