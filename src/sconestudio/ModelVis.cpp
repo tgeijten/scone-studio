@@ -35,6 +35,8 @@ namespace scone
 			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } ),
 			color_materials_( [&]( const xo::color& c ) { return vis::material( { c, specular_, shininess_, ambient_, c.a } ); } )
 	{
+		root_node_.set_name( "root" );
+
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
 		{
@@ -48,11 +50,13 @@ namespace scone
 			auto normal_rot = xo::quat_from_directions( xo::vec3f::unit_y(), plane.normal_ );
 			//ground_plane = scene_.add< vis::plane >( xo::vec3f( 64, 0, 0 ), xo::vec3f( 0, 0, -64 ), GetFolder( SCONE_UI_RESOURCE_FOLDER ) / "stile160.png", 64, 64 );
 			ground_.pos_ori( vis::vec3f( gp->GetPos() ), normal_rot * xo::quatf( gp->GetOri() ) );
+			ground_.set_name( "ground" );
 		}
 
 		for ( auto& body : model.GetBodies() )
 		{
 			bodies.push_back( vis::node( &root_node_ ) );
+			bodies.back().set_name( body->GetName().c_str() );
 			body_axes.push_back( vis::axes( bodies.back(), vis::axes_info{ vis::vec3f::diagonal( 0.1 ) } ) );
 			if ( body->GetMass() > 0 )
 			{
@@ -95,6 +99,7 @@ namespace scone
 					body_meshes.push_back( MakeMesh(
 						bodies.back(), geom.shape_, xo::color::cyan(), mat, geom.pos_, geom.ori_, geom.scale_ ) );
 				}
+				body_meshes.back().set_name( body->GetName().c_str() );
 			}
 		}
 
@@ -139,9 +144,12 @@ namespace scone
 			mv.ten2 = vis::trail( root_node_, vis::trail_info{ tendon_radius, xo::color::yellow(), 0.3f } );
 			mv.ten1.set_material( tendon_mat );
 			mv.ten2.set_material( tendon_mat );
+			mv.ten1.set_name( muscle->GetName().c_str() );
+			mv.ten2.set_name( muscle->GetName().c_str() );
 			mv.ce = vis::trail( root_node_, vis::trail_info{ muscle_radius, xo::color::red(), 0.5f } );
 			mv.mat = muscle_mat.clone();
 			mv.ce.set_material( mv.mat );
+			mv.ce.set_name( muscle->GetName().c_str() );
 			mv.ce_pos = muscle_position;
 			muscles.push_back( std::move( mv ) );
 		}
