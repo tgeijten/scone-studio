@@ -35,8 +35,6 @@ namespace scone
 			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } ),
 			color_materials_( [&]( const xo::color& c ) { return vis::material( { c, specular_, shininess_, ambient_, c.a } ); } )
 	{
-		root_node_.set_name( "root" );
-
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
 		{
@@ -50,7 +48,6 @@ namespace scone
 			auto normal_rot = xo::quat_from_directions( xo::vec3f::unit_y(), plane.normal_ );
 			//ground_plane = scene_.add< vis::plane >( xo::vec3f( 64, 0, 0 ), xo::vec3f( 0, 0, -64 ), GetFolder( SCONE_UI_RESOURCE_FOLDER ) / "stile160.png", 64, 64 );
 			ground_.pos_ori( vis::vec3f( gp->GetPos() ), normal_rot * xo::quatf( gp->GetOri() ) );
-			ground_.set_name( "ground" );
 		}
 
 		for ( auto& body : model.GetBodies() )
@@ -85,6 +82,7 @@ namespace scone
 						{
 							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
 							body_meshes.push_back( MakeMesh( bodies.back(), *geom_file, bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
+							body_meshes.back().set_name( body->GetName().c_str() );
 						}
 						else log::warning( "Could not find ", geom.filename_ );
 					}
@@ -98,8 +96,9 @@ namespace scone
 					const vis::material& mat = geom.color_.is_null() ? bone_mat : color_materials_( geom.color_ );
 					body_meshes.push_back( MakeMesh(
 						bodies.back(), geom.shape_, xo::color::cyan(), mat, geom.pos_, geom.ori_, geom.scale_ ) );
+					bool clickable = geom.color_.is_null() || geom.color_.a == 1;
+					body_meshes.back().set_name( clickable ? body->GetName().c_str() : "!" );
 				}
-				body_meshes.back().set_name( body->GetName().c_str() );
 			}
 		}
 
@@ -113,6 +112,7 @@ namespace scone
 				auto model_folder = model.GetModelFile().parent_path();
 				auto geom_file = FindFile( model_folder / cg->GetFileName() );
 				contact_geoms.push_back( MakeMesh( parent_node, geom_file, is_static ? static_mat : contact_mat, cg->GetPos(), cg->GetOri() ) );
+				contact_geoms.back().set_name( cg->GetName().c_str() );
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
@@ -121,6 +121,7 @@ namespace scone
 				contact_geoms.push_back( MakeMesh(
 					parent_node, cg->GetShape(), xo::color::cyan(), mat,
 					cg->GetPos(), cg->GetOri() ) );
+				contact_geoms.back().set_name( cg->GetName().c_str() );
 			}
 		}
 
@@ -159,6 +160,7 @@ namespace scone
 		{
 			joints.push_back( vis::mesh( root_node_, vis::shape_info{ xo::sphere( joint_radius ), xo::color::red(), xo::vec3f::zero(), 0.75f } ) );
 			joints.back().set_material( joint_mat );
+			joints.back().set_name( j->GetName().c_str() );
 		}
 
 		heading_ = vis::arrow( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::green() } );

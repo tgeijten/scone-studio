@@ -30,10 +30,12 @@
 #include "scone/core/storage_tools.h"
 #include "scone/core/system_tools.h"
 #include "scone/core/version.h"
+#include "scone/model/Dof.h"
 #include "scone/model/muscle_tools.h"
+#include "scone/model/model_tools.h"
 #include "scone/optimization/Optimizer.h"
 #include "scone/optimization/opt_tools.h"
-#include "scone/model/Dof.h"
+#include "scone/sconelib_config.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -51,10 +53,7 @@
 #include "xo/thread/thread_priority.h"
 #include "file_tools.h"
 #include "model_conversion.h"
-#include "scone/sconelib_config.h"
 #include "studio_tools.h"
-#include "xo/time/stopwatch.h"
-#include "scone/model/model_tools.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -267,7 +266,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	tabifyDockWidget( ui.resultsDock, dofDock );
 	dofDock->hide();
 
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model inspector
 	inspectorModel = new QPropNodeItemModel();
 	inspectorModel->setMaxPreviewChildren( 3 );
@@ -293,6 +291,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	tabifyDockWidget( ui.resultsDock, inspectorDock );
 	inspectorDock->hide();
 
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model input editor
 	userInputEditor = new UserInputEditor( this );
 	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
@@ -312,7 +311,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
 	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
-	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerWindowClicked );
+	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
+	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
 
 	createSettings( "SCONE", "SconeStudio" );
 	if ( GetStudioSetting<bool>( "ui.reset_layout" ) )
@@ -754,11 +754,11 @@ bool SconeStudio::createScenario( const QString& any_file )
 			if ( scenario_->HasData() )
 				updateModelDataWidgets();
 
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 			// update model inspector
 			inspectorModel->setData( scenario_->GetModel().GetInfo() );
 			inspectorView->expandToDepth( 0 );
 
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 			// setup model inputs
 			userInputEditor->init( scenario_->GetModel() );
 			userInputEditor->setEnableEditing( scenario_->IsEvaluatingStart() );
@@ -1125,17 +1125,23 @@ void SconeStudio::fixViewerWindowSize()
 	}
 }
 
-void SconeStudio::viewerWindowClicked()
+void SconeStudio::viewerTooltip()
 {
-	if ( auto* is = ui.osgViewer->getIntersection() )
+	if ( auto* node = ui.osgViewer->getTopNamedIntersectionNode() )
+		QToolTip::showText( QCursor::pos(), to_qt( node->getName() ));
+	else QToolTip::showText( QPoint(), QString() );
+}
+
+void SconeStudio::viewerSelect()
+{
+	if ( auto* node = ui.osgViewer->getTopNamedIntersectionNode() )
 	{
-		if ( auto* node = vis::top_named_node( is->nodePath ) )
+		auto name = to_qt( node->getName() );
+		auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, name, 1, Qt::MatchRecursive );
+		if ( !items.empty() )
 		{
-			auto name = to_qt( node->getName() );
-			QToolTip::showText( QCursor::pos(), name );
-			auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, QVariant::fromValue( name ), 2, Qt::MatchRecursive );
-			if ( !items.empty() )
-				inspectorView->setCurrentIndex( items.front() );
+			inspectorView->setCurrentIndex( items.front() );
+			inspectorDock->raise();
 		}
 	}
 }

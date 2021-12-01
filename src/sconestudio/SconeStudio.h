@@ -105,7 +105,8 @@ public slots:
 	void toggleComments() { if ( auto* e = getActiveCodeEditor() ) e->toggleComments(); }
 	void resetWindowLayout();
 	void fixViewerWindowSize();
-	void viewerWindowClicked();
+	void viewerTooltip();
+	void viewerSelect();
 	void exportCoordinates();
 
 	void deleteSelectedFileOrFolder();
@@ -193,7 +194,6 @@ private:
 	scone::DofEditorGroup* dofEditor;
 	QDockWidget* dofDock;
 
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model inspector
 	QSplitter* inspectorSplitter;
 	QTreeView* inspectorView;
@@ -201,6 +201,7 @@ private:
 	QPropNodeItemModel* inspectorModel;
 	QDockWidget* inspectorDock;
 
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// UserInput editor
 	scone::UserInputEditor* userInputEditor;
 #endif
