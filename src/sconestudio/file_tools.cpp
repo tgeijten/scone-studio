@@ -4,10 +4,12 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QFile>
+#include <QCryptographicHash>
 #include <filesystem>
 #include "scone/core/system_tools.h"
 #include "scone/core/Log.h"
 #include "xo/filesystem/filesystem.h"
+#include "qt_convert.h"
 
 namespace fs = std::filesystem;
 
@@ -40,28 +42,81 @@ namespace scone
 		return bestFile;
 	}
 
+	QString fileHash( QFile& file ) {
+		QCryptographicHash hash( QCryptographicHash::Md5 );
+		file.open( QIODevice::ReadOnly );
+		hash.addData( file.readAll() );
+		file.close();
+		return QString( hash.result().toHex() );
+	}
+
+	CheckInstallationResult checkInstallation( const QString& sourceDir, const QString& targetDir )
+	{
+		auto result = CheckInstallationResult();
+		QDirIterator it( sourceDir, QDir::Files, QDirIterator::Subdirectories );
+		while ( it.hasNext() ) {
+			QFile srcFile = it.next();
+			QFile trgFile = srcFile.fileName().replace( sourceDir, targetDir );
+
+			result.checked++;
+			if ( trgFile.exists() ) {
+				auto srcTime = srcFile.fileTime( QFile::FileModificationTime );
+				auto trgTime = trgFile.fileTime( QFile::FileModificationTime );
+				if ( srcTime != trgTime ) {
+					auto srcHash = fileHash( srcFile );
+					auto trgHash = fileHash( trgFile );
+					if ( srcHash != trgHash ) {
+						if ( srcTime > trgTime ) {
+							result.older++;
+							log::debug( trgFile.fileName().toStdString(), " is not up-to-date" );
+						}
+						else {
+							result.newer++;
+							log::debug( trgFile.fileName().toStdString(), " is has been modified" );
+						}
+					}
+				}
+			}
+			else {
+				result.missing++;
+				log::debug( trgFile.fileName().toStdString(), " is missing" );
+			}
+		}
+		return result;
+	}
+
 	void installTutorials()
 	{
-		auto sconeDir = scone::GetFolder( scone::SCONE_SCENARIO_FOLDER );
-		auto tutDir = sconeDir / "Tutorials";
-		auto instDir = scone::GetFolder( scone::SCONE_ROOT_FOLDER ) / "scenarios";
-		auto fsScone = fs::path( sconeDir.str() );
-		auto fsInst = fs::path( instDir.str() );
-		if ( fs::exists( fsScone / "Tutorials/Tutorial 1 - Introduction.scone" ) )
-		{
-			// backup 1.X tutorials
-			auto tutBackupDir = tutDir + "Backup";
-			QString msg = QString( "A previous version of the SCONE Tutorials was detected and will be moved to:\n\n" ) + tutBackupDir.c_str();
-			if ( QMessageBox::question( nullptr, "Rename Existing Tutorials", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Cancel )
-				return;
-			auto sconeTutBackup = fs::path( xo::find_unique_directory( tutDir + "Backup" ).str() );
-			fs::rename( fsScone / "Tutorials", sconeTutBackup );
-		}
+		auto srcPath = scone::GetFolder( scone::SCONE_ROOT_FOLDER ) / "scenarios";
+		auto trgPath = scone::GetFolder( scone::SCONE_SCENARIO_FOLDER );
+		auto trgTut = trgPath / "Tutorials";
 
-		auto options = fs::copy_options::update_existing | fs::copy_options::recursive;
-		log::debug( "Updating Tutorials and Examples" );
-		fs::copy( fsInst / "Tutorials", fsScone / "Tutorials", options );
-		fs::copy( fsInst / "Examples", fsScone / "Examples", options );
+		auto tres = checkInstallation( to_qt( srcPath / "Tutorials" ), to_qt( trgTut ) );
+		if ( !tres.good() )
+		{
+			auto trgfs = fs::path( trgPath.str() );
+			auto srcfs = fs::path( srcPath.str() );
+			if ( fs::exists( trgfs / "Tutorials/Tutorial 1 - Introduction.scone" ) )
+			{
+				// backup 1.X tutorials
+				auto tutBackupDir = trgTut + "Backup";
+				QString msg = QString( "A previous version of the SCONE Tutorials was detected and will be moved to:\n\n" ) + tutBackupDir.c_str();
+				if ( QMessageBox::question( nullptr, "Rename Existing Tutorials", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Cancel )
+					return;
+				auto sconeTutBackup = fs::path( xo::find_unique_directory( trgTut + "Backup" ).str() );
+				fs::rename( trgfs / "Tutorials", sconeTutBackup );
+			}
+			else if ( tres.newer > 0 || tres.older > 0 )
+			{
+				QString msg = QString( "The following files have been modified:\n\n" );
+				if ( QMessageBox::question( nullptr, "Restore Modified Files", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Cancel )
+					return;
+			}
+			auto options = fs::copy_options::update_existing | fs::copy_options::recursive;
+			log::debug( "Updating Tutorials and Examples" );
+			fs::copy( srcfs / "Tutorials", trgfs / "Tutorials", options );
+			fs::copy( srcfs / "Examples", trgfs / "Examples", options );
+		}
 	}
 
 	bool moveFilesToTrash( const QStringList& files )
