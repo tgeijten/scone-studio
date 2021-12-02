@@ -3,6 +3,7 @@
 #include <utility>
 #include <QString>
 #include <QFileInfo>
+#include <QStringList>
 
 namespace scone
 {
@@ -15,10 +16,10 @@ namespace scone
 	struct CheckInstallationResult {
 		int checked;
 		int missing;
-		int older;
-		int newer;
-		bool good() const { return checked > 0 && missing == 0 && older == 0 && newer == 0; }
+		QStringList different;
+		bool good() const { return checked > 0 && missing == 0 && different.empty(); }
 	};
+	bool okToUpdateFiles( const QStringList& l );
 	CheckInstallationResult checkInstallation( const QString& source, const QString& target );
 	void installTutorials();
 }
