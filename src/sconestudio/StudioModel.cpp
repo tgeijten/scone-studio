@@ -39,8 +39,9 @@ namespace scone
 		// create the objective from par file or config file
 		xo::timer load_time;
 		filename_ = file;
+		const auto file_type = file.extension_no_dot();
 		scenario_filename_ = FindScenario( file );
-		scenario_pn_ = xo::load_file_with_include( FindScenario( file ), "INCLUDE" );
+		scenario_pn_ = LoadScenario( scenario_filename_, file_type == "par" );
 		optimizer_ = CreateOptimizer( scenario_pn_, file.parent_path() );
 		model_objective_ = dynamic_cast<ModelObjective*>( &optimizer_->GetObjective() );
 
@@ -49,7 +50,6 @@ namespace scone
 			try
 			{
 				// create model from par or with default parameters
-				const auto file_type = file.extension_no_dot();
 				if ( file_type == "par" )
 				{
 					model_objective_->info().import_mean_std( file, true );
