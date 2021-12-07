@@ -1,7 +1,7 @@
 GaitPlot {
-	title = "Pelvic Tilt"
-	left_channel = pelvis_tilt
-	right_channel = pelvis_tilt
+	title = "Pelvic tilt"
+	left_channel = pelvis_tilt;/jointset/ground_pelvis/pelvis_tilt/value
+	right_channel = pelvis_tilt;/jointset/ground_pelvis/pelvis_tilt/value
 	channel_multiply = 57.3
 	x_label = "Gait Cycle (%)"
 	y_label = "<- ant / post ->"
@@ -14,9 +14,9 @@ GaitPlot {
 	column = 0
 }
 GaitPlot {
-	title = "Hip Flexion"
-	left_channel = hip_flexion_l
-	right_channel = hip_flexion_r
+	title = "Hip angle"
+	left_channel = hip_flexion_l;/jointset/hip_l/hip_flexion_l/value
+	right_channel = hip_flexion_r;/jointset/hip_r/hip_flexion_r/value
 	channel_multiply = 57.3
 	x_label = "Gait Cycle (%)"
 	y_label = "<- ext / flex ->"
@@ -29,9 +29,9 @@ GaitPlot {
 	column = 1
 }
 GaitPlot {
-	title = "Knee Flexion"
-	left_channel = knee_angle_l
-	right_channel = knee_angle_r
+	title = "Knee angle"
+	left_channel = knee_angle_l;/jointset/knee_l/knee_angle_l/value
+	right_channel = knee_angle_r;/jointset/knee_r/knee_angle_r/value
 	channel_multiply = -57.3
 	x_label = "Gait Cycle (%)"
 	y_label = "<- ext / flex ->"
@@ -44,9 +44,9 @@ GaitPlot {
 	column = 2
 }
 GaitPlot {
-	title = "Ankle Flexion"
-	left_channel = ankle_angle_l
-	right_channel = ankle_angle_r
+	title = "Ankle angle"
+	left_channel = ankle_angle_l;/jointset/ankle_l/ankle_angle_l/value
+	right_channel = ankle_angle_r;/jointset/ankle_r/ankle_angle_r/value
 	channel_multiply = 57.3
 	x_label = "Gait Cycle (%)"
 	y_label = "<- plantar / dorsi ->"
@@ -60,7 +60,7 @@ GaitPlot {
 	column = 3
 }
 GaitPlot {
-	title = "Ground Reaction Force"
+	title = "GRF"
 	left_channel = leg0_l.grf_norm_y
 	right_channel = leg1_r.grf_norm_y
 	x_label = "Gait Cycle (%)"
