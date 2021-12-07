@@ -41,6 +41,7 @@ namespace scone
 		// title
 		plot_->plotLayout()->insertRow( 0 ); // inserts an empty row above the default axis rect
 		plot_title_ = new QCPPlotTitle( plot_, title_.c_str() );
+		plot_title_->setFont( QFont( plot_->font().family(), 11, QFont::Bold ) );
 		plot_->plotLayout()->addElement( 0, 0, plot_title_ );
 
 		// norm data
