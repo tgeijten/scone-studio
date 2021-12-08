@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>300</height>
+    <width>480</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Convert Model</string>
   </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
@@ -61,6 +61,75 @@
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <widget class="QFileEdit" name="outputFileHfd" native="true"/>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Default joint stiffness [N/m]</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="jointStiffness">
+           <property name="decimals">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <double>1000000000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>1000.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>1000000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Default joint limit stiffness [N/rad]</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="limitStiffness">
+           <property name="decimals">
+            <number>0</number>
+           </property>
+           <property name="maximum">
+            <double>10000.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>500.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Body mass threshold [kg]</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="bodyMassThreshold">
+           <property name="maximum">
+            <double>1000.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>

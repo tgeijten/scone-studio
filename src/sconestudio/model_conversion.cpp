@@ -39,6 +39,10 @@ namespace scone
 		ui.convertHfd->setEnabled( SCONE_HYFYDY_ENABLED );
 		ui.convertHfd->setChecked( SCONE_HYFYDY_ENABLED );
 
+		ui.jointStiffness->setValue( 1e6 );
+		ui.limitStiffness->setValue( 500 );
+		ui.bodyMassThreshold->setValue( 1.0 );
+
 		if ( QDialog::Accepted == dlg.exec() )
 		{
 
@@ -48,13 +52,17 @@ namespace scone
 			if ( ui.convertHfd->isChecked() )
 			{
 				const xo::path outputFile = xo::path( ui.outputFileHfd->text().toStdString() );
-				log::info( "Converting model ", inputFile );
 
 				QString program = to_qt( GetApplicationFolder() / "hfdmodeltool" );
 				QStringList args;
 				args << to_qt( inputFile ) << "-o" << to_qt( outputFile );
 				args << "--remote";
+				args << "--joint-stiffness" << QString::number( ui.jointStiffness->value() );
+				args << "--limit-stiffness" << QString::number( ui.limitStiffness->value() );
+				args << "--body-mass-threshold" << QString::number( ui.bodyMassThreshold->value() );
 
+				auto joinedArgs = args.join( ' ' );
+				log::info( "Converting model: ", joinedArgs.toStdString() );
 				auto proc = new QProcess( parent );
 				proc->start( program, args );
 				if ( !proc->waitForFinished() )
@@ -77,6 +85,8 @@ namespace scone
 				else
 				{
 					QString title = "Error converting " + to_qt( inputFile.filename() );
+					if ( output.isEmpty() )
+						output = "Could not convert model with these settings:\n\n" + joinedArgs;
 					log::error( title.toStdString() );
 					log::error( output.toStdString() );
 					QMessageBox::critical( parent, title, output );
