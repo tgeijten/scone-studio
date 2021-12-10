@@ -52,9 +52,9 @@ namespace scone
 		return hash.result();
 	}
 
-	CheckInstallationResult checkInstallation( const QString& sourceDir, const QString& targetDir )
+	CompareFoldersResult compareFolders( const QString& sourceDir, const QString& targetDir )
 	{
-		auto result = CheckInstallationResult();
+		auto result = CompareFoldersResult();
 		QDirIterator it( sourceDir, QDir::Files, QDirIterator::Subdirectories );
 		while ( it.hasNext() ) {
 			QFile srcFile = it.next();
@@ -70,7 +70,7 @@ namespace scone
 			}
 			else {
 				result.missing++;
-				log::debug( trgFile.fileName().toStdString(), " is missing" );
+				//log::debug( trgFile.fileName().toStdString(), " is missing" );
 			}
 		}
 		return result;
@@ -80,48 +80,60 @@ namespace scone
 	{
 		if ( !l.empty() )
 		{
-			QString msg = QString( "The following SCONE scenario files are not up-to-date:\n\n" ) + l.join( '\n' );
-			msg += QString( "\n\nDo you wish to update these files (recommended)?" );
-			return QMessageBox::question( nullptr, "Update Files", msg, QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes;
+			QString msg = QString( "The following SCONE scenario files will be updated to the latest version (recommended):\n\n" ) + l.join( '\n' );
+			return QMessageBox::question( nullptr, "Update Scenario Files", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Ok;
 		}
 		else return true;
 	}
 
-	void installTutorials()
+	void updateTutorialsExamples()
 	{
 		auto srcPath = scone::GetFolder( scone::SCONE_ROOT_FOLDER ) / "scenarios";
 		auto trgPath = scone::GetFolder( scone::SCONE_SCENARIO_FOLDER );
-		auto tutsrc = srcPath / "Tutorials";
+		auto tutsrc = srcPath / "Tutorials2";
 		auto tuttrg = trgPath / "Tutorials";
-		auto exsrc = srcPath / "Examples";
+		auto exsrc = srcPath / "Examples2";
 		auto extrg = trgPath / "Examples";
-		bool keepOldTutorials = false;
 
-		// check tutorials
-		if ( fs::exists( to_fs( trgPath ) / "Tutorials/Tutorial 1 - Introduction.scone" ) )
+		// check if old versions are installed
+		bool hasOldTutorials = fs::exists( to_fs( tuttrg ) / "Tutorial 1 - Introduction.scone" );
+		bool hasOldExamples = fs::exists( to_fs( extrg ) / "data/InitStateGait10.sto" );
+		bool keepOld = false;
+		if ( hasOldTutorials || hasOldExamples )
 		{
-			// backup 1.X tutorials
-			auto trgtutbackup = xo::find_unique_directory( tuttrg + "Backup" );
-			QString msg = QString( "A previous version of the SCONE Tutorials was detected and will be moved to:\n\n" ) + trgtutbackup.c_str();
-			if ( QMessageBox::question( nullptr, "Backup Tutorials", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Ok )
-				fs::rename( to_fs( tuttrg ), to_fs( trgtutbackup ) );
-			else keepOldTutorials = true;
+			QString msg = QString( "A new version of the SCONE Tutorials and Examples will be installed. Existing files will be moved to:\n" );
+			path tutbackup, exbackup;
+			if ( hasOldTutorials ) {
+				tutbackup = xo::find_unique_directory( tuttrg + "Backup" );
+				msg += "\n" + to_qt( tutbackup );
+			}
+			if ( hasOldExamples ) {
+				exbackup = xo::find_unique_directory( extrg + "Backup" );
+				msg += "\n" + to_qt( exbackup );
+			}
+			if ( QMessageBox::question( nullptr, "Install Tutorials and Examples", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Ok ) {
+				if ( hasOldTutorials ) fs::rename( to_fs( tuttrg ), to_fs( tutbackup ) );
+				if ( hasOldExamples ) fs::rename( to_fs( extrg ), to_fs( exbackup ) );
+			}
+			else keepOld = true;
 		}
 
 		// check updates
-		auto tutCheck = checkInstallation( to_qt( tutsrc ), to_qt( tuttrg ) );
-		auto exCheck = checkInstallation( to_qt( exsrc ), to_qt( extrg ) );
-		if ( !tutCheck.good() || !exCheck.good() )
+		if ( !keepOld )
 		{
-			auto different = keepOldTutorials ? exCheck.different : tutCheck.different + exCheck.different;
-			if ( !different.empty() && !okToUpdateFiles( different ) )
-				return; // user want to keep existing versions
+			auto tutCheck = compareFolders( to_qt( tutsrc ), to_qt( tuttrg ) );
+			auto exCheck = compareFolders( to_qt( exsrc ), to_qt( extrg ) );
+			if ( !tutCheck.good() || !exCheck.good() )
+			{
+				auto different = tutCheck.different + exCheck.different;
+				if ( !different.empty() && !okToUpdateFiles( different ) )
+					return; // user want to keep existing versions
 
-			log::info( "Updating Scenarios" );
-			auto options = fs::copy_options::overwrite_existing | fs::copy_options::recursive;
-			if ( !keepOldTutorials )
+				log::info( "Updating SCONE Tutorials and Examples" );
+				auto options = fs::copy_options::overwrite_existing | fs::copy_options::recursive;
 				fs::copy( to_fs( tutsrc ), to_fs( tuttrg ), options );
-			fs::copy( to_fs( exsrc ), to_fs( extrg ), options );
+				fs::copy( to_fs( exsrc ), to_fs( extrg ), options );
+			}
 		}
 	}
 

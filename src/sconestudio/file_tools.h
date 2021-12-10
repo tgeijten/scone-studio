@@ -13,13 +13,14 @@ namespace scone
 	bool moveToTrash( const QString& path );
 	bool moveFilesToTrash( const QStringList& files );
 
-	struct CheckInstallationResult {
+	struct CompareFoldersResult {
 		int checked;
 		int missing;
 		QStringList different;
 		bool good() const { return checked > 0 && missing == 0 && different.empty(); }
 	};
+	CompareFoldersResult compareFolders( const QString& source, const QString& target );
+
 	bool okToUpdateFiles( const QStringList& l );
-	CheckInstallationResult checkInstallation( const QString& source, const QString& target );
-	void installTutorials();
+	void updateTutorialsExamples();
 }

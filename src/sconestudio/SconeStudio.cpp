@@ -184,7 +184,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
 	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
-	helpMenu->addAction( "Repair &Tutorials...", this, []() { installTutorials(); } );
+	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", this, [=]() { showAbout( this ); } );
 
@@ -343,13 +343,16 @@ bool SconeStudio::init()
 	// see if this is a new version of SCONE
 	auto version = xo::to_str( scone::GetSconeVersion() );
 	scone::log::info( "SCONE version ", version );
+	bool checkTutorials = GetStudioSetting<bool>( "ui.check_tutorials_on_launch" );
 	if ( GetStudioSetting<std::string>( "ui.last_version_run" ) != version )
 	{
 		GetStudioSettings().set( "ui.last_version_run", version );
 		GetStudioSettings().save();
-		if ( GetStudioSetting<bool>( "ui.install_tutorials" ) )
-			scone::installTutorials();
+		checkTutorials |= GetStudioSetting<bool>( "ui.check_tutorials_new_version" );
 	}
+
+	if ( checkTutorials )
+		scone::updateTutorialsExamples();
 
 	ui.messagesDock->raise();
 

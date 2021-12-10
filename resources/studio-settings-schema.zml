@@ -72,5 +72,6 @@ ui {
 	reset_layout { type = bool default = 0 label = "Reset window layout on start" }
 	last_version_run { type = string default = "" label = "Last version run" }
 	show_startup_time { type = bool default = 0 label = "Show startup time" }
-	install_tutorials { type = bool default = 0 label = "Install tutorials when new version is detected" }
+	check_tutorials_new_version { type = bool default = 1 label = "Check if Tutorials and Examples are up-to-date on new version" }
+	check_tutorials_on_launch { type = bool default = 1 label = "Check if Tutorials and Examples are up-to-date on launch" }
 }
