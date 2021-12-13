@@ -146,8 +146,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "Generate &Video...", this, &SconeStudio::createVideo );
 	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
 	toolsMenu->addSeparator();
-	toolsMenu->addAction( "&Model Analysis", this, &SconeStudio::modelAnalysis );
-	toolsMenu->addAction( "M&uscle Analysis", this, &SconeStudio::muscleAnalysis );
+	//toolsMenu->addAction( "&Model Analysis", this, &SconeStudio::modelAnalysis );
+	//toolsMenu->addAction( "M&uscle Analysis", this, &SconeStudio::muscleAnalysis );
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
 	toolsMenu->addAction( "Fil&ter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
@@ -156,7 +156,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "&Convert Model...", [=]() { ShowModelConversionDialog( this ); } );
 	toolsMenu->addSeparator();
 #endif
-
 	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
 
 	// Action menu
@@ -229,6 +228,19 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	addDockWidget( Qt::BottomDockWidgetArea, ui.messagesDock );
 	registerDockWidget( ui.messagesDock, "Me&ssages" );
 
+	// evaluation report
+	reportModel = new QPropNodeItemModel();
+	reportModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
+	reportView = new QTreeView( this );
+	reportView->setIndentation( 16 );
+	reportView->setModel( reportModel );
+	reportView->setEditTriggers( QAbstractItemView::NoEditTriggers );
+	reportView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
+	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
+	splitDockWidget( ui.messagesDock, reportDock, Qt::Horizontal );
+	reportDock->hide();
+
+	// analysis
 	analysisDock = createDockWidget( "&Analysis", analysisView, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, analysisDock );
 
@@ -247,28 +259,15 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		parView->horizontalHeader()->setSectionResizeMode( i, i == 0 ? QHeaderView::Stretch : QHeaderView::ResizeToContents );
 	parView->verticalHeader()->setSectionResizeMode( QHeaderView::Fixed );
 	parView->verticalHeader()->setDefaultSectionSize( 24 );
-	parViewDock = createDockWidget( "Optimization &Parameters", parView, Qt::LeftDockWidgetArea );
-	tabifyDockWidget( ui.resultsDock, parViewDock );
-	parViewDock->hide();
-
-	// evaluation report
-	reportModel = new QPropNodeItemModel();
-	reportModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
-	reportView = new QTreeView( this );
-	reportView->setIndentation( 16 );
-	reportView->setModel( reportModel );
-	reportView->setEditTriggers( QAbstractItemView::NoEditTriggers );
-	reportView->header()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
-	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
-	reportDock->hide();
+	parViewDock = createDockWidget( "&Parameters", parView, Qt::RightDockWidgetArea );
+	splitDockWidget( ui.viewerDock, parViewDock, Qt::Horizontal );
 
 	// dof editor
 	dofEditor = new DofEditorGroup( this );
 	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
 	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
-	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::LeftDockWidgetArea );
-	tabifyDockWidget( ui.resultsDock, dofDock );
-	dofDock->hide();
+	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::RightDockWidgetArea );
+	tabifyDockWidget( parViewDock, dofDock );
 
 	// model inspector
 	inspectorModel = new QPropNodeItemModel();
@@ -291,9 +290,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	inspectorSplitter->setStretchFactor( 1, 1 );
 	connect( inspectorView->selectionModel(), &QItemSelectionModel::currentChanged, inspectorDetails, &QTreeView::setRootIndex );
 
-	inspectorDock = createDockWidget( "&Model Inspector", inspectorSplitter, Qt::LeftDockWidgetArea );
-	tabifyDockWidget( ui.resultsDock, inspectorDock );
-	inspectorDock->hide();
+	inspectorDock = createDockWidget( "&Model Info", inspectorSplitter, Qt::RightDockWidgetArea );
+	tabifyDockWidget( dofDock, inspectorDock );
+	parViewDock->raise();
 
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model input editor
@@ -738,7 +737,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 	analysisStorageModel.setStorage( nullptr );
 	parModel->setObjectiveInfo( nullptr );
 	gaitAnalysis->reset();
-	parViewDock->setWindowTitle( "Optimization Parameters" );
+	parViewDock->setWindowTitle( "Parameters" );
 	ui.playControl->setRange( 0, 0 );
 
 	try
@@ -751,7 +750,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 		{
 			// update parameter view
 			parModel->setObjectiveInfo( &scenario_->GetObjective().info() );
-			parViewDock->setWindowTitle( QString( "Optimization Parameters (%1)" ).arg( scenario_->GetObjective().info().size() ) );
+			parViewDock->setWindowTitle( QString( "Parameters (%1)" ).arg( scenario_->GetObjective().info().size() ) );
 
 			// setup dof editor
 			dofEditor->init( scenario_->GetModel() );
