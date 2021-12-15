@@ -134,6 +134,7 @@ namespace scone
 				fs::copy( to_fs( tutsrc ), to_fs( tuttrg ), options );
 				fs::copy( to_fs( exsrc ), to_fs( extrg ), options );
 			}
+			else log::info( "SCONE Tutorials and Examples are up-to-date" );
 		}
 	}
 
