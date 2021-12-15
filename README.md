@@ -1,7 +1,7 @@
 # Welcome to SCONE!
+<img align="right" width="112" height="90" src="https://github.com/opensim-org/SCONE/blob/master/resources/ui/scone_logo_notext.png">
 ![.github/workflows/continuous-integration-workflow.yml](https://github.com/opensim-org/SCONE/workflows/.github/workflows/continuous-integration-workflow.yml/badge.svg)
 
-<img align="right" width="112" height="90" src="https://github.com/opensim-org/SCONE/blob/master/resources/ui/scone_logo_notext.png">
 SCONE is open source software for predictive simulation of biological
 motion. More information on SCONE, including tutorials, examples, community
 guidelines and documentation can be found on https://scone.software.
