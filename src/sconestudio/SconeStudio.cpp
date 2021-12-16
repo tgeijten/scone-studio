@@ -110,23 +110,29 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// View menu
 	auto viewMenu = menuBar()->addMenu( "&View" );
-	viewActions[ ViewOption::ShowForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowMuscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowTendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowBodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowBodyAxes ] = viewMenu->addAction( "Show Body &Axes", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowBodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowJoints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowGroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ShowModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ExternalForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::Muscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::Tendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::BodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::BodyAxes ] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::BodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::Joints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::GroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
+	viewMenu->addSeparator();
+	auto musGroup = new QActionGroup( this );
+	musGroup->addAction( viewActions[ ViewOption::MuscleActivation ] = viewMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ ViewOption::MuscleForce ] = viewMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ ViewOption::MuscleFiberLength ] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
+	musGroup->setExclusive( true );
 	viewMenu->addSeparator();
 	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
-	auto uncheckedViewOptions = { ViewOption::ShowBodyAxes, ViewOption::ShowJoints, ViewOption::ShowBodyCom, ViewOption::ShowModelComHeading, ViewOption::StaticCamera };
+	auto defaultOptions = MakeDefaultViewOptions();
 	for ( auto& va : viewActions )
 	{
 		va.second->setCheckable( true );
-		va.second->setChecked( xo::find( uncheckedViewOptions, va.first ) == uncheckedViewOptions.end() );
+		va.second->setChecked( defaultOptions.get( va.first ) );
 	}
 
 	// Scenario menu

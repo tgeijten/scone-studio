@@ -51,9 +51,10 @@ viewer {
 	static { type = color label = "Static geometry color" default { h = 180 s = 0.25 v = 0.4 } }
 	joint { type = color label = "Joint color" default { h = 40 s = 0.2 v = 0.5 } }
 	com { type = color label = "Center of Mass color" default { h = 105 s = 0.5 v = 0.5 } }
-	muscle_0 { type = color label = "Muscle color at 0% activation" default { h = 240 s = 0.7 v = 0.65 } }
-	muscle_50 { type = color label = "Muscle color at 50% activation" default { h = 0 s = 0.8 v = 0.8 } }
-	muscle_100 { type = color label = "Muscle color at 100% activation" default { h = 0 s = 0.9 v = 1.0 } }
+	muscle_min100 { type = color label = "Muscle color at -100%" default { h = 120 s = 0.7 v = 0.65 } }
+	muscle_0 { type = color label = "Muscle color at 0%" default { h = 240 s = 0.7 v = 0.65 } }
+	muscle_50 { type = color label = "Muscle color at 50%" default { h = 0 s = 0.8 v = 0.8 } }
+	muscle_100 { type = color label = "Muscle color at 100%" default { h = 0 s = 0.9 v = 1.0 } }
 	specular { type = float label = "Model specular" default = 1 }
 	shininess { type = float label = "Model shininess" default = 30 }
 	ambient { type = float label = "Model ambient" default = 1 }

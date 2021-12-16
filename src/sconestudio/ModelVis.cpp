@@ -30,6 +30,7 @@ namespace scone
 		contact_mat( { GetStudioSetting< xo::color >( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
 		static_mat( { GetStudioSetting< xo::color >( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
 		muscle_gradient( {
+			{ -1.0f, GetStudioSetting< xo::color >( "viewer.muscle_min100" ) },
 			{ 0.0f, GetStudioSetting< xo::color >( "viewer.muscle_0" ) },
 			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
 			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } ),
@@ -149,6 +150,7 @@ namespace scone
 			mv.ten2.set_name( muscle->GetName().c_str() );
 			mv.ce = vis::trail( root_node_, vis::trail_info{ muscle_radius, xo::color::red(), 0.5f } );
 			mv.mat = muscle_mat.clone();
+			mv.mat.emissive( vis::color() );
 			mv.ce.set_material( mv.mat );
 			mv.ce.set_name( muscle->GetName().c_str() );
 			mv.ce_pos = muscle_position;
@@ -204,7 +206,7 @@ namespace scone
 		{
 			auto pos = model_joints[ i ]->GetPos();
 			joints[ i ].pos( vis::vec3f( pos ) );
-			if ( view_flags.get< ViewOption::ShowJoints >() )
+			if ( view_flags.get< ViewOption::Joints >() )
 			{
 				UpdateForceVis( force_count++, pos, -model_joints[ i ]->GetReactionForce() );
 				UpdateMomentVis( moment_count++, pos, -model_joints[ i ]->GetLimitTorque() );
@@ -212,7 +214,7 @@ namespace scone
 		}
 
 		// update contact forces
-		if ( view_flags.get< ViewOption::ShowForces >() )
+		if ( view_flags.get< ViewOption::ExternalForces >() )
 		{
 			auto fvec = model.GetContactForceValues();
 			for ( auto& cf : fvec )
@@ -220,7 +222,7 @@ namespace scone
 		}
 
 		// update com / heading
-		if ( view_flags.get<ViewOption::ShowModelComHeading>() )
+		if ( view_flags.get<ViewOption::ModelComHeading>() )
 		{
 			if ( auto* root = model.GetRootBody() )
 			{
@@ -243,7 +245,7 @@ namespace scone
 		{
 			forces.emplace_back( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::yellow(), 0.3f } );
 			forces.back().set_material( arrow_mat );
-			forces.back().show( view_flags.get< ViewOption::ShowForces >() );
+			forces.back().show( view_flags.get< ViewOption::ExternalForces >() );
 		}
 		forces[ force_idx ].pos( vis::vec3f( cop ), vis::vec3f( cop + 0.001 * force ) );
 	}
@@ -254,7 +256,7 @@ namespace scone
 		{
 			moments.emplace_back( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::blue(), 0.3f } );
 			moments.back().set_material( moment_mat );
-			moments.back().show( view_flags.get< ViewOption::ShowForces >() );
+			moments.back().show( view_flags.get< ViewOption::ExternalForces >() );
 		}
 		moments[ moment_idx ].pos( vis::vec3f( pos ), vis::vec3f( pos + 0.01 * moment ) );
 	}
@@ -271,15 +273,22 @@ namespace scone
 			log::warning( mus.GetName(), " muscle tendon length: ", tlen, "; clamping to zero" );
 			tlen = 0.0;
 		}
-		auto a = mus.GetActivation();
-		auto p = mus.GetMusclePath();
+
+		Real a;
+		if ( view_flags.get<ViewOption::MuscleActivation>() )
+			a = mus.GetActivation();
+		else if ( view_flags.get<ViewOption::MuscleForce>() )
+			a = mus.GetNormalizedForce();
+		else if ( view_flags.get<ViewOption::MuscleFiberLength>() )
+			a = 1.5 * ( mus.GetNormalizedFiberLength() - 1 );
+		else a = 0.0;
 
 		xo::color c = muscle_gradient( float( a ) );
 		vis.mat.diffuse( c );
-		vis.mat.emissive( vis::color() );
 		vis.mat.ambient( c );
 
-		if ( view_flags.get<ViewOption::ShowTendons>() )
+		auto p = mus.GetMusclePath();
+		if ( view_flags.get<ViewOption::Tendons>() )
 		{
 			auto i1 = insert_path_point( p, tlen );
 			auto i2 = insert_path_point( p, tlen + mlen );
@@ -316,35 +325,35 @@ namespace scone
 	{
 		view_flags = f;
 		for ( auto& f : forces )
-			f.show( view_flags.get<ViewOption::ShowForces>() );
+			f.show( view_flags.get<ViewOption::ExternalForces>() );
 		for ( auto& m : moments )
-			m.show( view_flags.get<ViewOption::ShowForces>() );
+			m.show( view_flags.get<ViewOption::ExternalForces>() );
 
 		for ( auto& m : muscles )
 		{
-			m.ce.show( view_flags.get<ViewOption::ShowMuscles>() );
-			m.ten1.show( view_flags.get<ViewOption::ShowMuscles>() && view_flags.get<ViewOption::ShowTendons>() );
-			m.ten2.show( view_flags.get<ViewOption::ShowMuscles>() && view_flags.get<ViewOption::ShowTendons>() );
+			m.ce.show( view_flags.get<ViewOption::Muscles>() );
+			m.ten1.show( view_flags.get<ViewOption::Muscles>() && view_flags.get<ViewOption::Tendons>() );
+			m.ten2.show( view_flags.get<ViewOption::Muscles>() && view_flags.get<ViewOption::Tendons>() );
 		}
 
 		for ( auto& e : joints )
-			e.show( view_flags.get<ViewOption::ShowJoints>() );
+			e.show( view_flags.get<ViewOption::Joints>() );
 
 		for ( auto& e : body_meshes )
-			e.show( view_flags.get<ViewOption::ShowBodyGeom>() );
+			e.show( view_flags.get<ViewOption::BodyGeom>() );
 
 		for ( auto& e : body_axes )
-			e.show( view_flags.get<ViewOption::ShowBodyAxes>() );
+			e.show( view_flags.get<ViewOption::BodyAxes>() );
 
 		for ( auto& e : body_com )
-			e.show( view_flags.get<ViewOption::ShowBodyCom>() );
+			e.show( view_flags.get<ViewOption::BodyCom>() );
 
 		for ( auto& e : contact_geoms )
-			e.show( view_flags.get<ViewOption::ShowContactGeom>() );
+			e.show( view_flags.get<ViewOption::ContactGeom>() );
 
 		if ( ground_.node_id() )
-			ground_.show( view_flags.get<ViewOption::ShowGroundPlane>() );
+			ground_.show( view_flags.get<ViewOption::GroundPlane>() );
 
-		heading_.show( view_flags.get<ViewOption::ShowModelComHeading>() );
+		heading_.show( view_flags.get<ViewOption::ModelComHeading>() );
 	}
 }
