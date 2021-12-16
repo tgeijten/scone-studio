@@ -1,7 +1,7 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.0.0 RC 1 ====
+==== SCONE 2.0.0 RC 2 ====
 //Released December 14, 2021//
 
 === New Simulation Engines ===
@@ -25,6 +25,8 @@ Hyfydy is state-of-the-art musculoskeletal simulation software that provides a 5
 
 === 3D Visualizer Improvements ===
   * Hover over any muscle or body in the 3D viewer to see its name; click to see its properties.
+  * Muscle color can now represent activation, force or fiber length.
+  * Model geometry is now cached and loads much faster when a scenario is reloaded.
   * Added visualization of model center-of-mass, joint moments and body moments.
   * Viewer now supports static camera (enable via ''View –> Static Camera'').
   * Added configuration options for tile size, tile count and contact geometry transparency.
