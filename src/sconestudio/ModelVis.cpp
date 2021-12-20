@@ -317,7 +317,9 @@ namespace scone
 		auto fix_obj_ori = file.extension_no_dot() == "obj";
 		auto fixed_ori = fix_obj_ori ? xo::quat_from_x_angle( -90_degf ) * vis::quatf( ori ) : vis::quatf( ori );
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
-		msh.scale_enable_normalize( vis::vec3f( scale ) );
+		auto fixed_scale = fix_obj_ori ? vis::vec3f( scale.x, scale.z, scale.y ) : vis::vec3f( scale );
+		msh.scale_enable_normalize( fixed_scale );
+		xo_logvar2( scale, fixed_ori * vis::vec3f( scale ) );
 		return msh;
 	}
 

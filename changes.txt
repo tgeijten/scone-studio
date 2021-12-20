@@ -30,6 +30,8 @@ Hyfydy is state-of-the-art musculoskeletal simulation software that provides a 5
   * Added visualization of model center-of-mass, joint moments and body moments.
   * Viewer now supports static camera (enable via ''View –> Static Camera'').
   * Added configuration options for tile size, tile count and contact geometry transparency.
+  * Fixed shading of scaled geometry files.
+  * Fixed scaling of .obj geometry.
   * Many other visualization improvements and fixes.
 
 === Editor Improvements ===
@@ -60,7 +62,7 @@ Hyfydy is state-of-the-art musculoskeletal simulation software that provides a 5
   * Improved boot time when many files are present in the Optimization Results folder.
   * When editing preferences, leaving a setting blank now restores its default value.
 
-=== Fixes ===
+=== Other Fixes ===
   * Camera and view settings are now applied correctly on scenario load.
   * Added extra checks to prevent crash in case of missing filenames.
   * fixed issue where camera control would stop working after saving image.
