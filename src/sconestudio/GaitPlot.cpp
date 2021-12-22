@@ -123,7 +123,7 @@ namespace scone
 
 		for ( const auto& cycle : cycles )
 		{
-			bool right = cycle.side_ == RightSide;
+			bool right = cycle.side_ == Side::Right;
 			const auto& channel_name = right ? right_channel_ : left_channel_;
 			auto channel_idx = right ? right_channel_idx : left_channel_idx;
 			if ( channel_idx != no_index )
