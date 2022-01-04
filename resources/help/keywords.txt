@@ -61,6 +61,5 @@ script_measure.txt
 sequential_controller.txt
 simulation_objective.txt
 sine_wave.txt
-state_component.txt
 step_measure.txt
 test_objective.txt
