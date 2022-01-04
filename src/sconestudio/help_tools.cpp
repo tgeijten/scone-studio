@@ -38,29 +38,30 @@ namespace scone
 	void showAbout( QWidget* parent )
 	{
 		QString title = "<b>" + to_qt( "SCONE version " + xo::to_str( GetSconeVersion() ) ) + "</b><br><br>";
-		QString author = "Copyright (C) 2013 - 2021 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
+		QString author = "Copyright (C) 2013 - 2022 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
 		QString scone_license =
 			"<b>SCONE</b> is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>. "
 			"It uses the following external libraries:<ul>"
-			"<li>OpenSim 3.3 (Apache 2.0)"
-			"<li>Simbody (Apache 2.0)"
-			"<li>Lua (MIT)"
-			"<li>Sol 3 (MIT)"
-			"<li>TCLAP (MIT)"
-			"<li>xo (Apache 2.0)"
-			"<li>spot (Apache 2.0)"
+			"<li><a href='https://opensim.stanford.edu/'>OpenSim 3.3</a> (Apache 2.0)"
+			"<li><a href='https://opensim.stanford.edu/'>OpenSim 4.3</a> (Apache 2.0)"
+			"<li><a href='https://simbody.github.io/3.5.0/index.html'>Simbody</a> (Apache 2.0)"
+			"<li><a href='https://www.lua.org/'>Lua</a> (MIT)"
+			"<li><a href='https://github.com/ThePhD/sol2'>Sol 3</a> (MIT)"
+			"<li><a href='http://tclap.sourceforge.net'>TCLAP</a> (MIT)"
+			"<li><a href='https://github.com/tgeijten/xo'>xo</a> (Apache 2.0)"
+			"<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
 			"</ul><br>";
 		QString studio_license =
 			"<b>SCONE Studio</b> is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU Public License 3.0</a>. "
 			"It uses the following external libraries:<ul>"
-			"<li>Qt (GPL / LGPL)"
-			"<li>QCustomPlot (GPL v3)"
-			"<li>OpenSceneGraph (OSGPL)"
-			"<li>TCLAP (MIT)"
-			"<li>xo (Apache 2.0)"
-			"<li>spot (Apache 2.0)"
-			"<li>vis (Apache 2.0)"
-			"<li>qtfx (Apache 2.0)"
+			"<li><a href='https://qt.io'>Qt</a> (GPL / LGPL)"
+			"<li><a href='https://www.qcustomplot.com/'>QCustomPlot</a> (GPL v3)"
+			"<li><a href='http://www.openscenegraph.org/'>OpenSceneGraph</a> (OSGPL)"
+			"<li><a href='http://tclap.sourceforge.net'>TCLAP</a> (MIT)"
+			"<li><a href='https://github.com/tgeijten/xo'>xo</a> (Apache 2.0)"
+			"<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
+			"<li><a href='https://github.com/tgeijten/vis'>vis</a> (Apache 2.0)"
+			"<li><a href='https://github.com/tgeijten/qtfx'>qtfx</a> (Apache 2.0)"
 			"</ul>";
 		QMessageBox::information( parent, "About SCONE", title + author + scone_license + studio_license );
 	}
