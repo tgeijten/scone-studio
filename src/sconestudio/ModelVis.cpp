@@ -319,7 +319,6 @@ namespace scone
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
 		auto fixed_scale = fix_obj_ori ? vis::vec3f( scale.x, scale.z, scale.y ) : vis::vec3f( scale );
 		msh.scale_enable_normalize( fixed_scale );
-		xo_logvar2( scale, fixed_ori * vis::vec3f( scale ) );
 		return msh;
 	}
 
