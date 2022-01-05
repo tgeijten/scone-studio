@@ -37,4 +37,19 @@ namespace scone
 			ViewOption::MuscleActivation
 			} );
 	}
+
+	inline void FixViewOptions( ViewOptions& vo ) {
+		// make sure only one muscle visualization option is set
+		auto ex_opt = { ViewOption::MuscleActivation, ViewOption::MuscleForce, ViewOption::MuscleFiberLength };
+		if ( vo.count( ex_opt ) != 1 ) {
+			for ( auto opt : ex_opt )
+				vo.set( opt, opt == *ex_opt.begin() );
+		}
+	}
+
+	inline ViewOptions MakeViewOptions( xo::uint64 value ) {
+		ViewOptions vo( value );
+		FixViewOptions( vo );
+		return vo;
+	}
 }

@@ -371,7 +371,7 @@ void SconeStudio::restoreCustomSettings( QSettings& settings )
 {
 	if ( settings.contains( "viewSettings" ) )
 	{
-		ViewOptions f( settings.value( "viewSettings" ).toULongLong() );
+		auto f = MakeViewOptions( settings.value( "viewSettings" ).toULongLong() );
 		for ( auto& va : viewActions )
 			va.second->setChecked( f.get( va.first ) );
 	}
