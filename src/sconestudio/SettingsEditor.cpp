@@ -128,9 +128,9 @@ namespace scone
 	{
 #if SCONE_HYFYDY_ENABLED
 		auto license_key = GetSconeSetting<String>( "hyfydy.license" );
-		auto agreement = GetHfdLicenseAgreement( license_key.c_str() );
-		if ( agreement.isValid() )
+		if ( auto la_result = GetHfdLicenseAgreement( license_key.c_str() ) )
 		{
+			auto& agreement = la_result.value();
 			QDialog lic_dlg( parent );
 			Ui::LicenseDialog ui;
 			ui.setupUi( &lic_dlg );
@@ -155,6 +155,13 @@ namespace scone
 			GetSconeSettings().save();
 
 			return result;
+		}
+		else 
+		{
+			GetSconeSettings().set( "hyfydy.enabled", false );
+			GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", 0 );
+			GetSconeSettings().save();
+			QMessageBox::critical( nullptr, "Hyfydy License Error", la_result.error().message().c_str() );
 		}
 #endif
 

@@ -64,15 +64,14 @@ int main( int argc, char *argv[] )
 		w.show();
 		w.init();
 
-#if SCONE_HYFYDY_ENABLED
-		// check if license agreement has been updated
-		if ( scone::GetSconeSetting<bool>( "hyfydy.enabled" ) )
-			if ( !scone::CheckHfdLicenseAgreement( scone::GetSconeSetting<String>( "hyfydy.license" ) ) )
-				scone::ShowLicenseDialog( &w );
-#endif
-
 		// init scone file format and libraries
 		scone::Initialize();
+
+#if SCONE_HYFYDY_ENABLED
+		// check if license agreement has been updated
+		if ( scone::GetSconeHfdStatus() == scone::SconeHfdStatus::ErrorLicenseNotAccepted )
+			scone::ShowLicenseDialog( &w );
+#endif
 
 		// close splash screen
 		splash.close(); // DO NOT USE QSplashScreen::finish() because it's slow
