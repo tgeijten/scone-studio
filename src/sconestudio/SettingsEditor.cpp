@@ -76,6 +76,8 @@ namespace scone
 		ui.hfdEnabled->setCheckState( hfd_enabled ? Qt::Checked : Qt::Unchecked );
 		ui.hfdLicenseKey->setPlainText( to_qt( hfd_license ) );
 		QObject::connect( ui.hfdRequest, &QPushButton::clicked, []() { ShowRequestLicenseDialog(); } );
+		QObject::connect( ui.hfdLicenseKey, &QPlainTextEdit::textChanged,
+			[&]() { ui.hfdEnabled->setChecked( !ui.hfdLicenseKey->document()->isEmpty() ); } );
 #else
 		ui.tabWidget->removeTab( ui.tabWidget->indexOf( ui.hfdTab ) );
 #endif
@@ -161,7 +163,8 @@ namespace scone
 			GetSconeSettings().set( "hyfydy.enabled", false );
 			GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", 0 );
 			GetSconeSettings().save();
-			QMessageBox::critical( nullptr, "Hyfydy License Error", la_result.error().message().c_str() );
+			log::error( "License error: ", la_result.error().message() );
+			QMessageBox::critical( nullptr, "Hyfydy License Error", to_qt( la_result.error().message() ) );
 		}
 #endif
 

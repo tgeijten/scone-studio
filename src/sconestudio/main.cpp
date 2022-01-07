@@ -69,7 +69,7 @@ int main( int argc, char *argv[] )
 
 #if SCONE_HYFYDY_ENABLED
 		// check if license agreement has been updated
-		if ( scone::GetSconeHfdStatus() == scone::SconeHfdStatus::ErrorLicenseNotAccepted )
+		if ( scone::GetHfdStatus() == scone::SconeHfdStatus::LicenseNotAccepted )
 			scone::ShowLicenseDialog( &w );
 #endif
 
