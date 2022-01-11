@@ -145,6 +145,7 @@ private:
 	// model
 	std::unique_ptr< scone::StudioModel > scenario_;
 	QString currentFilename;
+	void clearScenario();
 	bool createScenario( const QString& any_file );
 	bool createAndVerifyActiveScenario( bool always_create );
 	void updateModelDataWidgets();
@@ -204,6 +205,12 @@ private:
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// UserInput editor
 	scone::UserInputEditor* userInputEditor;
+
+	// optimizer history analysis
+	scone::Storage<> optimizationHistoryStorage;
+	SconeStorageDataModel optimizationHistoryStorageModel;
+	QDataAnalysisView* optimizationHistoryView;
+	QDockWidget* optimizationHistoryDock;
 #endif
 };
 

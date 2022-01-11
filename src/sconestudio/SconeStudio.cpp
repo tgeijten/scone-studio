@@ -308,7 +308,16 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	auto userInputDock = createDockWidget( "Model &Inputs", userInputEditor, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, userInputDock );
 	userInputDock->hide();
-#endif // SCONE_EXPERIMENTAL_FEATURES_ENABLED
+
+	// optimization history
+	optimizationHistoryView = new QDataAnalysisView( &optimizationHistoryStorageModel, this );
+	optimizationHistoryView->setObjectName( "Optimization History" );
+	optimizationHistoryView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
+	optimizationHistoryView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
+	optimizationHistoryDock = createDockWidget( "&Optimization History", optimizationHistoryView, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( ui.messagesDock, optimizationHistoryDock );
+	optimizationHistoryDock->hide();
+#endif
 
 	// finalize windows menu
 	windowMenu->addSeparator();
@@ -736,7 +745,7 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 	}
 }
 
-bool SconeStudio::createScenario( const QString& any_file )
+void SconeStudio::clearScenario()
 {
 	ui.playControl->stop();
 	scenario_.reset();
@@ -745,6 +754,14 @@ bool SconeStudio::createScenario( const QString& any_file )
 	gaitAnalysis->reset();
 	parViewDock->setWindowTitle( "Parameters" );
 	ui.playControl->setRange( 0, 0 );
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	optimizationHistoryStorageModel.setStorage( nullptr );
+#endif
+}
+
+bool SconeStudio::createScenario( const QString& any_file )
+{
+	clearScenario();
 
 	try
 	{
@@ -779,6 +796,25 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
 			ui.playControl->reset();
 		}
+
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";
+		if ( xo::file_exists( history_file ) )
+		{
+			try {
+				scone::ReadStorageTxt( optimizationHistoryStorage, history_file );
+				if ( !optimizationHistoryStorage.IsEmpty() )
+				{
+					optimizationHistoryStorageModel.setStorage( &optimizationHistoryStorage );
+					optimizationHistoryView->reset();
+					optimizationHistoryView->setRange( 0, optimizationHistoryStorage.Back().GetTime() );
+				}
+			}
+			catch ( std::exception& e ) {
+				log::error( e.what() );
+			}
+		}
+#endif
 	}
 	catch ( FactoryNotFoundException& e )
 	{
@@ -787,13 +823,13 @@ bool SconeStudio::createScenario( const QString& any_file )
 				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
 				"Please check Tools -> Preferences -> Hyfydy, or visit <a href = 'https://hyfydy.com'>hyfydy.com</a> for more information." );
 		else error( "Error creating scenario", e.what() );
-		scenario_.reset();
+		clearScenario();
 		return false;
 	}
 	catch ( std::exception& e )
 	{
 		error( "Error creating scenario", e.what() );
-		scenario_.reset();
+		clearScenario();
 		return false;
 	}
 
@@ -936,7 +972,6 @@ void SconeStudio::optimizeScenario()
 			addProgressDock( new ProgressDockWidget( this, std::move( task ) ) );
 			updateOptimizations();
 		}
-
 	}
 	catch ( const std::exception& e )
 	{
@@ -1140,7 +1175,7 @@ void SconeStudio::fixViewerWindowSize()
 void SconeStudio::viewerTooltip()
 {
 	if ( auto* node = ui.osgViewer->getTopNamedIntersectionNode() )
-		QToolTip::showText( QCursor::pos(), to_qt( node->getName() ));
+		QToolTip::showText( QCursor::pos(), to_qt( node->getName() ) );
 	else QToolTip::showText( QPoint(), QString() );
 }
 
@@ -1316,7 +1351,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 			success = ui.resultsBrowser->fileSystemModel()->remove( idx );
 		if ( !success )
 			warning( msgTitle, tr( "Could not remove " ) + item.filePath() );
-	}
+}
 #endif
 }
 
