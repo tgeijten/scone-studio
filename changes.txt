@@ -1,8 +1,16 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.0.0 RC 2 ====
-//Released December 14, 2021//
+==== SCONE 2.0.0 ====
+//Released January 21, 2022//
+
+SCONE 2.0 is a **major new release**, with the following new features:
+  * **New simulation engines** OpenSim 4.3 and Hyfydy, allowing for much faster simulation and optimization.
+  * **Object selection**: Pick and select muscles and bodies in the 3D viewer.
+  * **Model Information** window that contains information on all model components.
+  * **Coordinate Editor** that allows you to tweak model coordinates and change initial poses.
+  * Updated **tutorials and examples**.
+  * Several improvements to the **Editor**, **Analysis** and **Optimization**, as well as many **bugfixes**.
 
 === New Simulation Engines ===
 SCONE now supports the following simulation engines:
