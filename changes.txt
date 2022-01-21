@@ -4,23 +4,23 @@
 ==== SCONE 2.0.0 ====
 //Released January 21, 2022//
 
-SCONE 2.0 is a **major new release**, with the following new features:
-  * **New simulation engines** OpenSim 4.3 and Hyfydy, allowing for much faster simulation and optimization.
-  * **Object selection**: Pick and select muscles and bodies in the 3D viewer.
-  * **Model Information** window that contains information on all model components.
-  * **Coordinate Editor** that allows you to tweak model coordinates and change initial poses.
-  * Updated **tutorials and examples**.
-  * Several improvements to the **Editor**, **Analysis** and **Optimization**, as well as many **bugfixes**.
+SCONE 2.0 is a **major new release** with following new features:
+  * Support for //new simulation engines// OpenSim 4.3 and Hyfydy, allowing for the latest features and drastically improved optimization speeds (using Hyfydy).
+  * //Select muscles and bodies// directly in the 3D viewer.
+  * New //Model Information// window that contains information on all model components.
+  * New //Coordinate Editor// that allows you to tweak model coordinates and change initial poses.
+  * Updated //Tutorials and Examples//.
+  * Several improvements to the //Editor//, //Analysis// and //Optimization//, as well as //many bugfixes//.
 
 === New Simulation Engines ===
-SCONE now supports the following simulation engines:
-  * OpenSim 3.3
-  * OpenSim 4.3
-  * Hyfydy
+SCONE includes support for the following simulation engines:
+  * [[https://opensim.stanford.edu|OpenSim 3.3]] (Open Source)
+  * [[https://opensim.stanford.edu|OpenSim 4.3]] (Open Source)
+  * [[https://hyfydy.com|Hyfydy]] (Proprietary)
 
-All Controllers and Measures can be used interchangeably with each of these simulation engines.
+All Controllers and Measures can be used interchangeably with each of these simulation engines. All engines are included in the Windows 64 bit installer for SCONE.
 
-Hyfydy is state-of-the-art musculoskeletal simulation software that provides a 50-100x speedup over OpenSim. See https://hyfydy.com for more information and a free trial.
+**Hyfydy** is state-of-the-art musculoskeletal simulation software that provides a 50-100x speedup over OpenSim. See https://hyfydy.com for more information and a free trial.
 
 === Tutorials and Examples ===
   * All Tutorials have been updated and fine-tuned and are now available for both OpenSim and Hyfydy.
@@ -281,10 +281,10 @@ Hyfydy is state-of-the-art musculoskeletal simulation software that provides a 5
   * GaitMeasure takes into account ground plane slopes when detecting falling.
   * Improved support for defining symmetric / asymmetric controllsers. The 'symmetric' property now works as expected in all controllers and is inherited from parent controllers if not specified (root controller defaults to true).
   * Scripting (ScriptMeasure and ScriptController):
-  	* Added support store_data() for writing data to .sto and SCONE analysis window
-  	* Improved error handling and reporting for scripts
-  	* added body:point_pos and body:point_vel
-  	* added functionality to LuaVec3 and LuaQuat (see reference manual)
+    * Added support store_data() for writing data to .sto and SCONE analysis window
+    * Improved error handling and reporting for scripts
+    * added body:point_pos and body:point_vel
+    * added functionality to LuaVec3 and LuaQuat (see reference manual)
   * Added warning in folder preferences dialog to avoid network drives (issue #53)
   * Pressing F5 will now evaluate the currently active scenario (if any)
   * When pressing Ctrl + T or Ctrl + F5 while a .lua file is active, scone tries to open a .scone instead.
