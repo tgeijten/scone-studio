@@ -326,7 +326,7 @@ All Controllers and Measures can be used interchangeably with each of these simu
     * Support for writing custom data to .sto and SCONE Analysis window
   * The SCONE Studio editor now supports Find (Ctrl+F) and Find Next / Previous (F3 / Shift+F3)
   * The .SCONE file format is now more strict:
-    * Comments using '';' ''%%//%%'' ''/*'' and ''*/'' are no longer supported
+    * Comments using '';'' ''%%//%%'' ''/*'' and ''*/'' are no longer supported
     * Only single line comments '#' and multi-line comments '###' are supported
   * Improved unit testing
   * Many documentation updates and fixes
