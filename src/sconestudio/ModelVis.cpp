@@ -56,6 +56,8 @@ namespace scone
 			bodies.push_back( vis::node( &root_node_ ) );
 			bodies.back().set_name( body->GetName().c_str() );
 			body_axes.push_back( vis::axes( bodies.back(), vis::axes_info{ vis::vec3f::diagonal( 0.1 ) } ) );
+			body_axes.back().set_cast_shadows( body->GetMass() > 0 );
+
 			if ( body->GetMass() > 0 )
 			{
 				body_com.push_back( vis::mesh( bodies.back(), vis::shape_info{ xo::sphere( 0.02f ), xo::color::green(), xo::vec3f::zero(), 0.75f } ) );
