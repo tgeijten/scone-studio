@@ -2,7 +2,7 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.0.0 ====
-//Released January 21, 2022//
+//Released February 18, 2022//
 
 SCONE 2.0 is a **major new release** with following new features:
   * Support for //new simulation engines// OpenSim 4.3 and Hyfydy, allowing for the latest features and drastically improved optimization speeds (using Hyfydy).
