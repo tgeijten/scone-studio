@@ -18,7 +18,7 @@ namespace scone
 		void setWidgetValues( const Dof& dof );
 		void updateDof( Dof& dof ) const;
 
-		int to_int( double d ) { return int( d / stepSize_ ); }
+		int to_int( double d ) { return xo::round_cast<int>( d / stepSize_ ); }
 		double to_double( int i ) { return stepSize_ * i; }
 
 		QLabel* label_;
