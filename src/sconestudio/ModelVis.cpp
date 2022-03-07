@@ -317,7 +317,7 @@ namespace scone
 		auto msh = vis::mesh( parent, file );
 		msh.set_material( mat  );
 		auto fix_obj_ori = file.extension_no_dot() == "obj";
-		auto fixed_ori = fix_obj_ori ? xo::quat_from_x_angle( -90_degf ) * vis::quatf( ori ) : vis::quatf( ori );
+		auto fixed_ori = fix_obj_ori ? vis::quatf( ori ) * xo::quat_from_x_angle( -90_degf ) : vis::quatf( ori );
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
 		auto fixed_scale = fix_obj_ori ? vis::vec3f( scale.x, scale.z, scale.y ) : vis::vec3f( scale );
 		msh.scale_enable_normalize( fixed_scale );
