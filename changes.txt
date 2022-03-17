@@ -1,6 +1,18 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.0.1 ====
+//Released March 17, 2022//
+
+=== Updates ===
+  * MimicMeasure can now read both .sto and .txt
+  * MimicMeasure now has activation_error_weight
+  * ReflexController now has new BodyOrientationReflex (experimental)
+
+=== Fixes ===
+  * Fixed rounding error of sliders in CoordinateEditor
+  * Fixed visualization of .obj files with extra orientation in transform
+
 ==== SCONE 2.0.0 ====
 //Released February 18, 2022//
 
