@@ -32,6 +32,7 @@
 #include "scone/core/version.h"
 #include "scone/model/Dof.h"
 #include "scone/model/muscle_tools.h"
+#include "scone/model/Muscle.h"
 #include "scone/model/model_tools.h"
 #include "scone/optimization/Optimizer.h"
 #include "scone/optimization/opt_tools.h"
@@ -1208,6 +1209,9 @@ void SconeStudio::exportCoordinates()
 				pn[ "values" ].set( dof->GetName(), dof->GetPos() );
 				pn[ "velocities" ].set( dof->GetName(), dof->GetVel() );
 			}
+			if ( scone::GetStudioSetting<bool>( "coordinates.export_activations" ) )
+				for ( const auto& mus : scenario_->GetModel().GetMuscles() )
+					pn[ "activations" ].set( mus->GetName(), mus->GetActivation() );
 			xo::save_file( pn, path_from_qt( filename ) );
 		}
 	}

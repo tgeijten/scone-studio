@@ -68,6 +68,11 @@ viewer {
 	enable_object_cache { type = bool label = "Enable mesh caching for faster reloading (needs restart)" default = 1 }
 }
 
+coordinates {
+	label = "Coordinates settings"
+	export_activations { type = bool label = "Export activations" default = 0 }
+}
+
 ui {
 	label = "User Interface Settings"
 	reset_layout { type = bool default = 0 label = "Reset window layout on start" }
