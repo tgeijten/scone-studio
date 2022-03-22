@@ -176,13 +176,13 @@ namespace scone
 	{
 		if ( result_pn_.empty() )
 		{
-			if ( model_objective_ && model_->GetMeasure() )
+			if ( model_objective_ )
 			{
 				auto fitness = model_objective_->GetResult( *model_ ); // this calls ComputeResult which fills report
 				auto& result = result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
 				result.set_value( fitness ); // this is done so Measures don't have to
 			}
-			else log::warning( "Model does not have a Measure" );
+			else log::warning( "Objective is not a ModelObjective" );
 		}
 		return result_pn_;
 	}
