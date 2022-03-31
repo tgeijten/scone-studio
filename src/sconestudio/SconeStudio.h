@@ -63,6 +63,7 @@ public:
 	virtual bool tryExit() override;
 
 public slots:
+	void windowShown();
 	void activateBrowserItem( QModelIndex idx );
 	void selectBrowserItem( const QModelIndex& idx, const QModelIndex& idxold );
 	void resultsSelectionChanged( const QItemSelection& newitem, const QItemSelection& olditem ) {}
@@ -168,49 +169,49 @@ private:
 
 	// video capture
 	QString captureFilename;
-	QProcess* captureProcess;
+	QProcess* captureProcess = nullptr;
 	QDir captureImageDir;
 	void finalizeCapture();
 
 	// analysis
 	SconeStorageDataModel analysisStorageModel;
-	QDataAnalysisView* analysisView;
-	QDockWidget* analysisDock;
+	QDataAnalysisView* analysisView = nullptr;
+	QDockWidget* analysisDock = nullptr;
 
 	// gait analysis
-	scone::GaitAnalysis* gaitAnalysis;
-	QDockWidget* gaitAnalysisDock;
+	scone::GaitAnalysis* gaitAnalysis = nullptr;
+	QDockWidget* gaitAnalysisDock = nullptr;
 
 	// parameters
-	QTableView* parView;
-	ParTableModel* parModel;
-	QDockWidget* parViewDock;
+	QTableView* parView = nullptr;
+	ParTableModel* parModel = nullptr;
+	QDockWidget* parViewDock = nullptr;
 
 	// evaluation report
-	QTreeView* reportView;
-	QPropNodeItemModel* reportModel;
-	QDockWidget* reportDock;
+	QTreeView* reportView = nullptr;
+	QPropNodeItemModel* reportModel = nullptr;
+	QDockWidget* reportDock = nullptr;
 
 	// dof editor
-	scone::DofEditorGroup* dofEditor;
-	QDockWidget* dofDock;
+	scone::DofEditorGroup* dofEditor = nullptr;
+	QDockWidget* dofDock = nullptr;
 
 	// model inspector
-	QSplitter* inspectorSplitter;
-	QTreeView* inspectorView;
-	QTreeView* inspectorDetails;
-	QPropNodeItemModel* inspectorModel;
-	QDockWidget* inspectorDock;
+	QSplitter* inspectorSplitter = nullptr;
+	QTreeView* inspectorView = nullptr;
+	QTreeView* inspectorDetails = nullptr;
+	QPropNodeItemModel* inspectorModel = nullptr;
+	QDockWidget* inspectorDock = nullptr;
 
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// UserInput editor
-	scone::UserInputEditor* userInputEditor;
+	scone::UserInputEditor* userInputEditor = nullptr;
 
 	// optimizer history analysis
 	scone::Storage<> optimizationHistoryStorage;
 	SconeStorageDataModel optimizationHistoryStorageModel;
-	QDataAnalysisView* optimizationHistoryView;
-	QDockWidget* optimizationHistoryDock;
+	QDataAnalysisView* optimizationHistoryView = nullptr;
+	QDockWidget* optimizationHistoryDock = nullptr;
 #endif
 };
 

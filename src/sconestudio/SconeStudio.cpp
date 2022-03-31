@@ -70,14 +70,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	com_delta( Vec3( 0, 0, 0 ) ),
 	captureProcess( nullptr )
 {
-	xo::log::debug( "Constructing UI elements" );
+	scone::TimeSection( "CreateWindow" );
+
 	ui.setupUi( this );
 
-	// Analysis
-	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
-	analysisView->setObjectName( "Analysis" );
-	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
-	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
+	scone::TimeSection( "SetupGui" );
 
 	// File menu
 	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
@@ -153,8 +150,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "Generate &Video...", this, &SconeStudio::createVideo );
 	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
 	toolsMenu->addSeparator();
-	//toolsMenu->addAction( "&Model Analysis", this, &SconeStudio::modelAnalysis );
-	//toolsMenu->addAction( "M&uscle Analysis", this, &SconeStudio::muscleAnalysis );
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
 	toolsMenu->addAction( "Fil&ter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
@@ -194,6 +189,15 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", this, [=]() { showAbout( this ); } );
 
+	scone::TimeSection( "InitMenu" );
+
+	// Analysis
+	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
+	analysisView->setObjectName( "Analysis" );
+	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
+	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
+	scone::TimeSection( "InitAnalysys" );
+
 	// Results Browser
 	auto results_folder = scone::GetFolder( SCONE_RESULTS_FOLDER );
 	xo::create_directories( results_folder );
@@ -209,6 +213,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	connect( ui.resultsBrowser->selectionModel(),
 		SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
 		this, SLOT( selectBrowserItem( const QModelIndex&, const QModelIndex& ) ) );
+	scone::TimeSection( "InitResultsBrowser" );
 
 	// Play Control
 	ui.stackedWidget->setCurrentIndex( 0 );
@@ -235,6 +240,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	addDockWidget( Qt::BottomDockWidgetArea, ui.messagesDock );
 	registerDockWidget( ui.messagesDock, "Me&ssages" );
 
+	analysisDock = createDockWidget( "&Analysis", analysisView, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( ui.messagesDock, analysisDock );
+
+	scone::TimeSection( "InitDocking" );
+
 	// evaluation report
 	reportModel = new QPropNodeItemModel();
 	reportModel->setDefaultIcon( style()->standardIcon( QStyle::SP_FileIcon ) );
@@ -246,16 +256,14 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	reportDock = createDockWidget( "Evaluation &Report", reportView, Qt::BottomDockWidgetArea );
 	splitDockWidget( ui.messagesDock, reportDock, Qt::Horizontal );
 	reportDock->hide();
-
-	// analysis
-	analysisDock = createDockWidget( "&Analysis", analysisView, Qt::BottomDockWidgetArea );
-	tabifyDockWidget( ui.messagesDock, analysisDock );
+	scone::TimeSection( "InitEvaluationReport" );
 
 	// gait analysis
 	gaitAnalysis = new GaitAnalysis( this );
 	gaitAnalysisDock = createDockWidget( "&Gait Analysis", gaitAnalysis, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, gaitAnalysisDock );
 	gaitAnalysisDock->hide();
+	scone::TimeSection( "InitGaitAnalysis" );
 
 	// parameter view
 	parView = new QTableView( this );
@@ -268,6 +276,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	parView->verticalHeader()->setDefaultSectionSize( 24 );
 	parViewDock = createDockWidget( "&Parameters", parView, Qt::RightDockWidgetArea );
 	splitDockWidget( ui.viewerDock, parViewDock, Qt::Horizontal );
+	scone::TimeSection( "InitParameterView" );
 
 	// dof editor
 	dofEditor = new DofEditorGroup( this );
@@ -275,6 +284,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
 	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::RightDockWidgetArea );
 	tabifyDockWidget( parViewDock, dofDock );
+	scone::TimeSection( "InitDofEditor" );
 
 	// model inspector
 	inspectorModel = new QPropNodeItemModel();
@@ -300,6 +310,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	inspectorDock = createDockWidget( "&Model Info", inspectorSplitter, Qt::RightDockWidgetArea );
 	tabifyDockWidget( dofDock, inspectorDock );
 	parViewDock->raise();
+	scone::TimeSection( "InitModelInspector" );
 
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// model input editor
@@ -332,6 +343,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
+	scone::TimeSection( "InitViewer" );
 
 	createSettings( "SCONE", "SconeStudio" );
 	if ( GetStudioSetting<bool>( "ui.reset_layout" ) )
@@ -342,6 +354,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		restoreSettings( true );
 	}
 	else restoreSettings();
+	scone::TimeSection( "RestoreSettings" );
 }
 
 bool SconeStudio::init()
@@ -350,10 +363,6 @@ bool SconeStudio::init()
 	xo::log::add_sink( ui.outputText );
 	ui.outputText->set_sink_mode( xo::log::sink_mode::current_thread );
 	ui.outputText->set_log_level( XO_IS_DEBUG_BUILD ? xo::log::level::trace : xo::log::level::debug );
-
-	// start timer for viewer
-	connect( &backgroundUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateBackgroundTimer() ) );
-	backgroundUpdateTimer.start( 500 );
 
 	// see if this is a new version of SCONE
 	auto version = xo::to_str( scone::GetSconeVersion() );
@@ -370,6 +379,11 @@ bool SconeStudio::init()
 		scone::updateTutorialsExamples();
 
 	ui.messagesDock->raise();
+
+	connect( &backgroundUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateBackgroundTimer() ) );
+	backgroundUpdateTimer.start( 500 );
+
+	QTimer::singleShot( 0, this, SLOT( windowShown() ) );
 
 	return true;
 }
@@ -393,6 +407,14 @@ void SconeStudio::saveCustomSettings( QSettings& settings )
 	for ( auto& va : viewActions )
 		f.set( va.first, va.second->isChecked() );
 	settings.setValue( "viewSettings", QVariant( uint( f.data() ) ) );
+}
+
+void SconeStudio::windowShown()
+{
+	if ( scone::GetStudioSetting<bool>( "ui.show_startup_time" ) ) {
+		scone::TimeSection( "FinalShown" );
+		log::info( scone::GetStudioStopwatch().get_report() );
+	}
 }
 
 void SconeStudio::activateBrowserItem( QModelIndex idx )

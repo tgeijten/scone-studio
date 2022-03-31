@@ -30,17 +30,15 @@
 #include "studio_tools.h"
 #include "StudioSettings.h"
 #include "QSafeApplication.h"
+#include "scone/core/profiler_config.h"
 
 int main( int argc, char *argv[] )
 {
-	xo::timer boot_timer;
-
 	// Qt setup, required before creating QApplication
 	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 	QApplication::setStyle( "fusion" );
-
-	// create application
 	QSafeApplication app( argc, argv );
+	scone::TimeSection( "InitApplication" );
 
 	try
 	{
@@ -52,20 +50,25 @@ int main( int argc, char *argv[] )
 		xo::log::file_sink file_sink( log_file, xo::log::level::debug, xo::log::sink_mode::current_thread );
 		SCONE_THROW_IF( !file_sink.file_stream().good(), "Could not create file " + log_file.str() );
 		xo::log::debug( "Created log file: ", log_file );
+		scone::TimeSection( "InitLog" );
 
 		// init plash screen
-		QPixmap splash_pm( to_qt( GetSconeStudioFolder() / "resources/ui/scone_splash.png" ) );
+		QPixmap splash_pm( to_qt( scone::GetSconeStudioFolder() / "resources/ui/scone_splash.png" ) );
 		QSplashScreen splash( splash_pm );
 		splash.show();
 		app.processEvents();
+		scone::TimeSection( "ShowSplash" );
 
 		// init main window
 		SconeStudio w;
 		w.show();
 		w.init();
+		scone::TimeSection( "ShowSconeStudio" );
 
 		// init scone file format and libraries
 		scone::Initialize();
+		scone::TimeSection( "InitScone" );
+
 
 #if SCONE_HYFYDY_ENABLED
 		// check if license agreement has been updated
@@ -75,10 +78,6 @@ int main( int argc, char *argv[] )
 
 		// close splash screen
 		splash.close(); // DO NOT USE QSplashScreen::finish() because it's slow
-
-		// show startup time (optional)
-		if ( scone::GetStudioSetting<bool>( "ui.show_startup_time") )
-			xo::log::debug( "SCONE startup time: ", boot_timer().secondsd(), "s" );
 
 		return app.exec();
 	}

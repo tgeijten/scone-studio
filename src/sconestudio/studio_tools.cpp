@@ -2,7 +2,17 @@
 
 #include "scone/core/system_tools.h"
 
-xo::path GetSconeStudioFolder()
+namespace scone
 {
-	return scone::GetInstallFolder().parent_path();
+	static xo::stopwatch g_StudioStopwatch;
+
+	xo::path GetSconeStudioFolder()
+	{
+		return scone::GetInstallFolder().parent_path();
+	}
+
+	xo::stopwatch& GetStudioStopwatch()
+	{
+		return g_StudioStopwatch;
+	}
 }
