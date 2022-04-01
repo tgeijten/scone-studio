@@ -158,9 +158,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
 	toolsMenu->addSeparator();
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
-	toolsMenu->addAction( "Fi&lter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
-	toolsMenu->addAction( "Clear Analysis Fi&lter", this,
-		[&]() { analysisView->setFilterText( "" ); analysisView->selectNone(); activateAnalysisFilter(); }, QKeySequence( "Ctrl+Shift+L" ) );
+	toolsMenu->addAction( "Clear Analysis Fi&lter", this, [&]() { analysisView->setFilterText( "" ); analysisView->selectNone();
+		analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
@@ -236,12 +235,12 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	connect( ui.viewerDock, &QDockWidget::topLevelChanged, this, &SconeStudio::fixViewerWindowSize );
 
 	addDockWidget( Qt::LeftDockWidgetArea, ui.resultsDock );
-	registerDockWidget( ui.resultsDock, "&Optimization Results" );
+	registerDockWidget( ui.resultsDock, "&Optimization Results", ui.resultsBrowser, QKeySequence( "Ctrl+Shift+U" ) );
 
 	addDockWidget( Qt::BottomDockWidgetArea, ui.messagesDock );
 	registerDockWidget( ui.messagesDock, "Me&ssages" );
 
-	analysisDock = createDockWidget( "&Analysis", analysisView, Qt::BottomDockWidgetArea );
+	analysisDock = createDockWidget( "&Analysis", analysisView, Qt::BottomDockWidgetArea, analysisView->filterWidget(), QKeySequence( "Ctrl+L" ) );
 	tabifyDockWidget( ui.messagesDock, analysisDock );
 
 	scone::TimeSection( "InitDocking" );
@@ -574,12 +573,6 @@ void SconeStudio::updateGaitAnalysis()
 		}
 	}
 	catch ( const std::exception& e ) { error( "Error", e.what() ); }
-}
-
-void SconeStudio::activateAnalysisFilter()
-{
-	analysisDock->raise();
-	analysisView->focusFilterEdit();
 }
 
 void SconeStudio::setTime( TimeInSeconds t, bool update_vis )

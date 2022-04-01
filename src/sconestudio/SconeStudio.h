@@ -92,7 +92,6 @@ public slots:
 	void modelAnalysis();
 	void muscleAnalysis();
 	void updateGaitAnalysis();
-	void activateAnalysisFilter();
 	void tabCloseRequested( int idx );
 	void applyViewOptions();
 	void showSettingsDialog();
