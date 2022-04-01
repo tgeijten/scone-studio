@@ -76,6 +76,13 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	scone::TimeSection( "SetupGui" );
 
+	// Analysis (must be done BEFORE menu, analysisView is used there)
+	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
+	analysisView->setObjectName( "Analysis" );
+	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
+	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
+	scone::TimeSection( "InitAnalysys" );
+
 	// File menu
 	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
 	fileMenu->addAction( "&Open...", this, &SconeStudio::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
@@ -142,8 +149,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Abort Optimizations", this, &SconeStudio::abortOptimizations, QKeySequence() );
 	scenarioMenu->addSeparator();
-	scenarioMenu->addAction( "&Performance Test", this, &SconeStudio::performanceTestNormal, QKeySequence( "Ctrl+P" ) );
-	scenarioMenu->addAction( "Performance Test (Write Stats)", this, &SconeStudio::performanceTestWriteStats, QKeySequence( "Ctrl+Shift+P" ) );
+	scenarioMenu->addAction( "&Performance Test", this, [&]() { performanceTest( false ); }, QKeySequence( "Ctrl+P" ) );
+	scenarioMenu->addAction( "Performance Test (Write Stats)", this, [&]() { performanceTest( true ); }, QKeySequence( "Ctrl+Shift+P" ) );
 
 	// Tools menu
 	auto toolsMenu = menuBar()->addMenu( "&Tools" );
@@ -151,7 +158,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
 	toolsMenu->addSeparator();
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
-	toolsMenu->addAction( "Fil&ter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
+	toolsMenu->addAction( "Fi&lter Analysis", this, &SconeStudio::activateAnalysisFilter, QKeySequence( "Ctrl+L" ) );
+	toolsMenu->addAction( "Clear Analysis Fi&lter", this,
+		[&]() { analysisView->setFilterText( "" ); analysisView->selectNone(); activateAnalysisFilter(); }, QKeySequence( "Ctrl+Shift+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
@@ -165,7 +174,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	actionMenu->addAction( "&Play or Evaluate", ui.playControl, &QPlayControl::togglePlay, Qt::Key_F5 );
 	actionMenu->addAction( "&Stop / Reset", ui.playControl, &QPlayControl::stopReset, Qt::Key_F8 );
 	actionMenu->addAction( "Toggle Play", ui.playControl, &QPlayControl::togglePlay, QKeySequence( "Ctrl+Space" ) );
-	actionMenu->addAction( "Toggle Loop", ui.playControl, &QPlayControl::toggleLoop, QKeySequence( "Ctrl+Shift+L" ) );
+	actionMenu->addAction( "Toggle Loop", ui.playControl, &QPlayControl::toggleLoop, QKeySequence( "Ctrl+Alt+L" ) );
 	actionMenu->addAction( "Play F&aster", ui.playControl, &QPlayControl::faster, QKeySequence( "Ctrl+Up" ) );
 	actionMenu->addAction( "Play S&lower", ui.playControl, &QPlayControl::slower, QKeySequence( "Ctrl+Down" ) );
 	actionMenu->addSeparator();
@@ -188,15 +197,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", this, [=]() { showAbout( this ); } );
-
 	scone::TimeSection( "InitMenu" );
-
-	// Analysis
-	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
-	analysisView->setObjectName( "Analysis" );
-	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
-	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
-	scone::TimeSection( "InitAnalysys" );
 
 	// Results Browser
 	auto results_folder = scone::GetFolder( SCONE_RESULTS_FOLDER );
