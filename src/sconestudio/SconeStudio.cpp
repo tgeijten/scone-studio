@@ -1251,6 +1251,8 @@ void SconeStudio::saveUserInputs( bool show_dialog )
 
 void SconeStudio::createVideo()
 {
+	ui.playControl->reset(); // playback interferes with video generation
+
 	if ( !scenario_ )
 		return error( "No Scenario", "There is no scenario open" );
 
