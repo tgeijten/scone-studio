@@ -1,6 +1,21 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.0.2 ====
+//Released April 6, 2022//
+
+=== Updates ===
+  * Added option to export muscle activations from Coordinates
+  * Actuator Input data now includes muscle excitation
+  * Added support for activations in state_init_file, new settings state_init_file_ignore_activations and 
+  * Added support for activations in state_init_file, new settings state_init_file_ignore_activations and initialize_activations_from_controller
+  * Optimization Results and Analysis can now be activated through shortcut shown in Windows menu
+
+=== Fixes ===
+  * Fixed joint_motor_force max_torque application
+  * Fixed rounding error of sliders in CoordinateEditor
+  * Fixed video generation during playback (closes #4)
+
 ==== SCONE 2.0.1 ====
 //Released March 17, 2022//
 
