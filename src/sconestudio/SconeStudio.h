@@ -203,13 +203,13 @@ private:
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// UserInput editor
 	scone::UserInputEditor* userInputEditor = nullptr;
+#endif
 
-	// optimizer history analysis
+	// Optimization History
 	scone::Storage<> optimizationHistoryStorage;
 	SconeStorageDataModel optimizationHistoryStorageModel;
 	QDataAnalysisView* optimizationHistoryView = nullptr;
 	QDockWidget* optimizationHistoryDock = nullptr;
-#endif
 };
 
 #endif // SCONESTUDIO_H

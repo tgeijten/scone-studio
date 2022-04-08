@@ -320,6 +320,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	auto userInputDock = createDockWidget( "Model &Inputs", userInputEditor, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, userInputDock );
 	userInputDock->hide();
+#endif
 
 	// optimization history
 	optimizationHistoryView = new QDataAnalysisView( &optimizationHistoryStorageModel, this );
@@ -329,7 +330,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	optimizationHistoryDock = createDockWidget( "&Optimization History", optimizationHistoryView, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, optimizationHistoryDock );
 	optimizationHistoryDock->hide();
-#endif
 
 	// finalize windows menu
 	windowMenu->addSeparator();
@@ -771,9 +771,7 @@ void SconeStudio::clearScenario()
 	gaitAnalysis->reset();
 	parViewDock->setWindowTitle( "Parameters" );
 	ui.playControl->setRange( 0, 0 );
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	optimizationHistoryStorageModel.setStorage( nullptr );
-#endif
 }
 
 bool SconeStudio::createScenario( const QString& any_file )
@@ -814,7 +812,6 @@ bool SconeStudio::createScenario( const QString& any_file )
 			ui.playControl->reset();
 		}
 
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";
 		if ( xo::file_exists( history_file ) )
 		{
@@ -831,7 +828,6 @@ bool SconeStudio::createScenario( const QString& any_file )
 				log::error( e.what() );
 			}
 		}
-#endif
 	}
 	catch ( FactoryNotFoundException& e )
 	{
