@@ -1,13 +1,22 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.0.3 ====
+//Released April 19, 2022//
+
+=== Updates ===
+  * Added contact information for help on model conversion
+
+=== Fixes ===
+  * Fixed issue causing the Model Conversion Tool to remove bodies attached by WeldJoints
+  * Fixed automatic indentation with '{' or '[' inside line comments
+
 ==== SCONE 2.0.2 ====
 //Released April 6, 2022//
 
 === Updates ===
   * Added option to export muscle activations from Coordinates
   * Actuator Input data now includes muscle excitation
-  * Added support for activations in state_init_file, new settings state_init_file_ignore_activations and 
   * Added support for activations in state_init_file, new settings state_init_file_ignore_activations and initialize_activations_from_controller
   * Optimization Results and Analysis can now be activated through shortcut shown in Windows menu
 
