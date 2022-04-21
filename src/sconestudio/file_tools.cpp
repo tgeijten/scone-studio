@@ -28,7 +28,7 @@ namespace scone
 
 	QFileInfo findBestPar( const QDir& dir )
 	{
-		const int min_file_age_sec = 2; // #todo: setting?
+		const int min_file_age_sec = 3; // #todo: setting?
 		QFileInfo bestFile;
 		int bestGen = -1;
 		auto now = QDateTime::currentDateTime();
@@ -38,7 +38,7 @@ namespace scone
 			if ( fi.isFile() && fi.suffix() == "par" )
 			{
 				auto [gen, best] = extractGenBestFromParFile( fi );
-				if ( gen > bestGen && fi.birthTime().secsTo( now ) >= min_file_age_sec ) {
+				if ( gen > bestGen && fi.lastModified().secsTo( now ) >= min_file_age_sec ) {
 					bestFile = fi;
 					bestGen = gen;
 				}
