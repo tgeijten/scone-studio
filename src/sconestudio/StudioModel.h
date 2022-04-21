@@ -20,6 +20,8 @@
 #include "ModelVis.h"
 #include "qt_convert.h"
 
+#include <future>
+
 namespace scone
 {
 	class StudioModel
