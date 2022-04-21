@@ -1050,7 +1050,7 @@ void SconeStudio::performanceTest( bool write_stats )
 				xo::timer real_time;
 				auto model = mo->CreateModelFromParams( par );
 				model->SetStoreData( false );
-				model->AdvanceSimulationTo( model->GetSimulationEndTime() );
+				mo->AdvanceSimulationTo( *model, model->GetSimulationEndTime() );
 				auto real_dur = real_time().secondsd();
 				auto sim_time = model->GetTime();
 				if ( model->GetProfiler().enabled() )
