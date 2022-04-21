@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QFile>
 #include <QCryptographicHash>
+#include <QDateTime>
 #include <filesystem>
 #include "scone/core/system_tools.h"
 #include "scone/core/Log.h"
