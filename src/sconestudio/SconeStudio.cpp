@@ -204,7 +204,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	resultsModel = new ResultsFileSystemModel( nullptr );
 	ui.resultsBrowser->setModel( resultsModel );
 	ui.resultsBrowser->setNumColumns( 1 );
-	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto" );
+	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.scone" );
 	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -424,7 +424,11 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		info = scone::findBestPar( QDir( info.absoluteFilePath() ) );
 	if ( info.exists() )
 	{
-		if ( createScenario( info.absoluteFilePath() ) )
+		if ( info.suffix() == "scone" )
+		{
+			openFile( info.absoluteFilePath() );
+		}
+		else if ( createScenario( info.absoluteFilePath() ) )
 		{
 			if ( scenario_->IsEvaluating() ) // .par or .sto
 				evaluate();
@@ -1096,6 +1100,8 @@ void SconeStudio::updateBackgroundTimer()
 {
 	if ( !ui.playControl->isPlaying() )
 		updateOptimizations();
+	if ( scenario_ )
+		scenario_->CheckWriteResults();
 }
 
 void SconeStudio::updateOptimizations()

@@ -97,7 +97,10 @@ namespace scone
 	}
 
 	StudioModel::~StudioModel()
-	{}
+	{
+		// make sure there is no pending file write
+		WaitForWriteResults();
+	}
 
 	void StudioModel::InitStateDataIndices()
 	{
@@ -187,6 +190,12 @@ namespace scone
 		return result_pn_;
 	}
 
+	void StudioModel::CheckWriteResults()
+	{
+		if ( write_results_.valid() && write_results_.wait_for( std::chrono::seconds( 0 ) ) == std::future_status::ready )
+			WaitForWriteResults();
+	}
+
 	void StudioModel::FinalizeEvaluation()
 	{
 		if ( model_objective_ )
@@ -201,9 +210,8 @@ namespace scone
 				log::info( GetResult() );
 
 				// write results to file(s)
-				xo::timer t;
-				auto result_files = model_->WriteResults( filename_ );
-				log::debug( "Results written to ", concatenate_str( result_files, ", " ), " in ", t().secondsd(), "s" );
+				WaitForWriteResults();
+				write_results_ = std::async( [this]() { return this->WriteResults(); } );
 
 				// we're done!
 				status_ = Status::Ready;
@@ -225,6 +233,22 @@ namespace scone
 			QMessageBox::critical( nullptr, "Error in " + to_qt( filename_.filename() ), message.c_str() );
 		}
 		else log::error( message );
+	}
+
+	StudioModel::WriteResultsInfo StudioModel::WriteResults()
+	{
+		SCONE_ASSERT( model_ );
+		xo::timer t;
+		auto result_files = model_->WriteResults( filename_ );
+		return { result_files, t() };
+	}
+
+	void StudioModel::WaitForWriteResults()
+	{
+		if ( write_results_.valid() ) {
+			auto r = write_results_.get();
+			log::debug( "Results written to ", concatenate_str( r.first, ", " ), " in ", r.second.secondsd(), "s" );
+		}
 	}
 
 	TimeInSeconds StudioModel::GetMaxTime() const

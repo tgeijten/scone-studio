@@ -63,6 +63,8 @@ namespace scone
 
 		const PropNode& GetResult();
 
+		void CheckWriteResults();
+
 	private:
 		void FinalizeEvaluation();
 		void InvokeError( const String& message );
@@ -82,7 +84,10 @@ namespace scone
 
 		Status status_;
 
-		//bool is_evaluating_;
+		using WriteResultsInfo = std::pair<std::vector<path>, xo::time>;
+		std::future<WriteResultsInfo> write_results_;
+		WriteResultsInfo WriteResults();
+		void WaitForWriteResults();
 
 		// model state
 		std::vector< size_t > state_data_index;
