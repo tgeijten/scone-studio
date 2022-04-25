@@ -426,7 +426,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 	{
 		if ( info.suffix() == "scone" )
 		{
-			openFile( info.absoluteFilePath() );
+			openFile( info.absoluteFilePath() ); // open the .scone file in a text editor
 		}
 		else if ( createScenario( info.absoluteFilePath() ) )
 		{
