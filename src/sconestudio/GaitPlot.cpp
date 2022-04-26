@@ -132,7 +132,7 @@ namespace scone
 				if ( graph ) graph->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
 				for ( Real perc : xo::frange<Real>( 0.0, 100.0, 0.5 ) )
 				{
-					auto f = sto.GetInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 );
+					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 );
 					auto value = channel_offset_ + channel_multiply_ * f.value( channel_idx );
 					if ( graph ) graph->addData( perc, value );
 					avg_data[ perc ] += s * value;
