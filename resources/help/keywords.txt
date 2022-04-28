@@ -57,6 +57,7 @@ range_penalty.txt
 reaction_force_measure.txt
 reflex.txt
 reflex_controller.txt
+replication_objective.txt
 script_controller.txt
 script_measure.txt
 sequential_controller.txt

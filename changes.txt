@@ -5,7 +5,7 @@
 //Released April 19, 2022//
 
 === Updates ===
-  * Added contact information for help on model conversion
+  * Updated Model Conversion user interface
 
 === Fixes ===
   * Fixed issue causing the Model Conversion Tool to remove bodies attached by WeldJoints
