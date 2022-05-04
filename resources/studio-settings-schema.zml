@@ -3,6 +3,12 @@ optimization {
 	use_external_process { type = bool default = 0 label = "Perform optimizations using external process" }
 }
 
+file {
+	label = "File settings"
+	auto_write_scone_evaluation { type = bool label = "Automatically write data after evaluating a .scone file" default = 0 }
+	auto_write_par_evaluation { type = bool label = "Automatically write data after evaluating a .par file" default = 1 }
+}
+
 gait_analysis {
 	label = "Gait Analysis settings"
 	template { type = path default = "" label = "Template used for gait analysis" }

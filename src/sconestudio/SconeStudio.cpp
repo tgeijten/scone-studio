@@ -93,6 +93,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "Save &As...", this, &SconeStudio::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
 	fileMenu->addAction( "&Close", this, &SconeStudio::fileCloseTriggered, QKeySequence( "Ctrl+W" ) );
 	fileMenu->addSeparator();
+	fileMenu->addAction( "Save Evaluation &Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
+	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	fileMenu->addAction( "Save &Model Inputs", this, [=]() { saveUserInputs( false ); } );
@@ -111,7 +113,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	editMenu->addAction( "Ne&xt Tab", this, [=]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
 	editMenu->addSeparator();
 	editMenu->addAction( "Toggle &Comments", this, &SconeStudio::toggleComments, QKeySequence( "Ctrl+/" ) );
-	editMenu->addAction( "&Duplicate Selection", this, [&]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
+	editMenu->addAction( "&Duplicate Selection", this, [=]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
 
 	// View menu
 	auto viewMenu = menuBar()->addMenu( "&View" );
@@ -1031,6 +1033,29 @@ void SconeStudio::evaluateActiveScenario()
 			evaluate();
 		ui.playControl->play();
 	}
+}
+
+void SconeStudio::writeEvaluationResults()
+{
+	if ( scenario_ )
+	{
+		if ( scenario_->IsReady() )
+			scenario_->WriteResults();
+		else if ( scenario_->IsEvaluating() ) {
+			scenario_->SetWriteResultsAfterEvaluation( true );
+			evaluate();
+			ui.playControl->play();
+		}
+	}
+	else if ( createAndVerifyActiveScenario( false ) )
+	{
+		if ( scenario_->IsEvaluating() ) {
+			scenario_->SetWriteResultsAfterEvaluation( true );
+			evaluate();
+		}
+		ui.playControl->play();
+	}
+	else log::warning( "No results found" );
 }
 
 void SconeStudio::performanceTest( bool write_stats )

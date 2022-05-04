@@ -34,7 +34,8 @@
 namespace scone
 {
 	StudioModel::StudioModel( vis::scene& s, const path& file, const ViewOptions& vs ) :
-		status_( Status::Initializing )
+		status_( Status::Initializing ),
+		write_results_after_evaluation_( false )
 	{
 		// create the objective from par file or config file
 		xo::timer load_time;
@@ -54,11 +55,13 @@ namespace scone
 				{
 					model_objective_->info().import_mean_std( file, true );
 					model_ = model_objective_->CreateModelFromParFile( file );
+					write_results_after_evaluation_ = GetStudioSetting<bool>( "file.auto_write_par_evaluation" );
 				}
 				else  // #todo: use ModelObjective::model_ instead? Needs proper parameter initialization
 				{
 					auto par = SearchPoint( model_objective_->info() );
 					model_ = model_objective_->CreateModelFromParams( par );
+					write_results_after_evaluation_ = GetStudioSetting<bool>( "file.auto_write_scone_evaluation" );
 				}
 
 				if ( file_type == "sto" )
@@ -210,8 +213,11 @@ namespace scone
 				log::info( GetResult() );
 
 				// write results to file(s)
-				WaitForWriteResults();
-				write_results_ = std::async( [this]() { return this->WriteResults(); } );
+				if ( write_results_after_evaluation_ )
+				{
+					WaitForWriteResults();
+					write_results_ = std::async( [this]() { return this->WriteResults(); } );
+				}
 
 				// we're done!
 				status_ = Status::Ready;

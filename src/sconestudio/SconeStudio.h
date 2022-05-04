@@ -82,6 +82,7 @@ public slots:
 	void helpSearch();
 	void helpForum();
 	void evaluateActiveScenario();
+	void writeEvaluationResults();
 	void optimizeScenario();
 	void optimizeScenarioMultiple();
 	bool abortOptimizations();

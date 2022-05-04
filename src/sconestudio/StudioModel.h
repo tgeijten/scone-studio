@@ -65,7 +65,10 @@ namespace scone
 
 		const PropNode& GetResult();
 
+		using WriteResultsInfo = std::pair<std::vector<path>, xo::time>;
+		WriteResultsInfo WriteResults();
 		void CheckWriteResults();
+		void SetWriteResultsAfterEvaluation( bool b ) { write_results_after_evaluation_ = b; }
 
 	private:
 		void FinalizeEvaluation();
@@ -86,10 +89,9 @@ namespace scone
 
 		Status status_;
 
-		using WriteResultsInfo = std::pair<std::vector<path>, xo::time>;
 		std::future<WriteResultsInfo> write_results_;
-		WriteResultsInfo WriteResults();
 		void WaitForWriteResults();
+		bool write_results_after_evaluation_;
 
 		// model state
 		std::vector< size_t > state_data_index;
