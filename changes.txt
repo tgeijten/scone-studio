@@ -1,6 +1,25 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.0.4 ====
+//Released May 13, 2022//
+
+=== New Features ===
+  * Writing evaluation data to .sto files is now optional (via Preferences -> User Interface -> File settings), data can now be written manually to .sto files via File -> Save Evaluation Data (Ctrl+Shift+E).
+  * config.scone can now be opened directly from the Optimization Results browser.
+  * GaitStateController, EffortMeasure, GaitMeasure now support omnidirectional use, via ''omnidirectional'' and ''use_initial_heading'' settings.
+  * New BodyEulerOriSensor to replace broken BodyOrientationSensor, used by default in BodyOrientationReflex
+  * DofReflex and BodyOrientationReflex now have ''mirror_left'' option, which mirrors the output for left sided actuators. Useful in combination with pelvis_list, pelvis_rotation, etc.
+
+=== Updates ===
+  * Evaluation results are now written to file in the background to decrease waiting time.
+  * Greatly improved MimicMeasure performance through data caching.
+
+=== Fixes ===
+  * Fixed issue when pressing enter on a directory to evaluate the latest .par would fail after the file had been deleted.
+  * BodyOrientationReflex opposite bodies now work correctly, using bodyname_o.
+  * Performance evaluation (Ctrl+P) with ReplicationObjective now works properly.
+
 ==== SCONE 2.0.3 ====
 //Released April 19, 2022//
 
