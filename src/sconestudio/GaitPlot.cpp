@@ -29,6 +29,7 @@ namespace scone
 		INIT_MEMBER( pn, channel_offset_, 0 ),
 		INIT_MEMBER( pn, channel_multiply_, 1.0 ),
 		INIT_MEMBER( pn, norm_offset_, 0 ),
+		INIT_MEMBER( pn, mirror_left_, false ),
 		plot_( nullptr ),
 		plot_title_( nullptr )
 	{
@@ -130,10 +131,11 @@ namespace scone
 			{
 				auto* graph = plot_cycles ? plot_->addGraph() : nullptr;
 				if ( graph ) graph->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
+				double factor = mirror_left_ && !right ? -channel_multiply_ : channel_multiply_;
 				for ( Real perc : xo::frange<Real>( 0.0, 100.0, 0.5 ) )
 				{
 					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 );
-					auto value = channel_offset_ + channel_multiply_ * f.value( channel_idx );
+					auto value = channel_offset_ + factor * f.value( channel_idx );
 					if ( graph ) graph->addData( perc, value );
 					avg_data[ perc ] += s * value;
 				}

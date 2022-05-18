@@ -38,6 +38,7 @@ namespace scone
 		double channel_offset_;
 		double channel_multiply_;
 		double norm_offset_;
+		bool mirror_left_;
 
 		xo::flat_map<double, xo::bounds<double>> norm_data_;
 		
