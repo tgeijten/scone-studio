@@ -226,10 +226,10 @@ namespace scone
 		// update com / heading
 		if ( view_flags.get<ViewOption::ModelComHeading>() )
 		{
-			if ( auto* root = model.GetRootBody() )
+			if ( model.HasRootBody() )
 			{
 				auto pos = xo::vec3f( model.GetComPos() );
-				auto dir = xo::quatf( root->GetOrientation() ) * xo::vec3f( 0.5f, 0, 0 );
+				auto dir = xo::quatf( model.GetRootBody().GetOrientation() ) * xo::vec3f( 0.5f, 0, 0 );
 				heading_.pos_ofs( pos, dir );
 			}
 		}
