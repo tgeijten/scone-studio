@@ -13,12 +13,15 @@
 
 namespace scone
 {
+	QString g_inputFileName;
+
 	void ShowModelConversionDialog( QWidget* parent )
 	{
 		QDialog dlg( parent );
 		Ui::ModelTool ui;
 		ui.setupUi( &dlg );
 		ui.inputFile->init( QFileEdit::OpenFile, "OpenSim 3 Models (*.osim)", "", to_qt( GetFolder( SCONE_SCENARIO_FOLDER ) ) );
+		ui.inputFile->setText( g_inputFileName );
 		auto updateInputFile = [&]() {
 			const auto inputFile = xo::path( ui.inputFile->text().toStdString() );
 			ui.buttonBox->button( QDialogButtonBox::Ok )->setEnabled( !inputFile.empty() );
@@ -45,7 +48,7 @@ namespace scone
 
 		if ( QDialog::Accepted == dlg.exec() )
 		{
-
+			g_inputFileName = ui.inputFile->text();
 			const xo::path inputFile = xo::path( ui.inputFile->text().toStdString() );
 
 #if SCONE_HYFYDY_ENABLED
