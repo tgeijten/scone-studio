@@ -1,6 +1,18 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.0.5 ====
+//Released May 27, 2022//
+
+=== Updates ===
+  * New Lua Script functions for muscles: tendon_length(), normalized_tendon_length(), tendon_slack_length().
+  * Gait Analysis plots now have 'mirror_left' option for non-sided channels (e.g. pelvis_list, pelvis_rotation).
+  * Reflexes now have 'par_name' option to override the parameter name.
+  * Model conversion tool now remembers previous input name
+
+=== Fixes ===
+  * Measure "name" property now works correctly again (regression in 2.0.4).
+
 ==== SCONE 2.0.4 ====
 //Released May 13, 2022//
 
