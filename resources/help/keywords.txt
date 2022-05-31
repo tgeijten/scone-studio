@@ -7,6 +7,7 @@ cma_optimizer_spot.txt
 cma_pool_optimizer.txt
 composite_controller.txt
 composite_measure.txt
+com_pivot_reflex.txt
 conditional_muscle_reflex.txt
 controller.txt
 dof_measure.txt
@@ -40,6 +41,7 @@ mirror_controller.txt
 model.txt
 model_objective.txt
 model_open_sim3.txt
+model_open_sim4.txt
 muscle_measure.txt
 muscle_reflex.txt
 neural_controller.txt
