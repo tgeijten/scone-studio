@@ -42,7 +42,7 @@ namespace scone
 		// title
 		plot_->plotLayout()->insertRow( 0 ); // inserts an empty row above the default axis rect
 		plot_title_ = new QCPPlotTitle( plot_, title_.c_str() );
-		plot_title_->setFont( QFont( plot_->font().family(), 11, QFont::Bold ) );
+		plot_title_->setFont( QFont( plot_->font().family(), GetStudioSetting<int>( "gait_analysis.title_font_size" ), QFont::Bold ) );
 		plot_->plotLayout()->addElement( 0, 0, plot_title_ );
 
 		// norm data
@@ -84,7 +84,7 @@ namespace scone
 
 		// fonts
 		auto labelFont = plot_->xAxis->labelFont();
-		labelFont.setPointSize( 10 );
+		labelFont.setPointSize( GetStudioSetting<int>( "gait_analysis.axis_font_size" ) );
 		plot_->xAxis->setLabelFont( labelFont );
 		plot_->yAxis->setLabelFont( labelFont );
 
