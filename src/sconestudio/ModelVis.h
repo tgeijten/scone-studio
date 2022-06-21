@@ -33,8 +33,8 @@ namespace scone
 			float ce_pos = 0.5f;
 		};
 
-		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force );
-		void UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment );
+		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float len_scale = 0.001f, float rad_scale = 1.0f );
+		void UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float len_scale = 0.001f, float rad_scale = 1.0f );
 		void UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis );
 
 		vis::mesh MakeMesh( vis::node& parent,

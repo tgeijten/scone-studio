@@ -190,7 +190,7 @@ namespace scone
 
 			// external forces
 			if ( auto f = b->GetExternalForce(); !f.is_null() )
-				UpdateForceVis( force_count++, b->GetPosOfPointOnBody( b->GetExternalForcePoint() ), f );
+				UpdateForceVis( force_count++, b->GetPosOfPointOnBody( b->GetExternalForcePoint() ), f, 0.005f, 0.25f );
 
 			// external moments
 			if ( auto m = b->GetExternalMoment(); !m.is_null() )
@@ -241,26 +241,26 @@ namespace scone
 			moments.pop_back();
 	}
 
-	void ModelVis::UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force )
+	void ModelVis::UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float len_scale, float rad_scale )
 	{
 		while ( forces.size() <= force_idx )
 		{
-			forces.emplace_back( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::yellow(), 0.3f } );
+			forces.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::yellow(), 0.3f } );
 			forces.back().set_material( arrow_mat );
 			forces.back().show( view_flags.get< ViewOption::ExternalForces >() );
 		}
-		forces[ force_idx ].pos( vis::vec3f( cop ), vis::vec3f( cop + 0.001 * force ) );
+		forces[ force_idx ].pos_ofs( vis::vec3f( cop ), len_scale * vis::vec3f( force ), rad_scale );
 	}
 
-	void ModelVis::UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment )
+	void ModelVis::UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float len_scale, float rad_scale )
 	{
 		while ( moments.size() <= moment_idx )
 		{
-			moments.emplace_back( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::blue(), 0.3f } );
+			moments.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::blue(), 0.3f } );
 			moments.back().set_material( moment_mat );
 			moments.back().show( view_flags.get< ViewOption::ExternalForces >() );
 		}
-		moments[ moment_idx ].pos( vis::vec3f( pos ), vis::vec3f( pos + 0.01 * moment ) );
+		moments[ moment_idx ].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
 	}
 
 	void ModelVis::UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis )
@@ -298,7 +298,8 @@ namespace scone
 			vis.ten1.set_points( p.begin(), p.begin() + i1 + 1 );
 			vis.ce.set_points( p.begin() + i1, p.begin() + i2 + 1 );
 			vis.ten2.set_points( p.begin() + i2, p.end() );
-		} else vis.ce.set_points( p.begin(), p.end() );
+		}
+		else vis.ce.set_points( p.begin(), p.end() );
 	}
 
 	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::shape& sh, const xo::color& col, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
@@ -315,7 +316,7 @@ namespace scone
 	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::path& file, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
 	{
 		auto msh = vis::mesh( parent, file );
-		msh.set_material( mat  );
+		msh.set_material( mat );
 		auto fix_obj_ori = file.extension_no_dot() == "obj";
 		auto fixed_ori = fix_obj_ori ? vis::quatf( ori ) * xo::quat_from_x_angle( -90_degf ) : vis::quatf( ori );
 		msh.pos_ori( vis::vec3f( pos ), fixed_ori );
