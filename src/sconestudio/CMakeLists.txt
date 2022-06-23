@@ -23,6 +23,7 @@ set(STUDIOFILES
 	SettingsEditor.cpp
 	StudioSettings.h
 	StudioSettings.cpp
+	studio_settings_schema.h
 	SconeStorageDataModel.h
 	SconeStorageDataModel.cpp
 	studio_tools.h
@@ -96,7 +97,6 @@ set (QT_UI_FILES
 set(RESOURCEFILES
 	studio.rc
 	SconeStudio.qrc 
-	../../resources/studio-settings-schema.zml
 	../../resources/gaitanalysis/default.zml
 	${QT_UI_FILES}
 	)

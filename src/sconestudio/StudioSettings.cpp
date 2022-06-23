@@ -13,14 +13,16 @@
 #include "scone/core/Log.h"
 #include "xo/serialization/serialize.h"
 #include "xo/filesystem/filesystem.h"
+#include "xo/serialization/prop_node_serializer_zml.h"
 #include "studio_config.h"
 #include "studio_tools.h"
+#include "studio_settings_schema.h"
 
 namespace scone
 {
 	StudioSettings::StudioSettings() :
 		xo::settings(
-			load_file( GetInstallFolder() / "../resources/studio-settings-schema.zml" ),
+			xo::parse_zml( studio_settings_schema ),
 			GetSettingsFolder() / "studio-settings.zml",
 			GetSconeVersion()
 		)
