@@ -34,6 +34,8 @@
 namespace scone
 {
 	StudioModel::StudioModel( vis::scene& s, const path& file, const ViewOptions& vs ) :
+		model_objective_( nullptr ),
+		null_objective_( PropNode(), file.parent_path() ),
 		status_( Status::Initializing ),
 		write_results_after_evaluation_( false )
 	{
@@ -43,12 +45,20 @@ namespace scone
 		const auto file_type = file.extension_no_dot();
 		scenario_filename_ = FindScenario( file );
 		scenario_pn_ = LoadScenario( scenario_filename_, file_type == "par" );
-		optimizer_ = CreateOptimizer( scenario_pn_, file.parent_path() );
-		model_objective_ = dynamic_cast<ModelObjective*>( &optimizer_->GetObjective() );
-
-		if ( model_objective_ )
+		if ( auto opt_fp = TryFindFactoryProps( GetOptimizerFactory(), scenario_pn_, "Optimizer" ); opt_fp )
 		{
-			try
+			optimizer_ = GetOptimizerFactory().create( opt_fp.type(), opt_fp.props(), scenario_pn_, file.parent_path() );
+			model_objective_ = dynamic_cast<ModelObjective*>( &optimizer_->GetObjective() );
+		}
+		else if ( auto mod_fp = TryFindFactoryProps( GetModelFactory(), scenario_pn_, "Model" ); mod_fp )
+		{
+			model_ = CreateModel( mod_fp, spot::null_objective_info(), file.parent_path() );
+		}
+		else log::warning( "Not a model objective, disabling visualization" );
+
+		try
+		{
+			if ( model_objective_ )
 			{
 				// create model from par or with default parameters
 				if ( file_type == "par" )
@@ -63,7 +73,10 @@ namespace scone
 					model_ = model_objective_->CreateModelFromParams( par );
 					write_results_after_evaluation_ = GetStudioSetting<bool>( "file.auto_write_scone_evaluation" );
 				}
+			}
 
+			if ( model_ )
+			{
 				if ( file_type == "sto" )
 				{
 					// file is a .sto, load results
@@ -86,14 +99,10 @@ namespace scone
 				vis_ = std::make_unique<ModelVis>( *model_, s, vs );
 				UpdateVis( 0 );
 			}
-			catch ( const std::exception& e )
-			{
-				InvokeError( e.what() );
-			}
 		}
-		else
+		catch ( const std::exception& e )
 		{
-			log::warning( "Not a model objective, disabling visualization" );
+			InvokeError( e.what() );
 		}
 
 		log::info( "Loaded ", file.filename(), "; dim=", GetObjective().dim(), "; time=", load_time() );
@@ -295,7 +304,7 @@ namespace scone
 		return com;
 	}
 
-	void StudioModel::ResetModelVis(vis::scene& s, const ViewOptions& f )
+	void StudioModel::ResetModelVis( vis::scene& s, const ViewOptions& f )
 	{
 		vis_.reset( nullptr );
 		vis_ = std::make_unique<ModelVis>( *model_, s, f );
