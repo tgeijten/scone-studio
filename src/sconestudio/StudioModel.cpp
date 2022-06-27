@@ -45,6 +45,7 @@ namespace scone
 		const auto file_type = file.extension_no_dot();
 		scenario_filename_ = FindScenario( file );
 		scenario_pn_ = LoadScenario( scenario_filename_, file_type == "par" );
+
 		if ( auto opt_fp = TryFindFactoryProps( GetOptimizerFactory(), scenario_pn_, "Optimizer" ); opt_fp )
 		{
 			optimizer_ = GetOptimizerFactory().create( opt_fp.type(), opt_fp.props(), scenario_pn_, file.parent_path() );
@@ -52,7 +53,8 @@ namespace scone
 		}
 		else if ( auto mod_fp = TryFindFactoryProps( GetModelFactory(), scenario_pn_, "Model" ); mod_fp )
 		{
-			model_ = CreateModel( mod_fp, spot::null_objective_info(), file.parent_path() );
+			spot::null_objective_info par;
+			model_ = CreateModel( mod_fp, par, file.parent_path() );
 		}
 		else log::warning( "Not a model objective, disabling visualization" );
 
