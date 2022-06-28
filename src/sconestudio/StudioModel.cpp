@@ -157,11 +157,14 @@ namespace scone
 
 	void StudioModel::EvaluateTo( TimeInSeconds t )
 	{
-		if ( model_ && model_objective_ && IsEvaluating() )
+		if ( model_ && IsEvaluating() )
 		{
 			try
 			{
-				model_objective_->AdvanceSimulationTo( *model_, t );
+				if ( model_objective_ )
+					model_objective_->AdvanceSimulationTo( *model_, t );
+				else
+					model_->AdvanceSimulationTo( t );
 				auto te = model_->GetSimulationEndTime();
 				auto t = model_->GetTime();
 				if ( model_->HasSimulationEnded() )
