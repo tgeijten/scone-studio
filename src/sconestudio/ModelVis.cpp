@@ -107,7 +107,7 @@ namespace scone
 
 		for ( auto& cg : model.GetContactGeometries() )
 		{
-			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b.get(); } );
+			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b; } );
 			auto& parent_node = idx != NoIndex ? bodies[ idx ] : root_node_;
 			bool is_static = idx == 0 || idx == NoIndex;
 			if ( cg->HasFileName() )
