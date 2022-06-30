@@ -48,6 +48,7 @@ neural_controller.txt
 noise_controller.txt
 objective.txt
 optimizer.txt
+par_init_settings.txt
 perturbation_controller.txt
 piece_wise_constant_function.txt
 piece_wise_linear_function.txt
