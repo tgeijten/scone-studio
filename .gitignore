@@ -15,3 +15,6 @@
 /.dir-locals.el
 *~
 build/
+/changes_scone.txt
+/changes_studio.txt
+/make_changes.py
