@@ -1,6 +1,35 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.0.6 ====
+//Released July 26, 2022//
+
+=== New Features ===
+  * Optimizers now have the option to specify multiple init files, each with its own settings, using the ''init { ... }'' syntax.
+
+=== Updates ===
+  * Lua Scripts now support the following functions:
+    * ''muscle:muscle_tendon_length()''
+    * ''muscle_tendon_velocity()''
+    * ''muscle:active_fiber_force()''
+    * ''muscle:active_force_length_multiplier()''
+    * ''muscle:passive_fiber_force()''
+    * ''muscle:max_contraction_velocity()''
+    * ''model:mass()''
+    * ''model:gravity()''
+    * renamed ''muscle:contraction_velocity()'' to ''muscle:fiber_velocity()''
+  * Lua scripts can now convert quaternions to euler angles, using ''quat:euler_angle_xyz()''.
+  * ReflexController ''delay'' is now a parameter that can be optimized.
+  * MuscleMeasure now supports "force" measurement.
+  * ''.sto'' files can now be played back if the folder contains a ''.scone'' file without an ''Optimizer''.
+  * Perturbation forces are now visualized with longer and thinner arrows, to improve visibility.
+  * Added option to set font sizes for gait analysis plots (Tools -> Preferences -> User Interface -> Gait Analysis).
+  * Removed scone_settings_schema.zml external file dependency.
+
+=== Fixes ===
+  * Fixed signs for contralateral BodyEulerOriSensor and BodyAngularVelocitySensor.
+  * Reflex parameters with source from opposite side now have _o postfix.
+
 ==== SCONE 2.0.5 ====
 //Released May 27, 2022//
 
