@@ -170,6 +170,11 @@ if (SCONE_LUA)
 	target_compile_definitions(sconestudio PRIVATE SCONE_LUA)
 endif()
 
+if (SCONE_USER_EXTENSIONS)
+	target_link_libraries(sconestudio sconeuser)
+	target_compile_definitions(sconestudio PRIVATE SCONE_USER_EXTENSIONS)
+endif()
+
 target_compile_definitions(sconestudio PRIVATE $<$<BOOL:${SCONE_ENABLE_PROFILER}>:SCONE_ENABLE_XO_PROFILING>)
 
 if(MSVC)
