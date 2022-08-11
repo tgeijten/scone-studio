@@ -1,6 +1,7 @@
 #include "studio_tools.h"
 
 #include "scone/core/system_tools.h"
+#include "scone/core/Exception.h"
 
 namespace scone
 {
@@ -8,7 +9,9 @@ namespace scone
 
 	xo::path GetSconeStudioFolder()
 	{
-		return scone::GetInstallFolder().parent_path();
+		const auto& p = GetInstallFolder();
+		SCONE_ERROR_IF( p.empty(), "Could not detect SCONE installation folder" );
+		return p.parent_path();
 	}
 
 	xo::stopwatch& GetStudioStopwatch()
