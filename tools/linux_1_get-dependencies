@@ -19,9 +19,11 @@ general_deps=(
 openscenegraph_build_deps=(
     libpng-dev
     zlib1g-dev
-    qt5-default
-    libqt5widgets5
-    libqt5opengl5-dev
+    qtbase5-dev    
+    qt5-cmake    
+    # qt5-default
+    # libqt5widgets5
+    # libqt5opengl5-dev
 )
 simbody_build_deps=(
     liblapack-dev
@@ -31,9 +33,11 @@ scone_build_deps=(
     libxi-dev
     libxmu-dev
     liblapack-dev
-    libqt5widgets5
-    libqt5opengl5-dev
-    qt5-default
+    qtbase5-dev    
+    qt5-cmake    
+    # qt5-default
+    # libqt5widgets5
+    # libqt5opengl5-dev
 )
 all_deps=(
     "${general_deps[@]}"
