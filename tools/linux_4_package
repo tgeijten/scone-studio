@@ -17,21 +17,17 @@ dependencies=(
     # scone
     freeglut3
     qtbase5-dev    
-    # qt5-default
-    # libqt5printsupport5
-    # libqt5opengl5
-    # libqt5widgets5
     libpng16-16
 )
 
 cd "${SCONE_BUILD_DIR}"
 fpm \
     --force \
-    --name "scone" \
+    --name "SCONE" \
     --version "$(cat linux/opt/scone/.version)" \
     --maintainer "Thomas Geijtenbeek <T.Geijtenbeek@tudelft.nl>" \
-    --url "https://github.com/opensim-org/SCONE" \
-    --description "open-source software for predictive simulation of biological motion" \
+    --url "https://scone.software" \
+    --description "Open-source software for predictive simulation of biological motion" \
     --license "gnu-3.0" \
     --architecture "x86_64" \
     --input-type "dir" \

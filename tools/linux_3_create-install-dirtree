@@ -28,7 +28,13 @@ find "${OSG_INSTALL_PATH}/" -name "*.so*" -exec cp -a {} "${install_dir}/lib" \;
 
 # <install_loc>/resources: resources
 mkdir -p "${install_dir}/resources"
-cp -r ${PROJECT_DIR}/resources/* "${install_dir}/resources"
+cp -r "${PROJECT_DIR}/resources/*" "${install_dir}/resources"
+
+# install examples and tutorials
+mkdir -p "${install_dir}/scone/scenarios/Examples2"
+cp -r "${PROJECT_DIR}/scone/scenarios/Examples2*" "${install_dir}/scone/scenarios/Examples2"
+mkdir -p "${install_dir}/scone/scenarios/Tutorials2"
+cp -r "${PROJECT_DIR}/scone/scenarios/Tutorials2*" "${install_dir}/scone/scenarios/Tutorials2"
 
 # <install_loc>/.version: SCONE version
 git rev-list --count HEAD > "${install_dir}/.version"
@@ -81,7 +87,7 @@ mkdir -p "${usr_dir}/share/applications"
 cat <<EOF > "${usr_dir}/share/applications/sconestudio.desktop"
 [Desktop Entry]
 Name=SCONE Studio
-Comment=Scone studio desktop client
+Comment=SCONE Studio desktop client
 TryExec=sconestudio
 Exec=sconestudio
 Icon=/opt/scone/resources/scone_icon.png
