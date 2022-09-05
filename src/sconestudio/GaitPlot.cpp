@@ -122,6 +122,7 @@ namespace scone
 
 		bool plot_cycles = GetStudioSetting<bool>( "gait_analysis.plot_individual_cycles" );
 
+		xo::boundsd range( y_min_, y_max_ );
 		for ( const auto& cycle : cycles )
 		{
 			bool right = cycle.side_ == Side::Right;
@@ -138,6 +139,7 @@ namespace scone
 					auto value = channel_offset_ + factor * f.value( channel_idx );
 					if ( graph ) graph->addData( perc, value );
 					avg_data[ perc ] += s * value;
+					range.extend( value );
 				}
 			}
 			else log::warning( "Gait Analysis could not find: ", channel_name ); // only shown when *either* left / right is missing
@@ -163,6 +165,7 @@ namespace scone
 			if ( plot_title_ && GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
 				plot_title_->setText( title_.c_str() + QString::asprintf( " (%.1f%%)", fit_perc ) );
 		}
+		plot_->yAxis->setRange( range.lower, range.upper );
 		plot_->replot();
 
 		return {};
