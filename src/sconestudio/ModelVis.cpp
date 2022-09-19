@@ -272,7 +272,7 @@ namespace scone
 		}
 		auto tlen = mus.GetTendonLength() * vis.ce_pos;
 		if ( tlen <= 0.0 ) {
-			log::warning( mus.GetName(), " muscle tendon length: ", tlen, "; clamping to zero" );
+			log::trace( mus.GetName(), " muscle tendon length: ", tlen, "; clamping to zero" );
 			tlen = 0.0;
 		}
 
