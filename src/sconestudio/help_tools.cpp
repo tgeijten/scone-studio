@@ -63,6 +63,10 @@ namespace scone
 			"<li><a href='https://github.com/tgeijten/vis'>vis</a> (Apache 2.0)"
 			"<li><a href='https://github.com/tgeijten/qtfx'>qtfx</a> (Apache 2.0)"
 			"</ul>";
-		QMessageBox::information( parent, "About SCONE", title + author + scone_license + studio_license );
+
+		QString hyfydy_license =
+			"<b>Hyfydy</b> is commercial software. Please visit <a href='https://hyfydy.com'>hyfydy.com</a> for a free trial license.";
+
+		QMessageBox::information( parent, "About SCONE", title + author + scone_license + studio_license + hyfydy_license );
 	}
 }
