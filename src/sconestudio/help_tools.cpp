@@ -65,7 +65,7 @@ namespace scone
 			"</ul>";
 
 		QString hyfydy_license =
-			"<b>Hyfydy</b> is commercial software. Please visit <a href='https://hyfydy.com'>hyfydy.com</a> for a free trial license.";
+			"<b>Hyfydy</b> is proprietary software. Please visit <a href='https://hyfydy.com'>hyfydy.com</a> for a free trial license.";
 
 		QMessageBox::information( parent, "About SCONE", title + author + scone_license + studio_license + hyfydy_license );
 	}
