@@ -201,7 +201,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	scone::TimeSection( "InitMenu" );
 
 	// Results Browser
-	auto results_folder = scone::GetFolder( SCONE_RESULTS_FOLDER );
+	auto results_folder = scone::GetFolder( SconeFolder::Results );
 	xo::create_directories( results_folder );
 	resultsModel = new ResultsFileSystemModel( nullptr );
 	ui.resultsBrowser->setModel( resultsModel );
@@ -612,7 +612,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 void SconeStudio::fileOpenTriggered()
 {
-	QString default_path = to_qt( GetFolder( SCONE_SCENARIO_FOLDER ) );
+	QString default_path = to_qt( GetFolder( SconeFolder::Scenarios ) );
 	if ( auto* s = getActiveScenario() )
 		default_path = to_qt( path( s->fileName.toStdString() ).parent_path() );
 

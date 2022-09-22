@@ -78,7 +78,7 @@ namespace scone
 							path( "geometry" ) / geom.filename_,
 							model_folder / geom.filename_,
 							model_folder / "geometry" / geom.filename_,
-							GetFolder( SCONE_GEOMETRY_FOLDER ) / geom.filename_
+							GetFolder( SconeFolder::Geometry ) / geom.filename_
 						};
 						auto geom_file = xo::try_find_file( file_options );
 						if ( geom_file )

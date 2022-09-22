@@ -91,8 +91,8 @@ namespace scone
 
 	void updateTutorialsExamples()
 	{
-		auto srcPath = scone::GetFolder( scone::SCONE_ROOT_FOLDER ) / "scenarios";
-		auto trgPath = scone::GetFolder( scone::SCONE_SCENARIO_FOLDER );
+		auto srcPath = scone::GetFolder( scone::SconeFolder::Root ) / "scenarios";
+		auto trgPath = scone::GetFolder( scone::SconeFolder::Scenarios );
 		auto tutsrc = srcPath / "Tutorials2";
 		auto tuttrg = trgPath / "Tutorials";
 		auto exsrc = srcPath / "Examples2";

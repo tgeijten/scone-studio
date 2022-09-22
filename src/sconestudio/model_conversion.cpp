@@ -20,7 +20,7 @@ namespace scone
 		QDialog dlg( parent );
 		Ui::ModelTool ui;
 		ui.setupUi( &dlg );
-		ui.inputFile->init( QFileEdit::OpenFile, "OpenSim 3 Models (*.osim)", "", to_qt( GetFolder( SCONE_SCENARIO_FOLDER ) ) );
+		ui.inputFile->init( QFileEdit::OpenFile, "OpenSim 3 Models (*.osim)", "", to_qt( GetFolder( SconeFolder::Scenarios ) ) );
 		ui.inputFile->setText( g_inputFileName );
 		auto updateInputFile = [&]() {
 			const auto inputFile = xo::path( ui.inputFile->text().toStdString() );
