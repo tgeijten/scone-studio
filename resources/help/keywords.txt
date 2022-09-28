@@ -14,6 +14,7 @@ dof_measure.txt
 dof_reflex.txt
 effort_measure.txt
 es_optimizer.txt
+external_controller.txt
 feed_forward_controller.txt
 function.txt
 gait_cycle_measure.txt
