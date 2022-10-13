@@ -92,9 +92,12 @@ namespace scone
 		if ( ret == QDialog::Accepted )
 		{
 			// update settings
-			scone_settings.set( "folders.scenarios", ui.scenariosFolder->text().toStdString() );
-			scone_settings.set( "folders.results", ui.resultsFolder->text().toStdString() );
-			scone_settings.set( "folders.geometry", ui.geometryFolder->text().toStdString() );
+			if ( ui.scenariosFolder->text().toStdString() != GetFolder( SconeFolder::Scenarios ) )
+				scone_settings.set( "folders.scenarios", ui.scenariosFolder->text().toStdString() );
+			if ( ui.resultsFolder->text().toStdString() != GetFolder( SconeFolder::Results ) )
+				scone_settings.set( "folders.results", ui.resultsFolder->text().toStdString() );
+			if ( ui.geometryFolder->text().toStdString() != GetFolder( SconeFolder::Geometry ) )
+				scone_settings.set( "folders.geometry", ui.geometryFolder->text().toStdString() );
 			studio_settings.set( "gait_analysis.template", ui.gaitAnalysisFolder->text().toStdString() );
 
 			// copy checkboxes
