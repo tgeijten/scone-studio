@@ -245,3 +245,8 @@ if(MSVC)
 		)
 	endforeach()
 endif()
+
+install(TARGETS sconestudio vis-osg
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	)

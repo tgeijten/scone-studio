@@ -1,6 +1,7 @@
 /_output/
 /bin/
 /build/
+/install/
 /doc/upload.bat
 /nsis/
 /OpenSceneGraph/
