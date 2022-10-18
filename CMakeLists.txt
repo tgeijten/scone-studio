@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-project(scone-studio)
+project(scone-studio VERSION 2.1.0)
 
 # Set LINUX variable
 if(UNIX AND NOT APPLE)
@@ -11,6 +11,11 @@ endif()
 option(SCONE_STUDIO_CPACK "Build SCONE Studio installer using CPack" OFF)
 if (LINUX)
 	option(SCONE_STUDIO_CPACK_DEBIAN "Build debian installer using CPack" OFF)
+endif()
+
+if(SCONE_STUDIO_CPACK)
+	file (STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/scone/.version" SCONE_REPOSITORY_REVISION)	
+	set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}.${SCONE_REPOSITORY_REVISION}")
 endif()
 
 # To create a folder hierarchy within Visual Studio.
@@ -64,6 +69,7 @@ if (SCONE_STUDIO_CPACK)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scone/scenarios/Examples2" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scone/scenarios/Tutorials2" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scone/scenarios/SconePy" DESTINATION "./scone/scenarios")
+	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources" DESTINATION "./")
 
 	# Windows install/packaging:
 	if (WIN32)
