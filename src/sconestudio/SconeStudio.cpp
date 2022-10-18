@@ -44,7 +44,7 @@
 #include <QTextStream>
 #include <osgDB/ReadFile>
 
-#include "qcustomplot.h"
+#include "qcustomplot/qcustomplot.h"
 #include "qt_convert.h"
 #include "qtfx.h"
 

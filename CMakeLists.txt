@@ -36,22 +36,7 @@ add_subdirectory(scone)
 
 # Required packages
 find_package(Qt5 COMPONENTS Widgets OpenGL PrintSupport REQUIRED)
-include_directories("${CMAKE_SOURCE_DIR}/contrib/qcustomplot")
-find_path(QTFX_PATH QOsgViewer.h "${CMAKE_SOURCE_DIR}/submodules/qtfx/qtfx")
-include_directories( ${QTFX_PATH} )
-
-find_package( OpenSceneGraph REQUIRED
-	osg
-	osgWidget
-	osgQt
-	osgGA
-	osgViewer
-	osgUtil
-	osgDB
-	osgShadow
-	OpenThreads )
-add_subdirectory("${CMAKE_SOURCE_DIR}/submodules/vis")
-
+add_subdirectory(submodules/vis)
 add_subdirectory(src/sconestudio)
 
 enable_testing()

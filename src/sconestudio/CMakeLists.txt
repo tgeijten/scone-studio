@@ -1,6 +1,8 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+find_path(QTFX_PATH QOsgViewer.h "${CMAKE_SOURCE_DIR}/submodules/qtfx/qtfx")
+
 set(STUDIOFILES
 	main.cpp
 	StudioModel.cpp
@@ -81,8 +83,8 @@ set(QTFILES
 	${QTFX_PATH}/QSafeApplication.h
 	${QTFX_PATH}/QSettingsItemModel.h
 	${QTFX_PATH}/QSettingsItemModel.cpp
-	../../contrib/qcustomplot/qcustomplot.h
-	../../contrib/qcustomplot/qcustomplot.cpp
+	${QTFX_PATH}/qcustomplot/qcustomplot.h
+	${QTFX_PATH}/qcustomplot/qcustomplot.cpp
 	)
 	
 set (QT_UI_FILES
@@ -118,8 +120,9 @@ set_target_properties(sconestudio PROPERTIES PROJECT_LABEL "sconestudio" OUTPUT_
 set_target_properties(sconestudio PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 
 # set target include libraries
-target_include_directories(sconestudio PRIVATE ${VIS_INCLUDE_DIR} ${OSG_INCLUDE_DIR} ${OSGQT_INCLUDE_DIR})
+target_include_directories(sconestudio PRIVATE ${VIS_INCLUDE_DIR} ${OSG_INCLUDE_DIR} ${OSGQT_INCLUDE_DIR} ${QTFX_PATH})
 
+# setup OpenSceneGraph stuff
 target_link_libraries(sconestudio
 	sconelib
 	vis-osg
