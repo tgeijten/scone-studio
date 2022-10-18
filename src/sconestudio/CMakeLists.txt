@@ -161,6 +161,12 @@ endif()
 
 target_compile_definitions(sconestudio PRIVATE $<$<BOOL:${SCONE_ENABLE_PROFILER}>:SCONE_ENABLE_XO_PROFILING>)
 
+if (LINUX)
+	set_target_properties(sconestudio PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
+elseif(APPLE)
+    set_target_properties(sconestudio PROPERTIES INSTALL_RPATH "@executable_path/lib")
+endif()
+
 if(MSVC)
 	# precompiled headers
 	target_precompile_headers(sconestudio PRIVATE
@@ -195,12 +201,14 @@ if(MSVC)
 		add_custom_command(TARGET sconestudio POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Widgets_DIR}/../../../bin/${qt5lib}$<$<CONFIG:debug>:d>.dll ${DLL_TARGET_DIR}
 		)
+		install(FILES ${Qt5Widgets_DIR}/../../../bin/${qt5lib}$<$<CONFIG:debug>:d>.dll DESTINATION bin)
 	endforeach()
 
 	add_custom_command(TARGET sconestudio POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "${DLL_TARGET_DIR}/platforms")
 	add_custom_command(TARGET sconestudio POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Widgets_DIR}/../../../plugins/platforms/qwindows$<$<CONFIG:debug>:d>.dll "${DLL_TARGET_DIR}/platforms"
 	)
+	install(FILES ${Qt5Widgets_DIR}/../../../plugins/platforms/qwindows$<$<CONFIG:debug>:d>.dll DESTINATION bin/platforms)
 	
 	# Copy OSG DLLs
 	# get OSG_INSTALL_DIR
@@ -217,6 +225,7 @@ if(MSVC)
 		add_custom_command(TARGET sconestudio POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OSG_DLL_DIR}/${osgdll}$<$<CONFIG:debug>:d>.dll ${DLL_TARGET_DIR}
 		)
+		install(FILES ${OSG_DLL_DIR}/${osgdll}$<$<CONFIG:debug>:d>.dll DESTINATION bin)
 	endforeach()
 
 	# Copy osg png plugin
@@ -227,6 +236,7 @@ if(MSVC)
 		add_custom_command(TARGET sconestudio POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OSG_DLL_DIR}/${OSG_PLUGINS_FOLDER}/${osgplugin}$<$<CONFIG:debug>:d>.dll "${DLL_TARGET_DIR}/${OSG_PLUGINS_FOLDER}"
 		)
+		install(FILES ${OSG_DLL_DIR}/${OSG_PLUGINS_FOLDER}/${osgplugin}$<$<CONFIG:debug>:d>.dll DESTINATION bin/${OSG_PLUGINS_FOLDER})
 	endforeach()
 endif()
 

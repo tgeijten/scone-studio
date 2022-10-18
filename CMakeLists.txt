@@ -5,6 +5,11 @@ project(scone-studio)
 # scone-studio options
 option(SCONE_STUDIO_CPACK "Build SCONE Studio installer using CPack" OFF)
 
+# Set LINUX variable
+if(UNIX AND NOT APPLE)
+	set(LINUX TRUE)
+endif()
+
 # To create a folder hierarchy within Visual Studio.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -15,6 +20,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # binary (build) directory. Otherwise, they get scattered around
 # the build directory and so the dll's aren't next to the executables.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+# Set INSTALL directories
+if(LINUX)
+	set(CMAKE_INSTALL_RPATH "\$ORIGIN")
+endif()
 
 # Silence CMake warning on OSX.
 set(CMAKE_MACOSX_RPATH ON)
