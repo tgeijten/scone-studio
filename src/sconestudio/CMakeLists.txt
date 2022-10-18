@@ -1,7 +1,6 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-FIND_PATH(QTFX_PATH QOsgViewer.h "../../submodules/qtfx/qtfx")
-	
+
 set(STUDIOFILES
 	main.cpp
 	StudioModel.cpp
@@ -101,13 +100,10 @@ set(RESOURCEFILES
 	${QT_UI_FILES}
 	)
 
-INCLUDE_DIRECTORIES( ../../contrib/qcustomplot )
-INCLUDE_DIRECTORIES( ${QTFX_PATH} )
-
 qt5_wrap_ui(UI_HEADERS ${QT_UI_FILES})
 qt5_add_resources(RESOURCES SconeStudio.qrc)
 
-SET( SOURCE_FILES ${STUDIOFILES} ${QTFILES} ${RESOURCES} )
+set( SOURCE_FILES ${STUDIOFILES} ${QTFILES} ${RESOURCES} )
 
 add_executable(sconestudio ${STUDIOFILES} ${QTFILES} ${PRECOMPILED_HEADER_FILES} ${UI_HEADERS} ${RESOURCEFILES} )
 
@@ -120,18 +116,6 @@ set_target_properties(sconestudio PROPERTIES PROJECT_LABEL "sconestudio" OUTPUT_
 
 # Require C++17 standard
 set_target_properties(sconestudio PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
-
-# setup OpenSceneGraph stuff
-FIND_PACKAGE( OpenSceneGraph REQUIRED
-	osg
-	osgWidget
-	osgQt
-	osgGA
-	osgViewer
-	osgUtil
-	osgDB
-	osgShadow
-	OpenThreads )
 
 # set target include libraries
 target_include_directories(sconestudio PRIVATE ${VIS_INCLUDE_DIR} ${OSG_INCLUDE_DIR} ${OSGQT_INCLUDE_DIR})
