@@ -2,6 +2,7 @@
 /bin/
 /build/
 /install/
+/packages/
 /doc/upload.bat
 /nsis/
 /OpenSceneGraph/

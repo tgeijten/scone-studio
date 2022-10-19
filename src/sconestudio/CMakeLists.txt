@@ -243,6 +243,12 @@ if(MSVC)
 	endforeach()
 endif()
 
+if(LINUX)
+	file(GLOB OSG_SO_FILES "${OSG_DIR}/lib64/*.so*")
+	# message("OSG_SO_FILES=" ${OSG_SO_FILES})
+	install(FILES ${OSG_SO_FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
+
 install(TARGETS sconestudio vis-osg
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

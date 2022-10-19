@@ -34,6 +34,20 @@ if(LINUX)
 	set(CMAKE_INSTALL_RPATH "\$ORIGIN")
 endif()
 
+# Initialize LINUX settings from build script
+if(LINUX)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
+
+	set(OSG_INSTALL_PATH "${CMAKE_SOURCE_DIR}/OpenSceneGraph/install")
+	set(OSG_DIR "${OSG_INSTALL_PATH}")
+	list(APPEND CMAKE_PREFIX_PATH "${OSG_INSTALL_PATH}/lib64")
+
+	set(OPENSIM3_INSTALL_PATH "${PROJECT_DIR}/opensim3-scone/install}")
+    set(OPENSIM_INSTALL_DIR "${OPENSIM3_INSTALL_PATH}")
+    set(OPENSIM_INCLUDE_DIR "${OPENSIM3_INSTALL_PATH}/sdk/include")
+endif()
+
+
 # Silence CMake warning on OSX.
 set(CMAKE_MACOSX_RPATH ON)
 
@@ -64,12 +78,13 @@ if (SCONE_STUDIO_CPACK)
 	set(CPACK_PACKAGE_HOMEPAGE_URL "https://goatstream.com")
 	set(CPACK_PACKAGE_DESCRIPTION "A tool for predictive musculoskeletal simulations")
 	set(CPACK_PACKAGE_EXECUTABLES "sconestudio;SCONE Command Line Interface")
+	set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_SOURCE_DIR}/packages")
 
 	# install scenarios
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scone/scenarios/Examples2" DESTINATION "./scone/scenarios")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scone/scenarios/Tutorials2" DESTINATION "./scone/scenarios")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/scone/scenarios/SconePy" DESTINATION "./scone/scenarios")
-	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources" DESTINATION "./")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Examples2" DESTINATION "./scone/scenarios")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Tutorials2" DESTINATION "./scone/scenarios")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/SconePy" DESTINATION "./scone/scenarios")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources" DESTINATION "./")
 
 	# Windows install/packaging:
 	if (WIN32)

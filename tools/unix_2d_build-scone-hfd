@@ -18,8 +18,12 @@ else
    )
 fi
 
+# Update version
+cd ./scone
+./tools/update_version.sh
+cd ..
+
 mkdir -p "${SCONE_BUILD_DIR}"
-mkdir -p "${SCONE_INSTALL_DIR}"
 cd "${SCONE_BUILD_DIR}"
 cmake ../ \
     -DOSG_DIR="${OSG_INSTALL_PATH}" \
@@ -28,7 +32,8 @@ cmake ../ \
     -DCMAKE_INSTALL_PREFIX="${SCONE_INSTALL_DIR}" \
     -DOPENSIM_INSTALL_DIR="${OPENSIM3_INSTALL_PATH}" \
     -DOPENSIM_INCLUDE_DIR="${OPENSIM3_INSTALL_PATH}/sdk/include" \
-    -DSCONE_OPENSIM_3=ON \
+    -DSCONE_OPENSIM_3=OFF \
     -DSCONE_HYFYDY=ON \
+    -DSCONE_STUDIO_CPACK=ON \
     ${cmake_extra_args[@]}
-cmake --build . --parallel "${NUM_BUILD_JOBS}"
+cmake --build . --parallel "${NUM_BUILD_JOBS}" --target install

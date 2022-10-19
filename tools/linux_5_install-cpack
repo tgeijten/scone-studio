@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+source ./tools/build_config  # sets relevant envvar defaults
+
+cd "${SCONE_BUILD_DIR}"
+cmake --build . --target install
+cpack .

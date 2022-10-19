@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+source ./tools/build_config
+
+# scone build dir
+rm -r  "${SCONE_BUILD_DIR}"
+
+# scone install dir
+rm -r  "${SCONE_INSTALL_DIR}"
+
+# where openscenegraph binaries are installed post-build
+rm -r  "${OSG_INSTALL_PATH}"
+rm -r  "${OSG_INSTALL_PATH}/../build"
+
+# where simbody binaries are installed post-build
+rm -r  "${SIMBODY_INSTALL_PATH}"
+rm -r  "${SIMBODY_INSTALL_PATH}/../build"
+
+# where opensim3 binaries are installed post-build
+rm -r  "${OPENSIM3_INSTALL_PATH}"
+rm -r  "${OPENSIM3_INSTALL_PATH}/../build"
