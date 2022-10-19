@@ -45,9 +45,11 @@ if(LINUX)
 
 	if(NOT DEFINED OPENSIM_INSTALL_DIR)
 	    set(OPENSIM_INSTALL_DIR "${PROJECT_DIR}/opensim3-scone/install")
+	endif()
 
 	if(NOT DEFINED OPENSIM_INCLUDE_DIR)
 	    set(OPENSIM_INCLUDE_DIR "${PROJECT_DIR}/opensim3-scone/install/sdk/include")
+	endif()
 endif()
 
 # Silence CMake warning on OSX.
