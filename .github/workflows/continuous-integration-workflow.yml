@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-11
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Get Brew
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -22,7 +22,7 @@ jobs:
 
     - name: Check cache for openscenegraph
       id: cache_osg
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ env.OSG_INSTALL_PATH }}
         key: ${{ runner.os }}-osg-${{ hashFiles('OpenSceneGraph/src') }}
@@ -33,7 +33,7 @@ jobs:
 
     - name: Check cache for simbody
       id: cache_simbody
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ env.SIMBODY_INSTALL_PATH }}
         key: ${{ runner.os }}-simbody-${{ hashFiles('simbody/Simbody') }}
@@ -44,7 +44,7 @@ jobs:
 
     - name: Cache opensim3
       id: cache_opensim3
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ env.OPENSIM3_INSTALL_PATH }}
         key: ${{ runner.os }}-opensim3-${{ hashFiles('opensim3-scone/OpenSim') }}
@@ -72,7 +72,7 @@ jobs:
     name: Build on Ubuntu 20.04
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Get Dependencies
       run: cd $GITHUB_WORKSPACE && ./tools/linux_1_get-dependencies
@@ -89,7 +89,7 @@ jobs:
     # openscenegraph: only build it if its source files have changed
     - name: Cache openscenegraph
       id: cache_osg
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ env.OSG_INSTALL_PATH }}
         key: ${{ runner.os }}-osg-${{ hashFiles('OpenSceneGraph/src') }}
@@ -102,7 +102,7 @@ jobs:
     # simbody: only build it if its source files have changed
     - name: Cache simbody
       id: cache_simbody
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ env.SIMBODY_INSTALL_PATH }}
         key: ${{ runner.os }}-simbody-${{ hashFiles('simbody/Simbody') }}
@@ -115,7 +115,7 @@ jobs:
     # opensim3: only build it if its source files have changed
     - name: Cache opensim3
       id: cache_opensim3
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ${{ env.OPENSIM3_INSTALL_PATH }}
         key: ${{ runner.os }}-opensim3-${{ hashFiles('opensim3-scone/OpenSim') }}
