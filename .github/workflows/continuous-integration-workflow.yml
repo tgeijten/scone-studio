@@ -63,7 +63,7 @@ jobs:
       run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
 
     - name: Upload DMG file as an artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: sconestudio.dmg
         path: build/*.dmg
@@ -138,7 +138,7 @@ jobs:
 
 
     - name: Upload deb package artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: deb-installer.zip
         path: build/*.deb
