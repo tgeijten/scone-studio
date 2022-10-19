@@ -36,17 +36,19 @@ endif()
 
 # Initialize LINUX settings from build script
 if(LINUX)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
+    # set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
 
-	set(OSG_INSTALL_PATH "${CMAKE_SOURCE_DIR}/OpenSceneGraph/install")
-	set(OSG_DIR "${OSG_INSTALL_PATH}")
-	list(APPEND CMAKE_PREFIX_PATH "${OSG_INSTALL_PATH}/lib64")
+	if(NOT DEFINED OSG_DIR)
+		set(OSG_DIR "${CMAKE_SOURCE_DIR}/OpenSceneGraph/install")
+		list(APPEND CMAKE_PREFIX_PATH "${OSG_INSTALL_PATH}/lib64")
+	endif()
 
-	set(OPENSIM3_INSTALL_PATH "${PROJECT_DIR}/opensim3-scone/install}")
-    set(OPENSIM_INSTALL_DIR "${OPENSIM3_INSTALL_PATH}")
-    set(OPENSIM_INCLUDE_DIR "${OPENSIM3_INSTALL_PATH}/sdk/include")
+	if(NOT DEFINED OPENSIM_INSTALL_DIR)
+	    set(OPENSIM_INSTALL_DIR "${PROJECT_DIR}/opensim3-scone/install")
+
+	if(NOT DEFINED OPENSIM_INCLUDE_DIR)
+	    set(OPENSIM_INCLUDE_DIR "${PROJECT_DIR}/opensim3-scone/install/sdk/include")
 endif()
-
 
 # Silence CMake warning on OSX.
 set(CMAKE_MACOSX_RPATH ON)
