@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-11
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v1
 
     - name: Get Brew
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -22,7 +22,7 @@ jobs:
 
     - name: Check cache for openscenegraph
       id: cache_osg
-      uses: actions/cache@v3
+      uses: actions/cache@v1
       with:
         path: ${{ env.OSG_INSTALL_PATH }}
         key: ${{ runner.os }}-osg-${{ hashFiles('OpenSceneGraph/src') }}
@@ -33,7 +33,7 @@ jobs:
 
     - name: Check cache for simbody
       id: cache_simbody
-      uses: actions/cache@v3
+      uses: actions/cache@v1
       with:
         path: ${{ env.SIMBODY_INSTALL_PATH }}
         key: ${{ runner.os }}-simbody-${{ hashFiles('simbody/Simbody') }}
@@ -44,7 +44,7 @@ jobs:
 
     - name: Cache opensim3
       id: cache_opensim3
-      uses: actions/cache@v3
+      uses: actions/cache@v1
       with:
         path: ${{ env.OPENSIM3_INSTALL_PATH }}
         key: ${{ runner.os }}-opensim3-${{ hashFiles('opensim3-scone/OpenSim') }}
@@ -63,7 +63,7 @@ jobs:
       run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
 
     - name: Upload DMG file as an artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: sconestudio.dmg
         path: build/*.dmg
