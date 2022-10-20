@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 set -xeuo pipefail
-source ./tools/build_config
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "${script_dir}/build_config"
 
 general_deps=(
     git

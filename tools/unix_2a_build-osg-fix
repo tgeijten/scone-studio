@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 set -xeuo pipefail
-source ./tools/build_config
+source "${script_dir}/build_config"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     cmake_extra_flags=(

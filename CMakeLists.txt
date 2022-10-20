@@ -83,6 +83,7 @@ if (SCONE_STUDIO_CPACK)
 	set(CPACK_PACKAGE_DESCRIPTION "A tool for predictive musculoskeletal simulations")
 	set(CPACK_PACKAGE_EXECUTABLES "sconestudio;SCONE Command Line Interface")
 	set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_SOURCE_DIR}/packages")
+	set(CPACK_OUTPUT_FILE_PREFIX "./../packages")
 
 	# install scenarios
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Examples2" DESTINATION "./scone/scenarios")
