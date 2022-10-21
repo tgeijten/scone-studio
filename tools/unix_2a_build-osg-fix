@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
+set -xeuo pipefail
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-set -xeuo pipefail
 source "${script_dir}/build_config"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then

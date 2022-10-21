@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 set -xeuo pipefail
-source ./tools/build_config
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source_dir="${script_dir}/../"
+
+source "${script_dir}/build_config"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     cmake_extra_args=(
@@ -15,25 +18,26 @@ else
         -DCMAKE_PREFIX_PATH="${OSG_INSTALL_PATH}/lib64"
         -DSCONE_LUA=ON
         -DSCONE_PYTHON=ON
+        -DSCONE_OPENSIM_3=OFF
+        -DSCONE_HYFYDY=ON
+        -DSCONE_STUDIO_CPACK=ON
+        -DSCONE_DEVELOPMENT_BUILD=ON
    )
 fi
 
 # Update version
-cd ./scone
-./tools/update_version.sh
-cd ..
+# cd ./scone
+# ./tools/update_version.sh
+# cd ..
 
 mkdir -p "${SCONE_BUILD_DIR}"
 cd "${SCONE_BUILD_DIR}"
-cmake ../ \
+cmake "${source_dir}" \
     -DOSG_DIR="${OSG_INSTALL_PATH}" \
     -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
     -DCMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE}" \
     -DCMAKE_INSTALL_PREFIX="${SCONE_INSTALL_DIR}" \
     -DOPENSIM_INSTALL_DIR="${OPENSIM3_INSTALL_PATH}" \
     -DOPENSIM_INCLUDE_DIR="${OPENSIM3_INSTALL_PATH}/sdk/include" \
-    -DSCONE_OPENSIM_3=OFF \
-    -DSCONE_HYFYDY=ON \
-    -DSCONE_STUDIO_CPACK=ON \
     ${cmake_extra_args[@]}
 cmake --build . --parallel "${NUM_BUILD_JOBS}" --target install

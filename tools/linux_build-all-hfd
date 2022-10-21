@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-source ./tools/linux_1_get-dependencies
-
-source ./tools/unix_2a_build-osg-fix
-
-source ./tools/unix_2d_build-scone-hfd
