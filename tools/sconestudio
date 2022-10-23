@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# get dir of this script
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# set OSG_LIBRARY_PATH so that OpenSceneGraph can find its plug-ins
+# export OSG_LIBRARY_PATH="${script_dir}/lib"
+
+# run ./bin/sconestudio
+"${script_dir}/bin/sconestudio" "\$@"
