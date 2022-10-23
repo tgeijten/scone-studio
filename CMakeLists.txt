@@ -106,30 +106,29 @@ if (SCONE_STUDIO_CPACK)
 	endif()
 
 	if (UNIX AND NOT APPLE)
+		# packaging: package installation as archive
+		set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+
 		if (SCONE_STUDIO_CPACK_DEBIAN)
 			# packaging: package installation as a DEB
-			set(CPACK_GENERATOR DEB)
+			set(CPACK_GENERATOR TGZ DEB)
 			set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/scone-studio")
 			set(CPACK_DEBIAN_PACKAGE_DEPENDS "libstdc++6")
 			set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 			set(CPACK_STRIP_FILES YES)
 
-			# packaging: configure a script that creates a symlink /usr/local/bin/sconecmd --> /opt/osc/bin/sconecmd
-			# configure_file("${PROJECT_SOURCE_DIR}/resources/package/postinst.in" "postinst" @ONLY)
+			# packaging: configure a script that creates symlinks /usr/local/bin/ --> /opt/scone-studio/bin/
+			configure_file("${PROJECT_SOURCE_DIR}/tools/postinst.in" "postinst" @ONLY)
 
 			# packaging: configure a script that destroys the above symlink on uninstall
-			# configure_file("${PROJECT_SOURCE_DIR}/resources/package/postrm.in" "postrm" @ONLY)
+			configure_file("${PROJECT_SOURCE_DIR}/tools/postrm.in" "postrm" @ONLY)
 
 			# packaging: tell debian packager to use the scripts for postinst and postrm actions
-			# set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/postrm")
+			set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/postrm")
 		else()
-			# packaging: package installation as archive
-			set(CPACK_GENERATOR TGZ ZIP)
-			set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
-			set(CPACK_PACKAGING_INSTALL_PREFIX "/scone-studio")
-			set(CPACK_DEBIAN_PACKAGE_DEPENDS "libstdc++6")
-			set(CPACK_STRIP_FILES YES)
+			set(CPACK_GENERATOR TGZ)
 		endif()
+
 	endif()
 
 	# CPack vars etc. now fully configured, so include it

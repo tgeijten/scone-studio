@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# postinst: ran by the Debian package manager (dpkg) after scone-studio is
+# installed.
+
+# create a symlink in /usr/local/bin to the installed scone-studio, so that
+# users can write 'sconecmd' at the command line
+if [[ ! -e "/usr/local/bin/sconecmd" ]]; then
+    ln -s "/opt/scone-studio/bin/sconecmd" "/usr/local/bin/sconecmd"
+fi
+
+if [[ ! -e "/usr/local/bin/sconestudio" ]]; then
+    ln -s "/opt/scone-studio/bin/sconestudio" "/usr/local/bin/sconestudio"
+fi
