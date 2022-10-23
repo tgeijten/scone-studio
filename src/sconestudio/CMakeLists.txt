@@ -137,6 +137,9 @@ target_link_libraries(sconestudio
 	${OPENTHREADS_LIBRARIES}
 	)
 
+set(OSG_PLUGINS_FOLDER "osgPlugins-3.4.1" CACHE STRING "Prefix of OpenSceneGraph Plugins folder. Yes, you need to set this by hand :-(")
+
+# add sconelib components
 if (SCONE_OPENSIM_3)
 	target_link_libraries(sconestudio sconeopensim3)
 	target_compile_definitions(sconestudio PRIVATE SCONE_OPENSIM_3)
@@ -232,7 +235,6 @@ if(MSVC)
 	endforeach()
 
 	# Copy osg png plugin
-	set(OSG_PLUGINS_FOLDER "osgPlugins-3.4.1" CACHE STRING "Prefix of OpenSceneGraph Plugins folder. Yes, you need to set this by hand :-(")
 	add_custom_command(TARGET sconestudio POST_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory "${DLL_TARGET_DIR}/${OSG_PLUGINS_FOLDER}")
 	set(OSG_PLUGINS osgdb_png osgdb_obj osgdb_stl)
 	foreach(osgplugin ${OSG_PLUGINS})
@@ -244,9 +246,9 @@ if(MSVC)
 endif()
 
 if(LINUX)
-	file(GLOB OSG_SO_FILES "${OSG_DIR}/lib64/*.so*")
-	# message("OSG_SO_FILES=" ${OSG_SO_FILES})
-	install(FILES ${OSG_SO_FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	# file(GLOB OSG_SO_FILES "${OSG_DIR}/lib64/*.so*")
+	# install(FILES ${OSG_SO_FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	install(DIRECTORY "${OSG_DIR}/lib64/" DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 install(TARGETS sconestudio vis-osg
