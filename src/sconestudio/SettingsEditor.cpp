@@ -39,10 +39,11 @@ namespace scone
 		auto& scone_settings = GetSconeSettings();
 
 		// folders
+		auto ga_template_path = to_qt( GetStudioSetting<xo::path>( "gait_analysis.template" ).make_preferred() );
 		ui.scenariosFolder->init( QFileEdit::Directory, "", to_qt( GetFolder( SconeFolder::Scenarios ).make_preferred() ) );
 		ui.resultsFolder->init( QFileEdit::Directory, "", to_qt( GetFolder( SconeFolder::Results ).make_preferred() ) );
 		ui.geometryFolder->init( QFileEdit::Directory, "", to_qt( GetFolder( SconeFolder::Geometry ).make_preferred() ) );
-		ui.gaitAnalysisFolder->init( QFileEdit::OpenFile, "Gait Analysis Templates (*.zml)", to_qt( GetStudioSetting<xo::path>( "gait_analysis.template" ).make_preferred() ) );
+		ui.gaitAnalysisFolder->init( QFileEdit::OpenFile, "Gait Analysis Templates (*.zml)", ga_template_path );
 
 		// data checkboxes
 		xo::flat_map< string, QListWidgetItem* > data_checkboxes;
@@ -98,7 +99,8 @@ namespace scone
 				scone_settings.set( "folders.results", ui.resultsFolder->text().toStdString() );
 			if ( ui.geometryFolder->text().toStdString() != GetFolder( SconeFolder::Geometry ) )
 				scone_settings.set( "folders.geometry", ui.geometryFolder->text().toStdString() );
-			studio_settings.set( "gait_analysis.template", ui.gaitAnalysisFolder->text().toStdString() );
+			if ( ui.gaitAnalysisFolder->text() != ga_template_path )
+				studio_settings.set( "gait_analysis.template", ui.gaitAnalysisFolder->text().toStdString() );
 
 			// copy checkboxes
 			for ( auto& item : data_checkboxes )
