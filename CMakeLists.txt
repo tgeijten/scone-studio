@@ -111,7 +111,7 @@ if (SCONE_STUDIO_CPACK)
 
 		if (SCONE_STUDIO_CPACK_DEBIAN)
 			# packaging: package installation as a DEB
-			set(CPACK_GENERATOR TGZ DEB)
+			set(CPACK_GENERATOR DEB)
 			set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/scone-studio")
 			set(CPACK_DEBIAN_PACKAGE_DEPENDS "libstdc++6")
 			set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
@@ -126,6 +126,7 @@ if (SCONE_STUDIO_CPACK)
 			# packaging: tell debian packager to use the scripts for postinst and postrm actions
 			set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/postrm")
 		else()
+			set(CPACK_PACKAGING_INSTALL_PREFIX "/scone-studio")
 			set(CPACK_GENERATOR TGZ)
 		endif()
 
