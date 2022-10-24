@@ -45,7 +45,7 @@ int main( int argc, char *argv[] )
 		// init console logging
 #if defined( _DEBUG )
 		xo::log::console_sink console_log_sink( xo::log::level::trace );
-#elseif !defined( _MSC_VER )
+#elif !defined( _MSC_VER )
 		xo::log::console_sink console_log_sink( xo::log::level::info );
 #endif
 		xo::path log_file = scone::GetSettingsFolder() / "log" / xo::path( xo::get_date_time_str( "%Y%m%d_%H%M%S" ) + ".log" );
