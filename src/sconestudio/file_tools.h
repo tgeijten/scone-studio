@@ -21,6 +21,6 @@ namespace scone
 	};
 	CompareFoldersResult compareFolders( const QString& source, const QString& target );
 
-	bool okToUpdateFiles( const QStringList& l );
+	bool okToUpdateFiles( QStringList l );
 	void updateTutorialsExamples();
 }

@@ -79,10 +79,15 @@ namespace scone
 		return result;
 	}
 
-	bool okToUpdateFiles( const QStringList& l )
+	bool okToUpdateFiles( QStringList l )
 	{
 		if ( !l.empty() )
 		{
+			if ( l.size() > 5 ) {
+				auto more = l.size() - 5;
+				l.erase( l.begin() + 5, l.end() );
+				l.push_back( QString().sprintf( "\n(%d more)", more ) );
+			}
 			QString msg = QString( "The following SCONE scenario files will be updated to the latest version (recommended):\n\n" ) + l.join( '\n' );
 			return QMessageBox::question( nullptr, "Update Scenario Files", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Ok;
 		}
