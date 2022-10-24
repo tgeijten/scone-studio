@@ -17,3 +17,6 @@ ${script_dir}/unix_2d_build-scone-studio-hfd
 cd "${SCONE_BUILD_DIR}"
 cmake --install .
 cpack
+
+cmake . -DSCONE_STUDIO_CPACK_DEBIAN=ON
+cpack
