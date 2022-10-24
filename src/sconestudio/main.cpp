@@ -42,9 +42,11 @@ int main( int argc, char *argv[] )
 
 	try
 	{
-		// init logging
-#if !defined( _MSC_VER ) || defined( _DEBUG )
+		// init console logging
+#if defined( _DEBUG )
 		xo::log::console_sink console_log_sink( xo::log::level::trace );
+#elseif !defined( _MSC_VER )
+		xo::log::console_sink console_log_sink( xo::log::level::info );
 #endif
 		xo::path log_file = scone::GetSettingsFolder() / "log" / xo::path( xo::get_date_time_str( "%Y%m%d_%H%M%S" ) + ".log" );
 		xo::log::file_sink file_sink( log_file, xo::log::level::debug, xo::log::sink_mode::current_thread );
