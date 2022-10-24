@@ -12,3 +12,10 @@ fi
 if [[ ! -e "/usr/local/bin/sconestudio" ]]; then
     ln -s "/opt/scone-studio/bin/sconestudio" "/usr/local/bin/sconestudio"
 fi
+
+# create desktop shortcut
+if [[ -d "/usr/share/applications/" ]]; then
+    if [[ ! -e "/usr/share/applications/scone-studio.desktop" ]]; then
+        ln -s "/opt/scone-studio/resources/scone-studio.desktop" "/usr/share/applications/scone-studio.desktop"
+    fi
+fi

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=SCONE Studio
+Comment=SCONE Graphical User Interface
+TryExec=/opt/scone-studio/bin/sconestudio
+Exec=/opt/scone-studio/bin/sconestudio
+Icon=/opt/scone-studio/resources/ui/scone-logo.png
+Type=Application
+Keywords=SCONE

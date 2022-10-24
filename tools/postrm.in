@@ -6,3 +6,6 @@
 # remove the symlink that was created at installation-time
 rm -f "/usr/local/bin/sconecmd"
 rm -f "/usr/local/bin/sconestudio"
+
+# remove the desktop icon
+rm -f "/usr/share/applications/scone-studio.desktop"
