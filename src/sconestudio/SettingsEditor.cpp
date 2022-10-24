@@ -99,8 +99,10 @@ namespace scone
 				scone_settings.set( "folders.results", ui.resultsFolder->text().toStdString() );
 			if ( ui.geometryFolder->text().toStdString() != GetFolder( SconeFolder::Geometry ) )
 				scone_settings.set( "folders.geometry", ui.geometryFolder->text().toStdString() );
-			if ( ui.gaitAnalysisFolder->text() != ga_template_path )
+			if ( ui.gaitAnalysisFolder->text() != ga_template_path ) {
+				log::debug( "Updating gait_analysis.template from ", ga_template_path.toStdString(), " to ", ui.gaitAnalysisFolder->text().toStdString() );
 				studio_settings.set( "gait_analysis.template", ui.gaitAnalysisFolder->text().toStdString() );
+			}
 
 			// copy checkboxes
 			for ( auto& item : data_checkboxes )
