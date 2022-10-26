@@ -31,6 +31,7 @@
 #include "StudioSettings.h"
 #include "QSafeApplication.h"
 #include "scone/core/profiler_config.h"
+#include <clocale>
 
 int main( int argc, char *argv[] )
 {
@@ -39,6 +40,9 @@ int main( int argc, char *argv[] )
 	QApplication::setStyle( "fusion" );
 	QSafeApplication app( argc, argv );
 	scone::TimeSection( "InitApplication" );
+	
+	// QApplication changes C locale on Linux, set it back to "C"
+	std::setlocale( LC_ALL, "C" );
 
 	try
 	{
@@ -93,11 +97,9 @@ int main( int argc, char *argv[] )
 	}
 }
 
-#ifdef _WIN32
-#ifndef DEBUG
+#if defined( _WIN32 ) && defined( DEBUG )
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	return main( __argc, __argv );
 }
-#endif
 #endif
