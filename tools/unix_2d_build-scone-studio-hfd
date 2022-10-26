@@ -4,6 +4,8 @@ set -xeuo pipefail
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source_dir="${script_dir}/../"
 
+export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-False}"
+
 source "${script_dir}/build_config"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
