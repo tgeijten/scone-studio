@@ -65,6 +65,7 @@ reflex_controller.txt
 replication_objective.txt
 script_controller.txt
 script_measure.txt
+sensor_reflex.txt
 sequential_controller.txt
 simulation_objective.txt
 sine_wave.txt
