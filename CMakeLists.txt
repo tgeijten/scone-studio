@@ -29,6 +29,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # the build directory and so the dll's aren't next to the executables.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
+# set CMAKE_INSTALL_BINDIR etc.
+include(GNUInstallDirs)
+
 # Set INSTALL directories
 if(LINUX)
 	set(CMAKE_INSTALL_RPATH "\$ORIGIN")
