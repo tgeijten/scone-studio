@@ -3,20 +3,20 @@
 set -xeuo pipefail
 script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-False}"
+export CMAKE_VERBOSE_MAKEFILE=${CMAKE_VERBOSE_MAKEFILE:-False}
 
 source "${script_dir}/build_config"
 
-# ${script_dir}/linux_1_get-external-dependencies
-# ${script_dir}/unix_2a_build-osg-fix
-# ${script_dir}/unix_2b_build-simbody-fix
-# ${script_dir}/unix_2c_build-opensim3-fix
+export SCONE_CREATE_DEBIAN_PACKAGE=ON
 ${script_dir}/unix_2d_build-scone-studio-hfd
 
-# install and package
 cd "${SCONE_BUILD_DIR}"
-cmake --install .
 cpack
+cd ..
+  
+export SCONE_CREATE_DEBIAN_PACKAGE=OFF
+${script_dir}/unix_2d_build-scone-studio-hfd
 
-cmake . -DSCONE_STUDIO_CPACK_DEBIAN=ON
+cd "${SCONE_BUILD_DIR}"
 cpack
+cd ..

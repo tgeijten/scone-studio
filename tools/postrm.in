@@ -3,9 +3,9 @@
 # postrm: ran by the Debian package manager (dpkg) when scone-studio is
 # uninstalled
 
-# remove the symlink that was created at installation-time
+# remove the symlinks created at installation-time
 rm -f "/usr/local/bin/sconecmd"
 rm -f "/usr/local/bin/sconestudio"
 
 # remove the desktop icon
-rm -f "/usr/share/applications/scone-studio.desktop"
+rm -f "/usr/share/applications/sconestudio.desktop"

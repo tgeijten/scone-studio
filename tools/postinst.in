@@ -15,7 +15,7 @@ fi
 
 # create desktop shortcut
 if [[ -d "/usr/share/applications/" ]]; then
-    if [[ ! -e "/usr/share/applications/scone-studio.desktop" ]]; then
-        ln -s "/opt/scone-studio/resources/scone-studio.desktop" "/usr/share/applications/scone-studio.desktop"
+    if [[ ! -e "/usr/share/applications/sconestudio.desktop" ]]; then
+        ln -s "/opt/scone-studio/resources/sconestudio.desktop" "/usr/share/applications/sconestudio.desktop"
     fi
 fi

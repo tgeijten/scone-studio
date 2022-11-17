@@ -60,6 +60,9 @@ export OPENSIM3_INSTALL_PATH="${OPENSIM3_INSTALL_PATH:-${PROJECT_DIR}/opensim3-s
 # where osgQt binaries are installed post-build
 OSGQT_INSTALL_DIR="${OSGQT_INSTALL_DIR:-${PROJECT_DIR}/osgQt/install}"
 
+# set if cpack should create a debian package
+export SCONE_CREATE_DEBIAN_PACKAGE=${SCONE_CREATE_DEBIAN_PACKAGE:-ON}
+
 # number of concurrent cc/c++ build jobs
 export NUM_BUILD_JOBS="${NUM_BUILD_JOBS:-$(num_processors)}"
 
