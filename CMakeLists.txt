@@ -78,7 +78,7 @@ if (SCONE_STUDIO_CPACK)
 	include(InstallRequiredSystemLibraries)
 
 	# set necessary CPack variables
-	set(CPACK_PACKAGE_NAME "scone-studio")
+	set(CPACK_PACKAGE_NAME "scone")
 	set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 	set(CPACK_PACKAGE_VENDOR "Goatstream")
 	set(CPACK_PACKAGE_CONTACT "info@goatstream.com")
@@ -97,7 +97,7 @@ if (SCONE_STUDIO_CPACK)
 	# Windows install/packaging:
 	if (WIN32)
 		# packaging: use NSIS to package everything into a self-extracting installer
-		set(CPACK_PACKAGE_INSTALL_DIRECTORY "scone-studio")
+		set(CPACK_PACKAGE_INSTALL_DIRECTORY "scone")
 		set(CPACK_GENERATOR NSIS)
 		set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/scone/resources/package/scone_icon_24.ico")
 
@@ -105,7 +105,7 @@ if (SCONE_STUDIO_CPACK)
 		set(CPACK_NSIS_CONTACT "info@goatstream.com")
 		set(CPACK_NSIS_MODIFY_PATH OFF)
 		set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
-		set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\scone-studio\\\\scone-studio.lnk' '\$INSTDIR\\\\bin\\\\sconestudio.exe'")
+		set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\scone\\\\scone-studio.lnk' '\$INSTDIR\\\\bin\\\\sconestudio.exe'")
 	endif()
 
 	if (UNIX AND NOT APPLE)
@@ -115,12 +115,12 @@ if (SCONE_STUDIO_CPACK)
 		if (SCONE_STUDIO_CPACK_DEBIAN)
 			# packaging: package installation as a DEB
 			set(CPACK_GENERATOR DEB)
-			set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/scone-studio")
+			set(CPACK_PACKAGING_INSTALL_PREFIX "/opt/scone")
 			set(CPACK_DEBIAN_PACKAGE_DEPENDS "libstdc++6, zlib1g, freeglut3, qtbase5-dev, libpng16-16")
 			set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 			set(CPACK_STRIP_FILES YES)
 
-			# packaging: configure a script that creates symlinks /usr/local/bin/ --> /opt/scone-studio/bin/
+			# packaging: configure a script that creates symlinks /usr/local/bin/ --> /opt/scone/bin/
 			configure_file("${PROJECT_SOURCE_DIR}/tools/postinst.in" "postinst" @ONLY)
 
 			# packaging: configure a script that destroys the above symlink on uninstall
@@ -129,7 +129,7 @@ if (SCONE_STUDIO_CPACK)
 			# packaging: tell debian packager to use the scripts for postinst and postrm actions
 			set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_BINARY_DIR}/postinst;${CMAKE_BINARY_DIR}/postrm")
 		else()
-			set(CPACK_PACKAGING_INSTALL_PREFIX "/scone-studio")
+			set(CPACK_PACKAGING_INSTALL_PREFIX "/scone")
 			set(CPACK_GENERATOR TGZ)
 		endif()
 

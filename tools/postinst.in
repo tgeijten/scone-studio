@@ -6,16 +6,16 @@
 # create a symlink in /usr/local/bin to the installed scone-studio, so that
 # users can write 'sconecmd' at the command line
 if [[ ! -e "/usr/local/bin/sconecmd" ]]; then
-    ln -s "/opt/scone-studio/bin/sconecmd" "/usr/local/bin/sconecmd"
+    ln -s "/opt/scone/bin/sconecmd" "/usr/local/bin/sconecmd"
 fi
 
 if [[ ! -e "/usr/local/bin/sconestudio" ]]; then
-    ln -s "/opt/scone-studio/bin/sconestudio" "/usr/local/bin/sconestudio"
+    ln -s "/opt/scone/bin/sconestudio" "/usr/local/bin/sconestudio"
 fi
 
 # create desktop shortcut
 if [[ -d "/usr/share/applications/" ]]; then
     if [[ ! -e "/usr/share/applications/sconestudio.desktop" ]]; then
-        ln -s "/opt/scone-studio/resources/sconestudio.desktop" "/usr/share/applications/sconestudio.desktop"
+        ln -s "/opt/scone/resources/sconestudio.desktop" "/usr/share/applications/sconestudio.desktop"
     fi
 fi
