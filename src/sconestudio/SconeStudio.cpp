@@ -1291,6 +1291,8 @@ void SconeStudio::createVideo()
 	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", QString(), "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
 	if ( captureFilename.isEmpty() )
 		return;
+	if ( !captureFilename.contains( "." ) )
+		captureFilename += ".mp4"; // make sure filename has an extension (needed for Linux)
 
 	// start recording
 	QDir().mkdir( captureFilename + ".images" );

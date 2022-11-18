@@ -38,7 +38,7 @@ namespace scone
 			set<path>( "gait_analysis.template", GetSconeStudioFolder().make_preferred() / "resources/gaitanalysis/default.zml" );
 
 		if ( get<path>( "video.path_to_ffmpeg" ).empty() )
-			set<path>( "video.path_to_ffmpeg", xo::get_application_dir() / SCONE_FFMPEG_EXECUTABLE );
+			set<path>( "video.path_to_ffmpeg", SCONE_DEFAULT_PATH_TO_FFMPEG );
 	}
 
 	xo::settings& GetStudioSettings()
