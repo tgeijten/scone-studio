@@ -85,7 +85,6 @@ if (SCONE_STUDIO_CPACK)
 	set(CPACK_PACKAGE_HOMEPAGE_URL "https://goatstream.com")
 	set(CPACK_PACKAGE_DESCRIPTION "A tool for predictive musculoskeletal simulations")
 	set(CPACK_PACKAGE_EXECUTABLES "sconestudio;SCONE Command Line Interface")
-	set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_SOURCE_DIR}/packages")
 	set(CPACK_OUTPUT_FILE_PREFIX "./../packages")
 
 	# install scenarios
@@ -97,6 +96,7 @@ if (SCONE_STUDIO_CPACK)
 	# Windows install/packaging:
 	if (WIN32)
 		# packaging: use NSIS to package everything into a self-extracting installer
+		set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_SOURCE_DIR}/packages")
 		set(CPACK_PACKAGE_INSTALL_DIRECTORY "scone")
 		set(CPACK_GENERATOR NSIS)
 		set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/scone/resources/package/scone_icon_24.ico")
