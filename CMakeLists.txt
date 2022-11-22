@@ -96,8 +96,9 @@ if (SCONE_STUDIO_CPACK)
 	# Windows install/packaging:
 	if (WIN32)
 		# packaging: use NSIS to package everything into a self-extracting installer
+		set(CPACK_PACKAGE_NAME "SCONE")
 		set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_SOURCE_DIR}/packages")
-		set(CPACK_PACKAGE_INSTALL_DIRECTORY "scone")
+		set(CPACK_PACKAGE_INSTALL_DIRECTORY "SCONE")
 		set(CPACK_GENERATOR NSIS)
 		set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/scone/resources/package/scone_icon_24.ico")
 
@@ -105,7 +106,8 @@ if (SCONE_STUDIO_CPACK)
 		set(CPACK_NSIS_CONTACT "info@goatstream.com")
 		set(CPACK_NSIS_MODIFY_PATH OFF)
 		set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
-		set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\scone\\\\scone-studio.lnk' '\$INSTDIR\\\\bin\\\\sconestudio.exe'")
+		set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\SCONE\\\\SCONE Studio.lnk' '\$INSTDIR\\\\bin\\\\sconestudio.exe'")
+		set(CPACK_NSIS_DELETE_ICONS_EXTRA "Delete '\$SMPROGRAMS\\\\SCONE\\\\SCONE Studio.lnk'")
 	endif()
 
 	if (UNIX AND NOT APPLE)
