@@ -102,7 +102,8 @@ namespace scone
 		auto tuttrg = trgPath / "Tutorials";
 		auto exsrc = srcPath / "Examples2";
 		auto extrg = trgPath / "Examples";
-
+		auto pysrc = srcPath / "SconePy";
+		auto pytrg = trgPath / "SconePy";
 		// check if old versions are installed
 		bool hasOldTutorials = fs::exists( to_fs( tuttrg ) / "Tutorial 1 - Introduction.scone" );
 		bool hasOldExamples = fs::exists( to_fs( extrg ) / "data/InitStateGait10.sto" );
@@ -134,9 +135,10 @@ namespace scone
 			{
 				auto tutCheck = compareFolders( to_qt( tutsrc ), to_qt( tuttrg ) );
 				auto exCheck = compareFolders( to_qt( exsrc ), to_qt( extrg ) );
-				if ( !tutCheck.good() || !exCheck.good() )
+				auto pyCheck = compareFolders( to_qt( pysrc ), to_qt( pytrg ) );
+				if ( !tutCheck.good() || !exCheck.good() || !pyCheck.good() )
 				{
-					auto different = tutCheck.different + exCheck.different;
+					auto different = tutCheck.different + exCheck.different + pyCheck.different;
 					if ( !different.empty() && !okToUpdateFiles( different ) )
 						return; // user want to keep existing versions
 
@@ -144,6 +146,7 @@ namespace scone
 					auto options = fs::copy_options::overwrite_existing | fs::copy_options::recursive;
 					fs::copy( to_fs( tutsrc ), to_fs( tuttrg ), options );
 					fs::copy( to_fs( exsrc ), to_fs( extrg ), options );
+					fs::copy( to_fs( pysrc ), to_fs( pytrg ), options );
 				}
 				else log::info( "SCONE Tutorials and Examples are up-to-date" );
 			}
