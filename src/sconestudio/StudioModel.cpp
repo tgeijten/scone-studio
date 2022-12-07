@@ -36,6 +36,7 @@ namespace scone
 	StudioModel::StudioModel( vis::scene& s, const path& file, const ViewOptions& vs ) :
 		model_objective_( nullptr ),
 		null_objective_( PropNode(), file.parent_path() ),
+		follow_body_( nullptr ),
 		status_( Status::Initializing ),
 		write_results_after_evaluation_( false )
 	{
@@ -96,6 +97,10 @@ namespace scone
 					model_->SetStoreData( true );
 					EvaluateTo( 0 ); // evaluate one step so we can init vis
 				}
+
+				// set follow body
+				if ( auto s = GetStudioSetting<String>( "viewer.camera_follow_body" ); !s.empty() )
+					follow_body_ = FindByName( model_->GetBodies(), s );
 
 				// create and init visualizer
 				vis_ = std::make_unique<ModelVis>( *model_, s, vs );
@@ -297,7 +302,7 @@ namespace scone
 
 	Vec3 StudioModel::GetFollowPoint() const
 	{
-		auto com = model_->GetComPos();
+		auto com = follow_body_ ? follow_body_->GetComPos() : model_->GetComPos();
 		if ( auto gp = model_->GetGroundPlane() )
 		{
 			auto l = xo::linef( xo::vec3f( com ), xo::vec3f::neg_unit_y() );

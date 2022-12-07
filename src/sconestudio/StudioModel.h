@@ -83,6 +83,7 @@ namespace scone
 		ModelObjective* model_objective_;
 		Objective null_objective_;
 		ModelUP model_;
+		Body* follow_body_;
 		path filename_;
 		path scenario_filename_;
 		PropNode scenario_pn_;
