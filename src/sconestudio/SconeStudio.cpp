@@ -56,6 +56,7 @@
 #include "file_tools.h"
 #include "model_conversion.h"
 #include "studio_tools.h"
+#include "scone/core/ModelConverter.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -161,11 +162,14 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addSeparator();
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
 	toolsMenu->addAction( "Clear Analysis Fi&lter", this, [&]() { analysisView->setFilterText( "" ); analysisView->selectNone();
-		analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
+	analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
 	toolsMenu->addAction( "&Convert Model...", [=]() { ShowModelConversionDialog( this ); } );
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	toolsMenu->addAction( "Convert &Scenario...", this, &SconeStudio::convertScenario );
+#endif
 	toolsMenu->addSeparator();
 #endif
 	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
@@ -577,8 +581,7 @@ void SconeStudio::updateGaitAnalysis()
 			gaitAnalysisDock->show();
 			gaitAnalysisDock->raise();
 		}
-	}
-	catch ( const std::exception& e ) { error( "Error", e.what() ); }
+	} catch ( const std::exception& e ) { error( "Error", e.what() ); }
 }
 
 void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
@@ -643,8 +646,7 @@ void SconeStudio::openFile( const QString& filename )
 		codeEditors.push_back( edw );
 		updateRecentFilesMenu( filename );
 		createAndVerifyActiveScenario( false );
-	}
-	catch ( std::exception& e ) { error( "Error opening " + filename, e.what() ); }
+	} catch ( std::exception& e ) { error( "Error opening " + filename, e.what() ); }
 }
 
 void SconeStudio::fileSaveTriggered()
@@ -685,8 +687,7 @@ void SconeStudio::fileSaveAsTriggered()
 				createAndVerifyActiveScenario( true );
 			}
 		}
-	}
-	catch ( std::exception& e ) { error( "Error saving file", e.what() ); }
+	} catch ( std::exception& e ) { error( "Error saving file", e.what() ); }
 }
 
 void SconeStudio::fileCloseTriggered()
@@ -829,13 +830,11 @@ bool SconeStudio::createScenario( const QString& any_file )
 					optimizationHistoryView->reset();
 					optimizationHistoryView->setRange( 0, optimizationHistoryStorage.Back().GetTime() );
 				}
-			}
-			catch ( std::exception& e ) {
+			} catch ( std::exception& e ) {
 				log::error( e.what() );
 			}
 		}
-	}
-	catch ( FactoryNotFoundException& e )
+	} catch ( FactoryNotFoundException& e )
 	{
 		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd" } ) )
 			error( "Error creating scenario",
@@ -844,8 +843,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 		else error( "Error creating scenario", e.what() );
 		clearScenario();
 		return false;
-	}
-	catch ( std::exception& e )
+	} catch ( std::exception& e )
 	{
 		error( "Error creating scenario", e.what() );
 		clearScenario();
@@ -991,8 +989,7 @@ void SconeStudio::optimizeScenario()
 			addProgressDock( new ProgressDockWidget( this, std::move( task ) ) );
 			updateOptimizations();
 		}
-	}
-	catch ( const std::exception& e )
+	} catch ( const std::exception& e )
 	{
 		error( "Error optimizing " + scenario_->GetScenarioFileName(), e.what() );
 	}
@@ -1018,8 +1015,7 @@ void SconeStudio::optimizeScenarioMultiple()
 				updateOptimizations();
 			}
 		}
-	}
-	catch ( const std::exception& e )
+	} catch ( const std::exception& e )
 	{
 		error( "Error optimizing " + scenario_->GetScenarioFileName(), e.what() );
 	}
@@ -1260,6 +1256,16 @@ void SconeStudio::exportCoordinates()
 	}
 }
 
+void SconeStudio::convertScenario()
+{
+	if ( scenario_ && scenario_->HasModel() ) {
+		auto pn = scone::ModelConverter().ConvertModel( scenario_->GetModel() );
+		auto filename = scenario_->GetModel().GetModelFile().replace_extension( "hfd" );
+		xo::save_file( pn, filename, "zml" );
+		log::info( "Written model file ", filename );
+	}
+}
+
 void SconeStudio::saveUserInputs( bool show_dialog )
 {
 	if ( scenario_ && scenario_->HasModel() )
@@ -1402,7 +1408,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 			success = ui.resultsBrowser->fileSystemModel()->remove( idx );
 		if ( !success )
 			warning( msgTitle, tr( "Could not remove " ) + item.filePath() );
-}
+	}
 #endif
 }
 

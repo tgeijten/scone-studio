@@ -107,6 +107,7 @@ public slots:
 	void viewerTooltip();
 	void viewerSelect();
 	void exportCoordinates();
+	void convertScenario();
 
 	void deleteSelectedFileOrFolder();
 	void sortResultsByDate();
