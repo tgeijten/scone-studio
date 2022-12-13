@@ -92,6 +92,7 @@ set (QT_UI_FILES
 	ProgressDockWidget.ui
 	SconeSettings.ui
 	ModelTool.ui
+	ConvertScenario.ui
 	LicenseDialog.ui
 )
 

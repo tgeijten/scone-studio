@@ -40,6 +40,7 @@ namespace scone
 		bool HasData() const { return !storage_.IsEmpty() && !state_data_index.empty(); }
 
 		Model& GetModel() { SCONE_ASSERT( model_ ); return *model_; }
+		const Model& GetModel() const { SCONE_ASSERT( model_ ); return *model_; }
 		const Objective& GetObjective() const { return optimizer_ ? optimizer_->GetObjective() : null_objective_; }
 		ModelObjective* TryGetModelObjective() const { return model_objective_; }
 
@@ -57,6 +58,7 @@ namespace scone
 		void ResetModelVis( vis::scene& s, const ViewOptions& f );
 
 		const path& GetFileName() const { return filename_; }
+		const path& GetScenarioPath() const { return scenario_filename_; }
 		QString GetScenarioFileName() const { return to_qt( scenario_filename_ ); }
 		const PropNode& GetScenarioProps() const { return scenario_pn_; }
 

@@ -166,9 +166,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
-	toolsMenu->addAction( "&Convert Model...", [=]() { ShowModelConversionDialog( this ); } );
+	toolsMenu->addAction( "Convert &Model (Legacy)...", [=]() { ShowModelConversionDialog( this ); } );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	toolsMenu->addAction( "Convert &Scenario...", this, &SconeStudio::convertScenario );
+	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
 #endif
 	toolsMenu->addSeparator();
 #endif
@@ -1259,10 +1259,7 @@ void SconeStudio::exportCoordinates()
 void SconeStudio::convertScenario()
 {
 	if ( scenario_ && scenario_->HasModel() ) {
-		auto pn = scone::ModelConverter().ConvertModel( scenario_->GetModel() );
-		auto filename = scenario_->GetModel().GetModelFile().replace_extension( "hfd" );
-		xo::save_file( pn, filename, "zml" );
-		log::info( "Written model file ", filename );
+		ShowConvertScenarioDialog( this, *scenario_ );
 	}
 }
 

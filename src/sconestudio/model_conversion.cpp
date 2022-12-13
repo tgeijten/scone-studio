@@ -1,6 +1,7 @@
 #include "model_conversion.h"
 
 #include "ui_ModelTool.h"
+#include "ui_ConvertScenario.h"
 #include "scone/core/Log.h"
 #include "scone/core/system_tools.h"
 #include "qt_convert.h"
@@ -10,6 +11,8 @@
 #include <QProcess>
 #include <QMessageBox>
 #include <QPushButton>
+#include "StudioModel.h"
+#include "scone/core/ModelConverter.h"
 
 namespace scone
 {
@@ -105,6 +108,35 @@ namespace scone
 				ConvertModelOpenSim4( inputFile, outputFile );
 			}
 #endif
+		}
+	}
+
+	void ConvertScenario( const path& current_filename, const path& new_filename ) {
+
+	}
+
+	void ShowConvertScenarioDialog( QWidget* parent, const StudioModel& scenario )
+	{
+		QDialog dlg( parent );
+		Ui::ConvertScenario ui;
+		ui.setupUi( &dlg );
+		ui.outputModel->setText( to_qt( scenario.GetModel().GetModelFile().replace_extension( "hfd" ) ) );
+		ui.outputScenario->setText( to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_hfd" ) ) );
+
+		if ( QDialog::Accepted == dlg.exec() ) {
+			auto mc = ModelConverter();
+			mc.body_mass_threshold_ = ui.bodyMassThreshold->value();
+			mc.joint_stiffness_ = ui.jointStiffness->value();
+			mc.joint_limit_stiffness_ = ui.limitStiffness->value();
+
+			auto model_pn = mc.ConvertModel( scenario.GetModel() );
+			auto model_file = path( ui.outputModel->text().toStdString() );
+			xo::save_file( model_pn, model_file, "zml" );
+			log::info( "Written model file ", model_file );
+
+			if ( ui.convertScenario->isChecked() ) {
+
+			}
 		}
 	}
 }
