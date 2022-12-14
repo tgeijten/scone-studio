@@ -13,6 +13,7 @@
 #include <QPushButton>
 #include "StudioModel.h"
 #include "scone/core/ModelConverter.h"
+#include "xo/filesystem/filesystem.h"
 
 namespace scone
 {
@@ -111,11 +112,7 @@ namespace scone
 		}
 	}
 
-	void ConvertScenario( const path& current_filename, const path& new_filename ) {
-
-	}
-
-	void ShowConvertScenarioDialog( QWidget* parent, const StudioModel& scenario )
+	QString ShowConvertScenarioDialog( QWidget* parent, StudioModel& scenario )
 	{
 		QDialog dlg( parent );
 		Ui::ConvertScenario ui;
@@ -129,14 +126,29 @@ namespace scone
 			mc.joint_stiffness_ = ui.jointStiffness->value();
 			mc.joint_limit_stiffness_ = ui.limitStiffness->value();
 
-			auto model_pn = mc.ConvertModel( scenario.GetModel() );
-			auto model_file = path( ui.outputModel->text().toStdString() );
-			xo::save_file( model_pn, model_file, "zml" );
-			log::info( "Written model file ", model_file );
+			auto& model = scenario.GetModel();
+			auto hfd_model_pn = mc.ConvertModel( model );
+			auto hfd_model_path = path( ui.outputModel->text().toStdString() );
+			xo::save_file( hfd_model_pn, hfd_model_path, "zml" );
+			log::info( "Written model file ", hfd_model_path );
 
 			if ( ui.convertScenario->isChecked() ) {
-
+				auto scenario_path = xo::path( ui.outputScenario->text().toStdString() );
+				auto& scenario_pn = scenario.GetScenarioPropNode();
+				auto* model_file_pn = scenario_pn.try_find_child_recursively( "model_file" );
+				auto model_file_org = model_file_pn ? model_file_pn->get<path>() : "";
+				path model_file_new;
+				if ( scenario.GetModel().GetModelFile().parent_path() == hfd_model_path.parent_path() )
+					model_file_new = model_file_org.parent_path() / hfd_model_path.filename();
+				else model_file_new = hfd_model_path;
+				auto str = xo::load_string( scenario.GetScenarioPath() );
+				xo::replace_str( str, model_file_org.str(), model_file_new.str() );
+				xo::replace_str( str, "ModelOpenSim3", "ModelHyfydy" );
+				xo::replace_str( str, "ModelOpenSim4", "ModelHyfydy" );
+				xo::save_string( str, scenario_path );
+				return to_qt( scenario_path );
 			}
 		}
+		return "";
 	}
 }

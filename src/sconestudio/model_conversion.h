@@ -6,5 +6,5 @@ namespace scone
 {
 	class StudioModel;
 	void ShowModelConversionDialog( QWidget* parent );
-	void ShowConvertScenarioDialog( QWidget* parent, const StudioModel& scenario );
+	QString ShowConvertScenarioDialog( QWidget* parent, StudioModel& scenario );
 }

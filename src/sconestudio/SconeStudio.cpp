@@ -951,10 +951,10 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create )
 		if ( createScenario( s->fileName ) )
 		{
 			s->setFocus();
-			if ( LogUnusedProperties( scenario_->GetScenarioProps() ) )
+			if ( LogUnusedProperties( scenario_->GetScenarioPropNode() ) )
 			{
 				QString message = "Invalid scenario settings in " + scenario_->GetScenarioFileName() + ":\n\n";
-				message += to_qt( to_str_unaccessed( scenario_->GetScenarioProps() ) );
+				message += to_qt( to_str_unaccessed( scenario_->GetScenarioPropNode() ) );
 				if ( QMessageBox::warning( this, "Invalid scenario settings", message, QMessageBox::Ignore, QMessageBox::Cancel ) == QMessageBox::Cancel )
 					return false; // user pressed cancel
 			}
@@ -1085,7 +1085,7 @@ void SconeStudio::performanceTest( bool write_stats )
 			else
 			{
 				auto f = scenario_->GetFileName();
-				scone::BenchmarkScenario( scenario_->GetScenarioProps(), f, f.parent_path() / "perf", 8 );
+				scone::BenchmarkScenario( scenario_->GetScenarioPropNode(), f, f.parent_path() / "perf", 8 );
 			}
 		}
 	}
@@ -1259,7 +1259,9 @@ void SconeStudio::exportCoordinates()
 void SconeStudio::convertScenario()
 {
 	if ( scenario_ && scenario_->HasModel() ) {
-		ShowConvertScenarioDialog( this, *scenario_ );
+		auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
+		if ( !new_scenario.isEmpty() )
+			openFile( new_scenario );
 	}
 }
 

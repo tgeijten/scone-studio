@@ -60,7 +60,7 @@ namespace scone
 		const path& GetFileName() const { return filename_; }
 		const path& GetScenarioPath() const { return scenario_filename_; }
 		QString GetScenarioFileName() const { return to_qt( scenario_filename_ ); }
-		const PropNode& GetScenarioProps() const { return scenario_pn_; }
+		const PropNode& GetScenarioPropNode() const { return scenario_pn_; }
 
 		enum class Status { Initializing, Evaluating, Ready, Aborted, Error };
 		Status GetStatus() const { return status_; }
