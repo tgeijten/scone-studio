@@ -166,10 +166,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
-	toolsMenu->addAction( "Convert &Model (Legacy)...", [=]() { ShowModelConversionDialog( this ); } );
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
-#endif
+	toolsMenu->addAction( "Convert OpenSim3 &Model...", [=]() { ShowModelConversionDialog( this ); } );
 	toolsMenu->addSeparator();
 #endif
 	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
@@ -1258,11 +1256,14 @@ void SconeStudio::exportCoordinates()
 
 void SconeStudio::convertScenario()
 {
-	if ( scenario_ && scenario_->HasModel() ) {
-		auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
-		if ( !new_scenario.isEmpty() )
-			openFile( new_scenario );
-	}
+	if ( !( createAndVerifyActiveScenario( true ) && scenario_->HasModel() ) )
+		return;
+	if ( scenario_->GetModel().GetModelFile().extension_no_dot() == "hfd" )
+		return information( "Cannot Convert Scenario", "This scenario already uses a Hyfdy model" );
+
+	auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
+	if ( !new_scenario.isEmpty() )
+		openFile( new_scenario );
 }
 
 void SconeStudio::saveUserInputs( bool show_dialog )
