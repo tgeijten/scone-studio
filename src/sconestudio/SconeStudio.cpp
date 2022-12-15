@@ -1262,8 +1262,12 @@ void SconeStudio::convertScenario()
 		return information( "Cannot Convert Scenario", "This scenario already uses a Hyfdy model" );
 
 	auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
-	if ( !new_scenario.isEmpty() )
+	if ( !new_scenario.isEmpty() ) {
 		openFile( new_scenario );
+		information( "Conversion Completed",
+			"<b>The scenario conversion is completed</b>. Please see the Messages window for additional information.<br>"
+			"<b>Need help?</b> Please contact <a href = 'mailto:support@goatstream.com'>support@goatstream.com</a> for assistance." );
+	}
 }
 
 void SconeStudio::saveUserInputs( bool show_dialog )
