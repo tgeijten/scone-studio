@@ -1264,9 +1264,10 @@ void SconeStudio::convertScenario()
 	auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
 	if ( !new_scenario.isEmpty() ) {
 		openFile( new_scenario );
-		information( "Conversion Completed",
-			"<b>The scenario conversion is completed</b>. Please see the Messages window for additional information.<br>"
-			"<b>Need help?</b> Please contact <a href = 'mailto:support@goatstream.com'>support@goatstream.com</a> for assistance." );
+		QString msg = "<b></b>The scenario has been successfully converted to:<br><br>" + new_scenario;
+		msg += "<br><br>Please note that <b>some elements way not work directly as intended</b> and require further adjustment. ";
+		msg += "For assistance, please contact <a href='mailto:support@goatstream.com'>support@goatstream.com</a>.";
+		information( "Conversion to Hyfydy Completed", msg );
 	}
 }
 
