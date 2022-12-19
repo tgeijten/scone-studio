@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>320</height>
+    <width>480</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,14 +78,24 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="useLimitForceStiffness">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Body mass threshold [kg]</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="4" column="1">
           <widget class="QDoubleSpinBox" name="bodyMassThreshold">
            <property name="maximum">
             <double>1000.000000000000000</double>
@@ -95,6 +105,27 @@
            </property>
            <property name="value">
             <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Use limit stiffness from limit force (when available)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Set limits from coordinate range (if no limit force is present)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCheckBox" name="useCoordinateRange">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
