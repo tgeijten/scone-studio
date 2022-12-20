@@ -132,7 +132,7 @@ namespace scone
 			auto hfd_model_pn = mc.ConvertModel( model );
 			auto hfd_model_path = path( ui.outputModel->text().toStdString() );
 			xo::save_file( hfd_model_pn, hfd_model_path, "zml" );
-			log::info( "Written model file ", hfd_model_path );
+			log::info( "Model written to ", hfd_model_path );
 
 			if ( ui.convertScenario->isChecked() ) {
 				auto scenario_path = xo::path( ui.outputScenario->text().toStdString() );
@@ -148,6 +148,7 @@ namespace scone
 				xo::replace_str( str, "ModelOpenSim3", "ModelHyfydy" );
 				xo::replace_str( str, "ModelOpenSim4", "ModelHyfydy" );
 				xo::save_string( str, scenario_path );
+				log::info( "Scenario written to ", hfd_model_path );
 				return to_qt( scenario_path );
 			}
 		}
