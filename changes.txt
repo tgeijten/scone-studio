@@ -1,6 +1,56 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.1.0 RC 1 ====
+//Released December 21, 2022//
+
+=== New Features ===
+  * SCONE now includes a **Python API**, designed and streamlined for **machine learning** applications. Click [[https://scone.software/doku.php?id=sconepy|here]] for more information. 
+  * SCONE now fully supports Linux (Ubuntu 20.04 or higher). It can be [[https://scone.software/doku.php?id=install|installed]] via a ''.deb'' package and a ''.tar.gz'' archive.
+  * Added support for converting OpenSim4 models and scenarios to Hyfydy, via ''Tools -> Convert to Hyfydy...''
+
+=== Updates ===
+  * Measures:
+    * MuscleMeasure now supports ''force'' measurement.
+    * EffortMeasure now supports measure type ''ActuatorTorque'', use in combination with ''order'' for quadratic, cubic, etc. penalties.
+    * DofMeasure now supports ''actuator_torque''. 
+    * DofMeasure 'force' is renamed to 'limit_torque' (backwards compatible).
+  * Optimization:
+    * Improved ''MimicMeasure'' optimization performance through data caching.
+    * Optimizers now have the option to specify multiple init files, each with its own settings, using the ''init { ... }'' syntax (also in 2.0.6).
+    * CmaOptimizer now has ''enable_boundary_transformer'' option.
+    * Added Optimizer setting ''output_individual_search_points'' to write .par files for each individual search point (useful for debug purposes).
+  * 3D visualizer:
+    * The 3D visualizer can now follow specific bodies via the setting view.camera_follow_body.
+    * Perturbation forces are now visualized with longer and thinner arrows.
+  * Gait Analysis:
+    * Gait Analysis plots now automatically extend the Y-axis range to fit the data.
+    * Added option to set font sizes for gait analysis plots (Tools -> Preferences -> User Interface -> Gait Analysis).
+  * ScriptController / ScriptMeasure:
+    * Lua scripts can now convert quaternions to euler angles, via SconePy.Quat.to_euler()
+    * LuaJoint.reaction_force(), limit_torque(), limit_power(), load()
+    * Added muscle_tendon_length() and muscle_tendon_velocity(), renamed contraction_velocity() to fiber_velocity()
+    * The current timestamp can now be accessed in Lua script update() functions, via update( model, timestamp ). This allows ScriptController scripts to easily access the time since a controller is activated.
+  * .sto files can now be played back without Optimizer.
+  * Extracted data channels now includes time column.
+  * Model now supports ''neural_delays'', used SconePy Python API.
+  * OpenSim 4 simulations now only log errors.
+  * Added option to enter a Hyfydy License Key via the SCONE command line interface (sconecmd).
+  * Updated Help -> About license information.
+
+=== Fixes ===
+  * Fixed issue where 3D Viewer window would stop working after a simulation error.
+  * Improved finding the SCONE install folder and related error handling.
+  * Fixed issue where SCONE Studio would not work properly if the system locale has comma as decimal separator (Linux).
+  * Folders are no longer stored in settings if they are the default.
+  * ''BodyEulerOriSensor'' could return invalid number in rare cases, output can be slightly different now.
+  * Default ModelOpenSim3::GetSimulationEndTime() is now set to MAX.
+  * Fixed signs for contralateral ''BodyEulerOriSensor'' and ''BodyAngularVelocitySensor''.
+  * Reflex parameters with source from opposite side now have _o postfix.
+  * Move text editor cursor to line start after ''Ctrl+/''.
+  * Improved error handling when updating tutorials and examples.
+  * Removed warning for when muscle tendon length is smaller than zero.
+
 ==== SCONE 2.0.6 ====
 //Released July 26, 2022//
 
@@ -163,7 +213,7 @@ All Controllers and Measures can be used interchangeably with each of these simu
 
 === Other Improvements ===
   * Optimization Results can now be benchmarked with Ctrl+P and Ctrl+Shift+P.
-  * Improved boot time when many files are present in the Optimization Results folder.
+
   * When editing preferences, leaving a setting blank now restores its default value.
 
 === Other Fixes ===
