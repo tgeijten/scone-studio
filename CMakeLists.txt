@@ -108,6 +108,7 @@ if (SCONE_STUDIO_CPACK)
 		set(CPACK_NSIS_IGNORE_LICENSE_PAGE ON)
 		set(CPACK_NSIS_CREATE_ICONS "CreateShortCut '\$SMPROGRAMS\\\\SCONE\\\\SCONE Studio.lnk' '\$INSTDIR\\\\bin\\\\sconestudio.exe'")
 		set(CPACK_NSIS_DELETE_ICONS_EXTRA "Delete '\$SMPROGRAMS\\\\SCONE\\\\SCONE Studio.lnk'")
+		set(CPACK_NSIS_UNINSTALL_NAME "Uninstall SCONE")
 	endif()
 
 	if (UNIX AND NOT APPLE)
