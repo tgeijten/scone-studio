@@ -1294,8 +1294,12 @@ void SconeStudio::createVideo()
 	if ( !scenario_ )
 		return error( "No Scenario", "There is no scenario open" );
 
-	if ( auto p = GetStudioSetting<path>( "video.path_to_ffmpeg" ); !xo::file_exists( p ) )
-		return error( "Could not find ffmpeg", to_qt( "Could not find " + p.str() ) );
+	if ( auto p = GetStudioSetting<path>( "video.path_to_ffmpeg" ); !xo::file_exists( p ) ) {
+		QString msg = "<b></b>Could not find ffmpeg (" + to_qt( p.str() ) + ")<br><br>";
+		msg += "To enable video generation, please download ffmpeg from <a href='https://ffmpeg.org'>ffmpeg.org</a> ";
+		msg += "and specify its file path in Preferences -> User Interface -> Video settings.";
+		return error( "Could not find ffmpeg", msg );
+	}
 
 	fixViewerWindowSize();
 
