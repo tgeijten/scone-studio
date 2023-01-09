@@ -1,8 +1,8 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.1.0 RC 1 ====
-//Released December 21, 2022//
+==== SCONE 2.1.0 ====
+//Released January 9, 2023//
 
 === New Features ===
   * SCONE now includes a **Python API**, designed and streamlined for **machine learning** applications. Click [[https://scone.software/doku.php?id=sconepy|here]] for more information. 
@@ -49,6 +49,7 @@
   * Reflex parameters with source from opposite side now have _o postfix.
   * Move text editor cursor to line start after ''Ctrl+/''.
   * Improved error handling when updating tutorials and examples.
+  * Updated error message when ffmpeg is missing.
   * Removed warning for when muscle tendon length is smaller than zero.
 
 ==== SCONE 2.0.6 ====
