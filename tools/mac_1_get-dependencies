@@ -11,6 +11,12 @@ else
     sudo='sudo'
 fi
 
+# this is set to ensure that homebrew doesn't try and upgrade everything,
+# which can fail
+#
+# see: https://github.com/Homebrew/brew/issues/9285
+export HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1
+
 echo "installing brew dependencies"
 brew install qt5
 
