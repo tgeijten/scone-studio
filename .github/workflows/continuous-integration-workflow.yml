@@ -8,7 +8,7 @@ env:
 
 jobs:
   osx:
-    if: ${{ false }}
+    # if: ${{ false }}
     name: Build on MacOS 11
     runs-on: macos-11
 
