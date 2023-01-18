@@ -1,9 +1,4 @@
 const char* studio_settings_schema = R"str(
-optimization {
-	label = "Optimization settings"
-	use_external_process { type = bool default = 0 label = "Perform optimizations using external process" }
-}
-
 file {
 	label = "File settings"
 	auto_write_scone_evaluation { type = bool label = "Automatically write data after evaluating a .scone file" default = 0 }
@@ -30,17 +25,6 @@ video {
 	quality { type = int default = 2 label = "Quality for video output" }
 	width { type = int default = 1024 label = "Horizontal resolution (only when Viewer is not docked)" }
 	height { type = int default = 768 label = "Vertical resolution (only when Viewer is not docked)" }
-}
-
-progress {
-	label = "Optimization progress settings"
-	line_width { type = float default = 1 label = "Line width of progress graphs (use 1 for best performance)" range = [ 1 10 ] }
-}
-
-analysis {
-	label = "Analysis settings"
-	line_width { type = float default = 1 label = "Line width for analysis (use 1 for best performance)" range = [ 1 10 ] }
-	auto_fit_vertical_axis { type = bool default = 1 label = "Automatically scale vertical axis to fit data in range" }
 }
 
 viewer {
@@ -78,6 +62,22 @@ viewer {
 	camera_follow_body { type = string label = "Body to follow by camera (leave blank for CoM)" default = "" }
 }
 
+optimization {
+	label = "Optimization settings"
+	use_external_process { type = bool default = 0 label = "Perform optimizations using external process" }
+}
+
+progress {
+	label = "Optimization progress settings"
+	line_width { type = float default = 1 label = "Line width of progress graphs (use 1 for best performance)" range = [ 1 10 ] }
+}
+
+analysis {
+	label = "Analysis settings"
+	line_width { type = float default = 1 label = "Line width for analysis (use 1 for best performance)" range = [ 1 10 ] }
+	auto_fit_vertical_axis { type = bool default = 1 label = "Automatically scale vertical axis to fit data in range" }
+}
+
 coordinates {
 	label = "Coordinates settings"
 	export_activations { type = bool label = "Export activations" default = 0 }
@@ -85,6 +85,7 @@ coordinates {
 
 ui {
 	label = "User Interface Settings"
+	log_level { type = int default = 2 label = "Messages log level (1-7)" }
 	reset_layout { type = bool default = 0 label = "Reset window layout on start" }
 	last_version_run { type = string default = "" label = "Last version run" }
 	show_startup_time { type = bool default = 0 label = "Show startup time" }

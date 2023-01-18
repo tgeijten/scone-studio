@@ -366,7 +366,7 @@ bool SconeStudio::init()
 	// add outputText to global sinks (only *after* the ui has been initialized)
 	xo::log::add_sink( ui.outputText );
 	ui.outputText->set_sink_mode( xo::log::sink_mode::current_thread );
-	ui.outputText->set_log_level( XO_IS_DEBUG_BUILD ? xo::log::level::trace : xo::log::level::debug );
+	ui.outputText->set_log_level( xo::log::level( GetStudioSetting<int>( "ui.log_level" ) ) );
 
 	// see if this is a new version of SCONE
 	auto version = xo::to_str( scone::GetSconeVersion() );
@@ -1180,8 +1180,10 @@ void SconeStudio::applyViewOptions()
 
 void SconeStudio::showSettingsDialog()
 {
-	if ( ShowPreferencesDialog( this ) == QDialog::Accepted )
+	if ( ShowPreferencesDialog( this ) == QDialog::Accepted ) {
 		gaitAnalysis->reset();
+		ui.outputText->set_log_level( xo::log::level( GetStudioSetting<int>( "ui.log_level" ) ) );
+	}
 }
 
 void SconeStudio::updateTabTitles()
