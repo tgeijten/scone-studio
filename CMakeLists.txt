@@ -90,6 +90,7 @@ if (SCONE_STUDIO_CPACK)
 	# install scenarios
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Examples2" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Tutorials2" DESTINATION "./scone/scenarios")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Benchmarks" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/SconePy" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources" DESTINATION "./")
 
