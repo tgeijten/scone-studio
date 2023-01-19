@@ -92,7 +92,7 @@ if (SCONE_STUDIO_CPACK)
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Tutorials2" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/Benchmarks" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/SconePy" DESTINATION "./scone/scenarios")
-	install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources" DESTINATION "./")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources" DESTINATION ".")
 
 	# Windows install/packaging:
 	if (WIN32)
