@@ -41,7 +41,7 @@ export SCONE_INSTALL_DIR=${PROJECT_DIR}/install
 
 # whether makefiles should emit commands (useful for debugging
 # compiler flags + errors)
-export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-True}"
+export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-False}"
 
 # type of cmake build for all source builds. Usually "Release" or
 # "RelWithDebInfo". "Debug" if you want a faster compile and nicer
