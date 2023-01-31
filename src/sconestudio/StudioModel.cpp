@@ -177,7 +177,10 @@ namespace scone
 			}
 			catch ( std::exception& e )
 			{
-				InvokeError( e.what() );
+				// simulation exception, abort instead of error so that data remains available
+				AbortEvaluation();
+				log::error( "Error evaluating ", filename_.filename(), ": ", e.what() );
+				QMessageBox::critical( nullptr, "Error evaluating " + to_qt( filename_.filename() ), e.what() );
 			}
 		}
 		else log::warning( "Unexpected call to StudioModel::EvaluateTo()" );
