@@ -227,7 +227,7 @@ namespace scone
 
 	void StudioModel::FinalizeEvaluation()
 	{
-		if ( HasModel() && model_->GetMeasure() )
+		if ( HasModel() )
 		{
 			try
 			{
@@ -236,7 +236,8 @@ namespace scone
 				InitStateDataIndices();
 
 				// compute and show fitness results
-				log::info( GetResult() );
+				if ( model_->GetMeasure() )
+					log::info( GetResult() );
 
 				// write results to file(s)
 				if ( write_results_after_evaluation_ )
