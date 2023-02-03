@@ -51,6 +51,8 @@ set(STUDIOFILES
 	
 set(QTFILES
 	${QTFX_PATH}/qt_convert.h
+	${QTFX_PATH}/gui_profiler.h
+	${QTFX_PATH}/gui_profiler.cpp
 	${QTFX_PATH}/qtfx.h
 	${QTFX_PATH}/qtfx.cpp
 	${QTFX_PATH}/QGroup.h

@@ -8,6 +8,7 @@
 #include "scone/model/Dof.h"
 #include "qt_convert.h"
 #include "xo/system/log.h"
+#include "gui_profiler.h"
 
 namespace scone
 {
@@ -18,6 +19,8 @@ namespace scone
 		useDegrees( dof.IsRotational() ),
 		stepSize_( 0.01 )
 	{
+		GUI_PROFILE_FUNCTION;
+
 		label_ = new QLabel( to_qt( dof.GetName() ) );
 		deg->grid()->addWidget( label_, row, 0 );
 
@@ -83,6 +86,8 @@ namespace scone
 		QWidget( parent ),
 		dofGrid( nullptr )
 	{
+		GUI_PROFILE_FUNCTION;
+
 		QVBoxLayout* wl = new QVBoxLayout( this );
 		wl->setMargin( 0 );
 		wl->setSpacing( 0 );
@@ -114,6 +119,8 @@ namespace scone
 
 	void DofEditorGroup::init( const Model& model )
 	{
+		GUI_PROFILE_FUNCTION;
+
 		dofEditors.clear();
 		qDeleteAll( dofGrid->findChildren<QWidget*>( "", Qt::FindDirectChildrenOnly ) );
 
@@ -131,6 +138,8 @@ namespace scone
 
 	void DofEditorGroup::setSlidersFromDofs( const Model& model )
 	{
+		GUI_PROFILE_FUNCTION;
+
 		blockSignals( true );
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofEditors.size() );
@@ -141,6 +150,8 @@ namespace scone
 
 	void DofEditorGroup::setDofsFromSliders( Model& model )
 	{
+		GUI_PROFILE_FUNCTION;
+
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )

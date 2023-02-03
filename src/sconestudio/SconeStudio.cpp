@@ -20,13 +20,15 @@
 #include "xo/filesystem/filesystem.h"
 #include "xo/system/system_tools.h"
 #include "xo/utility/color.h"
+#include "xo/thread/thread_priority.h"
 
 #include "scone/core/Benchmark.h"
 #include "scone/core/Factories.h"
 #include "scone/core/Log.h"
+#include "scone/core/ModelConverter.h"
+#include "scone/core/profiler_config.h"
 #include "scone/core/Settings.h"
 #include "scone/core/StorageIo.h"
-#include "scone/core/profiler_config.h"
 #include "scone/core/storage_tools.h"
 #include "scone/core/system_tools.h"
 #include "scone/core/version.h"
@@ -47,16 +49,15 @@
 #include "qcustomplot/qcustomplot.h"
 #include "qt_convert.h"
 #include "qtfx.h"
+#include "gui_profiler.h"
 
 #include "vis-osg/osg_object_manager.h"
 #include "vis-osg/osg_tools.h"
 #include "vis/plane.h"
 #include "help_tools.h"
-#include "xo/thread/thread_priority.h"
 #include "file_tools.h"
 #include "model_conversion.h"
 #include "studio_tools.h"
-#include "scone/core/ModelConverter.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -473,6 +474,8 @@ void SconeStudio::stop()
 
 void SconeStudio::refreshAnalysis()
 {
+	GUI_PROFILE_FUNCTION;
+
 	analysisView->refresh( current_time );
 }
 
@@ -500,6 +503,7 @@ void SconeStudio::userInputValueChanged()
 
 void SconeStudio::evaluate()
 {
+	GUI_PROFILE_FUNCTION;
 	SCONE_ASSERT( scenario_ );
 
 	// disable dof editor and model input editor
@@ -570,6 +574,8 @@ void SconeStudio::muscleAnalysis()
 
 void SconeStudio::updateGaitAnalysis()
 {
+	GUI_PROFILE_FUNCTION;
+
 	try
 	{
 		if ( scenario_ && !scenario_->IsEvaluating() )
@@ -584,6 +590,8 @@ void SconeStudio::updateGaitAnalysis()
 
 void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 {
+	GUI_PROFILE_FUNCTION;
+
 	if ( scenario_ )
 	{
 		current_time = t;
@@ -769,6 +777,8 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 
 void SconeStudio::clearScenario()
 {
+	GUI_PROFILE_FUNCTION;
+
 	ui.playControl->stop();
 	scenario_.reset();
 	analysisStorageModel.setStorage( nullptr );
@@ -781,6 +791,8 @@ void SconeStudio::clearScenario()
 
 bool SconeStudio::createScenario( const QString& any_file )
 {
+	GUI_PROFILE_FUNCTION;
+
 	clearScenario();
 
 	try
@@ -933,6 +945,8 @@ QCodeEditor* SconeStudio::getActiveScenario()
 
 bool SconeStudio::createAndVerifyActiveScenario( bool always_create )
 {
+	GUI_PROFILE_FUNCTION;
+
 	if ( auto* s = getActiveScenario() )
 	{
 		auto changed_docs = changedDocuments();
@@ -969,7 +983,9 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create )
 
 void SconeStudio::updateModelDataWidgets()
 {
+	GUI_PROFILE_FUNCTION;
 	SCONE_ASSERT( scenario_ && scenario_->HasData() );
+
 	analysisStorageModel.setStorage( &scenario_->GetData() );
 	analysisView->reset();
 	ui.playControl->setRange( 0, scenario_->GetMaxTime() );
@@ -1021,12 +1037,18 @@ void SconeStudio::optimizeScenarioMultiple()
 
 void SconeStudio::evaluateActiveScenario()
 {
+	if ( scone::GetStudioSetting<bool>( "ui.enable_profiler" ) )
+		getGuiProfiler().start();
+
 	if ( createAndVerifyActiveScenario( false ) )
 	{
 		if ( scenario_->IsEvaluating() )
 			evaluate();
 		ui.playControl->play();
 	}
+
+	if ( getGuiProfiler().enabled() )
+		getGuiProfiler().log_results();
 }
 
 void SconeStudio::writeEvaluationResults()
@@ -1117,6 +1139,8 @@ bool SconeStudio::abortOptimizations()
 
 void SconeStudio::updateBackgroundTimer()
 {
+	GUI_PROFILE_FUNCTION;
+
 	if ( !ui.playControl->isPlaying() )
 		updateOptimizations();
 	if ( scenario_ )

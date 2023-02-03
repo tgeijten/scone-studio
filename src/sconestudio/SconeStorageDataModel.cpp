@@ -9,6 +9,7 @@
 #include "SconeStorageDataModel.h"
 #include "xo/numerical/math.h"
 #include "scone/core/Log.h"
+#include "gui_profiler.h"
 
 SconeStorageDataModel::SconeStorageDataModel( const scone::Storage<>* s ) :
 	storage( s ),
@@ -18,6 +19,8 @@ SconeStorageDataModel::SconeStorageDataModel( const scone::Storage<>* s ) :
 
 void SconeStorageDataModel::setStorage( const scone::Storage<>* s )
 {
+	GUI_PROFILE_FUNCTION;
+
 	index_cache = { -1, 0 };
 	storage = s;
 
