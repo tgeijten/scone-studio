@@ -943,7 +943,7 @@ QCodeEditor* SconeStudio::getActiveScenario()
 	return first_scenario; // either first .scone file, or none
 }
 
-bool SconeStudio::createAndVerifyActiveScenario( bool always_create )
+bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_have_parameters )
 {
 	GUI_PROFILE_FUNCTION;
 
@@ -969,6 +969,10 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create )
 				message += to_qt( to_str_unaccessed( scenario_->GetScenarioPropNode() ) );
 				if ( QMessageBox::warning( this, "Invalid scenario settings", message, QMessageBox::Ignore, QMessageBox::Cancel ) == QMessageBox::Cancel )
 					return false; // user pressed cancel
+			}
+			if ( must_have_parameters && scenario_->GetObjective().dim() <= 0 ) {
+				information( scenario_->GetScenarioFileName(), "This scenario does not contain any free parameters" );
+				return false;
 			}
 			return true; // everything loaded ok or invalid settings ignored
 		}
@@ -997,7 +1001,7 @@ void SconeStudio::optimizeScenario()
 {
 	try
 	{
-		if ( createAndVerifyActiveScenario( true ) )
+		if ( createAndVerifyActiveScenario( true, true ) )
 		{
 			auto task = scone::createOptimizerTask( scenario_->GetScenarioFileName() );
 			addProgressDock( new ProgressDockWidget( this, std::move( task ) ) );
@@ -1013,7 +1017,7 @@ void SconeStudio::optimizeScenarioMultiple()
 {
 	try
 	{
-		if ( createAndVerifyActiveScenario( true ) )
+		if ( createAndVerifyActiveScenario( true, true ) )
 		{
 			bool ok = true;
 			int count = QInputDialog::getInt( this, "Run Multiple Optimizations", "Enter number of optimization instances: ", 3, 1, 100, 1, &ok );

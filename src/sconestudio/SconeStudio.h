@@ -147,7 +147,7 @@ private:
 	QString currentFilename;
 	void clearScenario();
 	bool createScenario( const QString& any_file );
-	bool createAndVerifyActiveScenario( bool always_create );
+	bool createAndVerifyActiveScenario( bool always_create, bool must_have_parameters = false );
 	void updateModelDataWidgets();
 
 	// simulation
