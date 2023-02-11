@@ -45,7 +45,7 @@ namespace scone
 		filename_ = file;
 		const auto file_type = file.extension_no_dot();
 		scenario_filename_ = FindScenario( file );
-		scenario_pn_ = LoadScenario( scenario_filename_, file_type == "par" );
+		scenario_pn_ = LoadScenario( file );
 
 		if ( auto opt_fp = TryFindFactoryProps( GetOptimizerFactory(), scenario_pn_, "Optimizer" ); opt_fp )
 		{
@@ -207,12 +207,11 @@ namespace scone
 			if ( model_objective_ ) {
 				auto fitness = model_objective_->GetResult( *model_ ); // this calls ComputeResult which fills report
 				auto& result = result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
-				result.set_value( fitness ); // this is done so Measures don't have to
 			}
 			else if ( model_ && model_->GetMeasure() ) {
 				auto fitness = model_->GetMeasure()->GetWeightedResult( *model_ ); // this calls ComputeResult which fills report
 				auto& result = result_pn_.add_child( "Result", model_->GetMeasure()->GetReport() );
-				result.set_value( fitness ); // this is done so Measures don't have to
+				result.set_value( fitness ); // needed because result value is only set by ModelObjective
 			}
 			else log::warning( "Model has no Measure" );
 		}
