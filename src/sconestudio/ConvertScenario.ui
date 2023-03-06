@@ -134,6 +134,9 @@
         <property name="text">
          <string>Set &amp;limits from coordinate range (if no limit force is present)</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
