@@ -9,8 +9,8 @@ env:
 jobs:
   osx:
     # if: ${{ false }}
-    name: Build on MacOS 13
-    runs-on: macos-13
+    name: Build on MacOS 12
+    runs-on: macos-12
 
     steps:
     - uses: actions/checkout@v1
