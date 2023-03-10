@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -xeuo pipefail
-source ./tools/build_config  # sets relevant envvar defaults
+source "$( dirname ${BASH_SOURCE} )/build_config"
 
 # keeping this list as short as possible is the only way to guarantee
 # that the resulting `.deb` package will install on multiple versions

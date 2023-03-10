@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 set -xeuo pipefail
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source_dir="${script_dir}/../"
-
-export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-False}"
-
-source "${script_dir}/build_config"
+source "$( dirname ${BASH_SOURCE} )/build_config"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     cmake_extra_args=(
@@ -36,7 +31,7 @@ fi
 
 mkdir -p "${SCONE_BUILD_DIR}"
 cd "${SCONE_BUILD_DIR}"
-cmake "${source_dir}" \
+cmake "${SCONE_REPOSITORY_DIR}" \
     -DOSG_DIR="${OSG_INSTALL_PATH}" \
     -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
     -DCMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE}" \

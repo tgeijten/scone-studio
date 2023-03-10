@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
 set -xeuo pipefail
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source "${script_dir}/build_config"
+source "$( dirname ${BASH_SOURCE} )/build_config"
 
 # if root is running this script then do not use `sudo` (some distros
 # do not supply it)
@@ -29,6 +28,7 @@ try_clone_checkout "https://github.com/create-dmg/create-dmg.git" "v1.0.8"
 
 # echo "getting submodule dependencies"
 # git submodule update --init --recursive
+
 
 echo "performing other hacks necessary to make SCONE compile on mac"
 
