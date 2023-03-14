@@ -8,7 +8,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         -DCMAKE_PREFIX_PATH="${OSG_INSTALL_PATH}/lib64;${QT5_BREW_PATH}"
         -DOSGQT_INCLUDE_DIR="${OSG_INSTALL_PATH}/lib64"
         -DOSGQT_LIBRARY_RELEASE="${OSG_INSTALL_PATH}/lib/libosgQt.dylib"
-        -DSCONE_SCONESTUDIO_REQUIRED=ON
     )
 else
     cmake_extra_args=(

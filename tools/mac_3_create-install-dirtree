@@ -84,13 +84,13 @@ EOF
 mkdir -p "${app_dir}/Contents/Resources/"
 
 # SconeStudio.app/Contents/Resources/Tutorials
-# rsync -avz --delete "${PROJECT_DIR}/scone/scenarios/Tutorials" "${app_dir}/Contents/Resources/"
+# rsync -avz --delete "${SCONE_REPOSITORY_DIR}/scone/scenarios/Tutorials" "${app_dir}/Contents/Resources/"
 
 # SconeStudio.app/Contents/Resources/geometry
-# rsync -avz --delete "${PROJECT_DIR}/resources/geometry" "${app_dir}/Contents/Resources"
+# rsync -avz --delete "${SCONE_REPOSITORY_DIR}/resources/geometry" "${app_dir}/Contents/Resources"
 
 # SconeStudio.app/Contents/Resources/scone.icns
-cp "${PROJECT_DIR}/resources/ui/scone_logo_256x256.icns" "${app_dir}/Contents/Resources/scone.icns"
+cp "${SCONE_REPOSITORY_DIR}/resources/ui/scone_logo_256x256.icns" "${app_dir}/Contents/Resources/scone.icns"
 
 # SconeStudio.app.app/Contents/MacOS
 mkdir -p "${app_dir}/Contents/MacOS/"
@@ -173,11 +173,12 @@ ${QT5_BREW_PATH}/bin/macdeployqt \
 
 # SconeStudio.app/Contents/MacOS/resources
 mkdir -p "${app_dir}/Contents/MacOS/resources/"
-cp -r ${PROJECT_DIR}/resources/* "${app_dir}/Contents/MacOS/resources/"
+cp -r ${SCONE_REPOSITORY_DIR}/resources/* "${app_dir}/Contents/MacOS/resources/"
 mkdir -p "${app_dir}/Contents/MacOS/scone/scenarios/"
-cp -r ${PROJECT_DIR}/scone/scenarios/* "${app_dir}/Contents/MacOS/scone/scenarios"
+cp -r ${SCONE_REPOSITORY_DIR}/scone/scenarios/* "${app_dir}/Contents/MacOS/scone/scenarios"
 
 # SconeStudio.app/Contents/MacOS/.version
 # (needed by SCONE to boot)
+cd ${SCONE_REPOSITORY_DIR}
 git rev-list --count HEAD > "${app_dir}/Contents/MacOS/.version"
 
