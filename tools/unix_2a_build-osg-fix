@@ -12,6 +12,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         # because brew-installed qt5 isn't on the search path
         -DCMAKE_PREFIX_PATH="${QT5_BREW_PATH}/lib/cmake/Qt5Widgets/"
+        -DCMAKE_MACOSX_RPATH=TRUE
+        -DCMAKE_INSTALL_RPATH="@executable_path/../lib"
     )
 else
     cmake_extra_flags=(

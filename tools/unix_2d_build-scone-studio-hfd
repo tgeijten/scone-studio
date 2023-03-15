@@ -9,10 +9,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         -DOSGQT_INCLUDE_DIR="${OSG_INSTALL_PATH}/lib64"
         -DOSGQT_LIBRARY_RELEASE="${OSG_INSTALL_PATH}/lib/libosgQt.dylib"
         -DSCONE_LUA=ON
-        # -DSCONE_PYTHON=ON
-        # -DPYBIND11_PYTHON_VERSION=3.9
+        -DSCONE_PYTHON=ON
+        -DPYBIND11_PYTHON_VERSION=3.9
         -DSCONE_OPENSIM_3=ON
-        -DSCONE_HYFYDY=OFF
+        -DSCONE_HYFYDY=ON
+        -DSCONE_STUDIO_CPACK=ON
+        -DSCONE_DEVELOPMENT_BUILD=ON
     )
 else
     cmake_extra_args=(
@@ -43,4 +45,5 @@ cmake "${SCONE_REPOSITORY_DIR}" \
     -DOPENSIM_INSTALL_DIR="${OPENSIM3_INSTALL_PATH}" \
     -DOPENSIM_INCLUDE_DIR="${OPENSIM3_INSTALL_PATH}/sdk/include" \
     ${cmake_extra_args[@]}
+    
 cmake --build . --parallel "${NUM_BUILD_JOBS}" --target install

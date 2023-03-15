@@ -173,7 +173,8 @@ target_compile_definitions(sconestudio PRIVATE $<$<BOOL:${SCONE_ENABLE_PROFILER}
 if (LINUX)
 	set_target_properties(sconestudio PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
 elseif(APPLE)
-    set_target_properties(sconestudio PROPERTIES INSTALL_RPATH "@executable_path/lib")
+	set(CMAKE_MACOSX_RPATH ON)
+    set_target_properties(sconestudio PROPERTIES INSTALL_RPATH "@executable_path/../lib")
 endif()
 
 if(MSVC)
@@ -252,6 +253,10 @@ if(LINUX)
 	# file(GLOB OSG_SO_FILES "${OSG_DIR}/lib64/*.so*")
 	# install(FILES ${OSG_SO_FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 	install(DIRECTORY "${OSG_DIR}/lib64/" DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
+
+if(APPLE)
+	install(DIRECTORY "${OSG_DIR}/lib/" DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 install(TARGETS sconestudio vis-osg

@@ -35,6 +35,9 @@ include(GNUInstallDirs)
 # Set INSTALL directories
 if(LINUX)
 	set(CMAKE_INSTALL_RPATH "\$ORIGIN")
+elseif(APPLE)
+	set(CMAKE_MACOSX_RPATH ON)
+	set(CMAKE_INSTALL_RPATH "@executable_path/../lib")
 endif()
 
 # Initialize LINUX settings from build script
@@ -54,9 +57,6 @@ if(LINUX)
 	    set(OPENSIM_INCLUDE_DIR "${PROJECT_DIR}/opensim3-scone/install/sdk/include")
 	endif()
 endif()
-
-# Silence CMake warning on OSX.
-set(CMAKE_MACOSX_RPATH ON)
 
 #
 # Add targets
