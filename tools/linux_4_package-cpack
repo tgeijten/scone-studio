@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -xeuo pipefail
+source "$( dirname ${BASH_SOURCE} )/build_config"
+
+cd "${SCONE_BUILD_DIR}"
+cpack
+cd ..
+ 

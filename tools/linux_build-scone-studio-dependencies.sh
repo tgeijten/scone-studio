@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
 set -xeuo pipefail
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
-export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-False}"
-
-source "${script_dir}/build_config"
+source "$( dirname ${BASH_SOURCE} )/build_config"
 
 ${script_dir}/linux_1_get-external-dependencies
 ${script_dir}/unix_2a_build-osg-fix
