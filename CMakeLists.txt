@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-project(scone-studio VERSION 2.1.0)
+project(scone-studio VERSION 2.2.0)
 
 # Set LINUX variable
 if(UNIX AND NOT APPLE)
