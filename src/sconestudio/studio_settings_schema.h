@@ -58,6 +58,7 @@ viewer {
 	muscle_position { type = float label = "Relative muscle belly position (0-1)" range = [ 0 1 ] default = 0.333 }
 	relative_tendon_width { type = float label = "Tendon diameter relative to muscle" range = [ 0.1 1 ] default = 0.618 }
 	joint_radius { type = float label = "Joint sphere radius" range = [ 0.001 1 ] default = 0.015 }
+	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
 	enable_object_cache { type = bool label = "Enable mesh caching for faster reloading (needs restart)" default = 1 }
 	camera_follow_body { type = string label = "Body to follow by camera (leave blank for CoM)" default = "" }
 }

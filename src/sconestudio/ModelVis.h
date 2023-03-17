@@ -52,6 +52,7 @@ namespace scone
 		float specular_;
 		float shininess_;
 		float ambient_;
+		const bool combine_contact_forces_;
 
 		vis::material bone_mat;
 		vis::material joint_mat;

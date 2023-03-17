@@ -20,6 +20,7 @@ namespace scone
 		specular_( GetStudioSetting< float >( "viewer.specular" ) ),
 		shininess_( GetStudioSetting< float >( "viewer.shininess" ) ),
 		ambient_( GetStudioSetting< float >( "viewer.ambient" ) ),
+		combine_contact_forces_( GetStudioSetting< bool >( "viewer.combine_contact_forces" ) ),
 		bone_mat( { GetStudioSetting< xo::color >( "viewer.bone" ), specular_, shininess_, ambient_ } ),
 		joint_mat( { GetStudioSetting< xo::color >( "viewer.joint" ), specular_, shininess_, ambient_ } ),
 		com_mat( { GetStudioSetting< xo::color >( "viewer.com" ), specular_, shininess_, ambient_ } ),
@@ -188,6 +189,10 @@ namespace scone
 			auto& b = model_bodies[ i ];
 			bodies[ i ].pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
 
+			// contact forces
+			if ( auto f = b->GetContactForce(); view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !f.is_null() )
+				UpdateForceVis( force_count++, b->GetContactPoint(), f );
+
 			// external forces
 			if ( auto f = b->GetExternalForce(); !f.is_null() )
 				UpdateForceVis( force_count++, b->GetPosOfPointOnBody( b->GetExternalForcePoint() ), f, 0.004f, 0.5f );
@@ -208,7 +213,7 @@ namespace scone
 		{
 			auto pos = model_joints[ i ]->GetPos();
 			joints[ i ].pos( vis::vec3f( pos ) );
-			if ( view_flags.get< ViewOption::Joints >() )
+			if ( view_flags( ViewOption::Joints ) )
 			{
 				UpdateForceVis( force_count++, pos, -model_joints[ i ]->GetReactionForce() );
 				UpdateMomentVis( moment_count++, pos, -model_joints[ i ]->GetLimitTorque() );
@@ -216,7 +221,7 @@ namespace scone
 		}
 
 		// update contact forces
-		if ( view_flags.get< ViewOption::ExternalForces >() )
+		if ( view_flags( ViewOption::ExternalForces ) && !combine_contact_forces_ )
 		{
 			auto fvec = model.GetContactForceValues();
 			for ( auto& cf : fvec )
@@ -224,7 +229,7 @@ namespace scone
 		}
 
 		// update com / heading
-		if ( view_flags.get<ViewOption::ModelComHeading>() )
+		if ( view_flags( ViewOption::ModelComHeading ) )
 		{
 			if ( model.HasRootBody() )
 			{
@@ -247,7 +252,7 @@ namespace scone
 		{
 			forces.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::yellow(), 0.3f } );
 			forces.back().set_material( arrow_mat );
-			forces.back().show( view_flags.get< ViewOption::ExternalForces >() );
+			forces.back().show( view_flags( ViewOption::ExternalForces ) );
 		}
 		forces[ force_idx ].pos_ofs( vis::vec3f( cop ), len_scale * vis::vec3f( force ), rad_scale );
 	}
@@ -258,7 +263,7 @@ namespace scone
 		{
 			moments.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::blue(), 0.3f } );
 			moments.back().set_material( moment_mat );
-			moments.back().show( view_flags.get< ViewOption::ExternalForces >() );
+			moments.back().show( view_flags( ViewOption::ExternalForces ) );
 		}
 		moments[ moment_idx ].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
 	}
@@ -277,11 +282,11 @@ namespace scone
 		}
 
 		Real a;
-		if ( view_flags.get<ViewOption::MuscleActivation>() )
+		if ( view_flags( ViewOption::MuscleActivation ) )
 			a = mus.GetActivation();
-		else if ( view_flags.get<ViewOption::MuscleForce>() )
+		else if ( view_flags( ViewOption::MuscleForce ) )
 			a = mus.GetNormalizedForce();
-		else if ( view_flags.get<ViewOption::MuscleFiberLength>() )
+		else if ( view_flags( ViewOption::MuscleFiberLength ) )
 			a = 1.5 * ( mus.GetNormalizedFiberLength() - 1 );
 		else a = 0.0;
 
@@ -290,7 +295,7 @@ namespace scone
 		vis.mat.ambient( c );
 
 		auto p = mus.GetMusclePath();
-		if ( view_flags.get<ViewOption::Tendons>() )
+		if ( view_flags( ViewOption::Tendons ) )
 		{
 			auto i1 = insert_path_point( p, tlen );
 			auto i2 = insert_path_point( p, tlen + mlen );
@@ -329,35 +334,35 @@ namespace scone
 	{
 		view_flags = f;
 		for ( auto& f : forces )
-			f.show( view_flags.get<ViewOption::ExternalForces>() );
+			f.show( view_flags( ViewOption::ExternalForces ) );
 		for ( auto& m : moments )
-			m.show( view_flags.get<ViewOption::ExternalForces>() );
+			m.show( view_flags( ViewOption::ExternalForces ) );
 
 		for ( auto& m : muscles )
 		{
-			m.ce.show( view_flags.get<ViewOption::Muscles>() );
-			m.ten1.show( view_flags.get<ViewOption::Muscles>() && view_flags.get<ViewOption::Tendons>() );
-			m.ten2.show( view_flags.get<ViewOption::Muscles>() && view_flags.get<ViewOption::Tendons>() );
+			m.ce.show( view_flags( ViewOption::Muscles ) );
+			m.ten1.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
+			m.ten2.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
 		}
 
 		for ( auto& e : joints )
-			e.show( view_flags.get<ViewOption::Joints>() );
+			e.show( view_flags( ViewOption::Joints ) );
 
 		for ( auto& e : body_meshes )
-			e.show( view_flags.get<ViewOption::BodyGeom>() );
+			e.show( view_flags( ViewOption::BodyGeom ) );
 
 		for ( auto& e : body_axes )
-			e.show( view_flags.get<ViewOption::BodyAxes>() );
+			e.show( view_flags( ViewOption::BodyAxes ) );
 
 		for ( auto& e : body_com )
-			e.show( view_flags.get<ViewOption::BodyCom>() );
+			e.show( view_flags( ViewOption::BodyCom ) );
 
 		for ( auto& e : contact_geoms )
-			e.show( view_flags.get<ViewOption::ContactGeom>() );
+			e.show( view_flags( ViewOption::ContactGeom ) );
 
 		if ( ground_.node_id() )
-			ground_.show( view_flags.get<ViewOption::GroundPlane>() );
+			ground_.show( view_flags( ViewOption::GroundPlane ) );
 
-		heading_.show( view_flags.get<ViewOption::ModelComHeading>() );
+		heading_.show( view_flags( ViewOption::ModelComHeading ) );
 	}
 }
