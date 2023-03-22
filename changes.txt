@@ -1,6 +1,45 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.2.0 ====
+//Released March 22, 2023//
+
+=== New Features ===
+  * SCONE is now officially supported on macOS
+  * SconePy now supports ``current_measure()`` to allow SCONE Measures to be used for Reinforcement Learning
+  * Hyfydy models now uses a new integrator by default, increasing both performance and accuracy
+
+=== Updates ===
+  * Hyfydy Tutorials and Examples no longer include HfdConfig
+  * Optimization / Evaluation
+    * Optimizers now have use_best_as_mean setting
+    * Objectives can now be evaluated even if they contain no free parameters
+    * Models can now be evaluated without ModelObjective; S: scone
+    * Controllers and Measures can now be defined inside Models without type property
+  * SconePy
+    * sconepy.quaternion.get_rotation_vector()
+    * sconepy.Body.com_acc(), ang_acc()
+    * sconepy.model.log_measure_report()
+    * sconepy.model.set_simulation_end_time(), has_simulation_ended()
+    * sconepy.current_measure(), final_measure()
+  * Progress graph
+    * Progress graph refresh rate can now be configured
+    * Progress window now shows optimization time
+  * Analysis view
+    * Analysis view now has maximum zoom level and better edge handling
+    * Data analysis and playback now remains available after simulation errors
+  * 3D Viewer can now visualize contact forces using a single arrow per body (Preferences -> User Interface -> Combine body contact forces)
+  * Messages log level can now be set in Preferences -> Scone Studio -> User Interface Settings
+  * Asymmetric model components are now shown in the Model Info window
+  * GaitStateController now has use_model_com_reference_pos for state transitions based on sagittal_pos
+
+=== Fixes ===
+  * scone_version is now added in LoadScenario() if a .par file is loaded
+  * Model components are now properly cleared, fixes User Input / Blueprint crash
+  * OpenSim models now correctly load init_state when initial_load = 0
+  * ModelConverter now mirrors joint limits correctly
+  * CmaPoolOptimizer now has better documentation
+
 ==== SCONE 2.1.0 ====
 //Released January 9, 2023//
 
