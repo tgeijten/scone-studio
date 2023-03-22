@@ -78,6 +78,7 @@ public:
 
 	bool showCloseWarning;
 	bool closeWhenFinished;
+	const bool showPrediction;
 
 	int min_view_gens;
 	int view_first_gen;

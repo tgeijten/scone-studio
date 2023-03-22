@@ -70,7 +70,9 @@ optimization {
 
 progress {
 	label = "Optimization progress settings"
+	update_interval { type = int default = 250 label = "Interval [ms] to update progress graphs" range = [ 10 1000 ] }
 	line_width { type = float default = 1 label = "Line width of progress graphs (use 1 for best performance)" range = [ 1 10 ] }
+	show_prediction { type = bool default = 0 label = "Show predicted fitness" }
 }
 
 analysis {

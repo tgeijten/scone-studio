@@ -386,7 +386,7 @@ bool SconeStudio::init()
 	ui.messagesDock->raise();
 
 	connect( &backgroundUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateBackgroundTimer() ) );
-	backgroundUpdateTimer.start( 500 );
+	backgroundUpdateTimer.start( GetStudioSetting<int>( "progress.update_interval" ) );
 
 	QTimer::singleShot( 0, this, SLOT( windowShown() ) );
 

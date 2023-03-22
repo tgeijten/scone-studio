@@ -28,6 +28,7 @@ ProgressDockWidget::ProgressDockWidget( SconeStudio* s, std::unique_ptr<scone::O
 	state( StartingState ),
 	showCloseWarning( true ),
 	closeWhenFinished( false ),
+	showPrediction( GetStudioSetting< float >( "progress.show_prediction" ) ),
 	min_view_gens( 20 ),
 	view_first_gen( 0 ),
 	view_last_gen( min_view_gens ),
@@ -327,6 +328,7 @@ void ProgressDockWidget::updateText()
 	string s;
 
 	auto* opt = ( best_idx != -1 ) ? &optimizations[ best_idx ] : nullptr;
+	std::string tstr = opt ? xo::to_str( xo::time_from_seconds( opt->duration ), 0.0 ) : "0";
 
 	switch ( state )
 	{
@@ -336,13 +338,16 @@ void ProgressDockWidget::updateText()
 	case ProgressDockWidget::RunningState:
 		if ( closeWhenFinished )
 			s = "Canceling optimization...";
-		else if ( opt )
-			s = xo::stringf( "Gen %d; Best=%.3f (Gen %d); P=%.3f", opt->cur_gen, opt->best, opt->best_gen, opt->cur_pred );
+		else if ( opt ) {
+			s = xo::stringf( "T=%s  Gen=%d  Best=%.3f (Gen %d)", tstr.c_str(), opt->cur_gen, opt->best, opt->best_gen );
+			if ( showPrediction )
+				s += xo::stringf( "  P=%.3f", opt->cur_pred );
+		}
 		else s = "Waiting for first evaluation...";
 		break;
 	case ProgressDockWidget::FinishedState:
 		if ( opt )
-			s = xo::stringf( "Finished (Gen %d); Best=%.3f (Gen %d)", opt->cur_gen, opt->best, opt->best_gen ) + "\n" + message;
+			s = xo::stringf( "Finished in %s  -  Gen=%d  Best=%.3f (Gen %d)", tstr.c_str(), opt->cur_gen, opt->best, opt->best_gen ) + "\n" + message;
 		else s = message;
 		break;
 	case ProgressDockWidget::ClosedState:
