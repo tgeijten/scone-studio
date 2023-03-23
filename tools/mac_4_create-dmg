@@ -8,18 +8,15 @@
 set -xeuo pipefail
 source "$( dirname ${BASH_SOURCE} )/build_config"
 
-scone_version="2.2.0"
-installer_name="SCONE-${scone_version}"
-app_name="SCONE.app"
-
 # create-dmg fails if target already exists
-rm -f "${SCONE_BUILD_DIR}/${installer_name}.dmg"
+rm -f "${SCONE_BUILD_DIR}/SconeStudio.dmg"
 
 ./create-dmg/create-dmg \
-    --volicon "${SCONE_BUILD_DIR}/${app_name}/Contents/MacOS/resources/ui/scone_logo_256x256.icns" \
-    --volname "Install ${installer_name}" \
-    --icon "${SCONE_BUILD_DIR}/${app_name}" 0 0 \
+    --volicon "${SCONE_BUILD_DIR}/SconeStudio.app/Contents/MacOS/resources/ui/scone_logo_256x256.icns" \
+    --volname "sconestudio installer" \
+    --icon "${SCONE_BUILD_DIR}/SconeStudio.app" 0 0 \
     --icon-size 100 \
     --app-drop-link 200 0 \
-    "${SCONE_BUILD_DIR}/${installer_name}.dmg" \
-    "${SCONE_BUILD_DIR}/${app_name}"
+    "${SCONE_BUILD_DIR}/SconeStudio.dmg" \
+    "${SCONE_BUILD_DIR}/SconeStudio.app"
+
