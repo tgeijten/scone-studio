@@ -12,11 +12,11 @@
 #
 # Describes the structure of .app directories as:
 #
-# SconeStudio.app/
+# SCONE.app/
 #     Contents/
 #         Info.plist
 #         MacOS/
-#             sconestudio
+#             scone-studio-launcher
 #             all_the_other_stuff/
 #         Resources/
 #              sconestudio.icns
@@ -42,54 +42,53 @@
 set -xeuo pipefail
 source "$( dirname ${BASH_SOURCE} )/build_config"
 
-app_dir="${SCONE_BUILD_DIR}/SconeStudio.app"
+app_dir="${SCONE_BUILD_DIR}/SCONE.app"
 
-# SconeStudio.app/
+# delete existing app_dir
+rm -rf "${app_dir}"
+
+# SCONE.app/
 mkdir -p "${app_dir}"
-# SconeStudio.app/Contents/
+# SCONE.app/Contents/
 mkdir -p "${app_dir}/Contents/"
 
-# SconeStudio.app/Contents/Info.plist
+# SCONE.app/Contents/Info.plist
 cat <<EOF > "${app_dir}/Contents/Info.plist"
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleGetInfoString</key>
-  <string>sconestudio</string>
-  <key>CFBundleExecutable</key>
-  <string>sconestudio</string>
-  <key>CFBundleIdentifier</key>
-  <string>software.scone</string>
   <key>CFBundleName</key>
-  <string>sconestudio</string>
+  <string>SCONE</string>
+  <key>CFBundleDisplayName</key>
+  <string>SCONE</string>
+  <key>CFBundleIdentifier</key>
+  <string>SCONE-2.2.0</string>
+  <key>CFBundleShortVersionString</key>
+  <string>2.2.0</string>
+  <key>CFBundleExecutable</key>
+  <string>scone-studio-launcher</string>
   <key>CFBundleIconFile</key>
   <string>scone.icns</string>
-  <key>CFBundleShortVersionString</key>
-  <string>0.01</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
-  <key>IFMajorVersion</key>
-  <integer>0</integer>
-  <key>IFMinorVersion</key>
-  <integer>1</integer>
 </dict>
 </plist>
 EOF
 
-# SconeStudio.app/Contents/Resources
+# SCONE.app/Contents/Resources
 mkdir -p "${app_dir}/Contents/Resources/"
 
-# SconeStudio.app/Contents/Resources/scone.icns
+# SCONE.app/Contents/Resources/scone.icns
 cp "${SCONE_REPOSITORY_DIR}/resources/ui/scone_logo_256x256.icns" "${app_dir}/Contents/Resources/scone.icns"
 
-# SconeStudio.app.app/Contents/MacOS
+# SCONE.app.app/Contents/MacOS
 mkdir -p "${app_dir}/Contents/MacOS/"
 
-# SconeStudio.app/Contents/MacOS/sconestudio
-cat <<EOF > "${app_dir}/Contents/MacOS/sconestudio"
+# SCONE.app/Contents/MacOS/SCONE
+cat <<EOF > "${app_dir}/Contents/MacOS/scone-studio-launcher"
 #!/usr/bin/env bash
 
 # ensure the dynamic linker can find bundled libs
@@ -103,18 +102,32 @@ export PATH="\${BASH_SOURCE%/*}/bin:\${PATH}"
 
 exec sconestudio "\$@"
 EOF
-chmod +x "${app_dir}/Contents/MacOS/sconestudio"
+chmod +x "${app_dir}/Contents/MacOS/scone-studio-launcher"
 
 
 # copy executables
 
-# SconeStudio.app/Contents/MacOS/bin/
+# SCONE.app/Contents/MacOS/bin/
 mkdir -p "${app_dir}/Contents/MacOS/bin/"
 for exe in $(find "${SCONE_INSTALL_DIR}/bin" -type f); do
     cp -a "${exe}" "${app_dir}/Contents/MacOS/bin/"
 done
 chmod +x ${app_dir}/Contents/MacOS/bin/*
 
+
+# copy resources (icons etc.)
+
+# SCONE.app/Contents/MacOS/resources
+mkdir -p "${app_dir}/Contents/MacOS/resources"
+cp -r ${SCONE_INSTALL_DIR}/resources/* "${app_dir}/Contents/MacOS/resources/"
+# SCONE.app/Contents/MacOS/scone/scenarios
+mkdir -p "${app_dir}/Contents/MacOS/scone/scenarios"
+cp -r ${SCONE_INSTALL_DIR}/scone/scenarios/* "${app_dir}/Contents/MacOS/scone/scenarios"
+
+# SCONE.app/Contents/MacOS/.version
+# (needed by SCONE to boot)
+# cd ${SCONE_REPOSITORY_DIR}
+# git rev-list --count HEAD > "${app_dir}/Contents/MacOS/.version"
 
 # copy libraries
 #
@@ -125,7 +138,7 @@ chmod +x ${app_dir}/Contents/MacOS/bin/*
 #   more mac-centric '.framework dir's have to be handled with some additional
 #   magic
 
-# SconeStudio.app/Contents/MacOS/lib
+# SCONE.app/Contents/MacOS/lib
 lib_dir="${app_dir}/Contents/MacOS/lib/"
 mkdir -p "${lib_dir}"
 
@@ -156,18 +169,3 @@ ${QT5_BREW_PATH}/bin/macdeployqt \
     -verbose=2 \
     -no-strip \
     -executable=${app_dir}/Contents/MacOS/bin/sconestudio
-
-# copy resources (icons etc.)
-
-# SconeStudio.app/Contents/MacOS/resources
-mkdir -p "${app_dir}/Contents/MacOS/resources"
-cp -r ${SCONE_INSTALL_DIR}/resources/* "${app_dir}/Contents/MacOS/resources/"
-# SconeStudio.app/Contents/MacOS/scone/scenarios
-mkdir -p "${app_dir}/Contents/MacOS/scone/scenarios"
-cp -r ${SCONE_INSTALL_DIR}/scone/scenarios/* "${app_dir}/Contents/MacOS/scone/scenarios"
-
-# SconeStudio.app/Contents/MacOS/.version
-# (needed by SCONE to boot)
-# cd ${SCONE_REPOSITORY_DIR}
-# git rev-list --count HEAD > "${app_dir}/Contents/MacOS/.version"
-
