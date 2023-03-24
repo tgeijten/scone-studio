@@ -8,8 +8,7 @@
 set -xeuo pipefail
 source "$( dirname ${BASH_SOURCE} )/build_config"
 
-scone_version="2.2.0"
-installer_name="SCONE-${scone_version}"
+installer_name="SCONE-${SCONE_VERSION}"
 app_name="SCONE.app"
 
 # create-dmg fails if target already exists

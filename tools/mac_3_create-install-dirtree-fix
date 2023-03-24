@@ -63,9 +63,9 @@ cat <<EOF > "${app_dir}/Contents/Info.plist"
   <key>CFBundleDisplayName</key>
   <string>SCONE</string>
   <key>CFBundleIdentifier</key>
-  <string>SCONE-2.2.0</string>
+  <string>SCONE-${SCONE_VERSION}</string>
   <key>CFBundleShortVersionString</key>
-  <string>2.2.0</string>
+  <string>${SCONE_VERSION}</string>
   <key>CFBundleExecutable</key>
   <string>scone-studio-launcher</string>
   <key>CFBundleIconFile</key>

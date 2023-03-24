@@ -108,8 +108,6 @@ set(RESOURCEFILES
 qt5_wrap_ui(UI_HEADERS ${QT_UI_FILES})
 qt5_add_resources(RESOURCES SconeStudio.qrc)
 
-set( SOURCE_FILES ${STUDIOFILES} ${QTFILES} ${RESOURCES} )
-
 add_executable(sconestudio ${STUDIOFILES} ${QTFILES} ${PRECOMPILED_HEADER_FILES} ${UI_HEADERS} ${RESOURCEFILES} )
 
 target_compile_definitions(sconestudio PRIVATE QTFX_USE_QCUSTOMPLOT)

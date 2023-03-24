@@ -42,6 +42,9 @@ export SCONE_BUILD_DIR=${PROJECT_DIR}/build
 # scone install dir
 export SCONE_INSTALL_DIR=${PROJECT_DIR}/install
 
+# scone version read from VERSION.txt
+export SCONE_VERSION=$(<"${SCONE_REPOSITORY_DIR}/scone/VERSION.txt")
+
 # whether makefiles should emit commands (useful for debugging
 # compiler flags + errors)
 export CMAKE_VERBOSE_MAKEFILE="${CMAKE_VERBOSE_MAKEFILE:-False}"
