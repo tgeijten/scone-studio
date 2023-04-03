@@ -7,7 +7,7 @@
 === New Features ===
   * SCONE is now officially supported on macOS
   * SconePy now supports using SCONE Measures to be used for Reinforcement Learning via ''current_measure()''
-  * Hyfydy models now uses a new integrator by default, increasing both performance and accuracy
+  * Hyfydy models now use a new integrator by default, increasing both performance and accuracy
 
 === Updates ===
   * Hyfydy Tutorials and Examples no longer include HfdConfig
