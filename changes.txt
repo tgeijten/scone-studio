@@ -2,11 +2,11 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.2.0 ====
-//Released March 22, 2023//
+//Released April 3, 2023//
 
 === New Features ===
   * SCONE is now officially supported on macOS
-  * SconePy now supports ``current_measure()`` to allow SCONE Measures to be used for Reinforcement Learning
+  * SconePy now supports using SCONE Measures to be used for Reinforcement Learning via ''current_measure()''
   * Hyfydy models now uses a new integrator by default, increasing both performance and accuracy
 
 === Updates ===
@@ -34,10 +34,11 @@
   * GaitStateController now has use_model_com_reference_pos for state transitions based on sagittal_pos
 
 === Fixes ===
-  * scone_version is now added in LoadScenario() if a .par file is loaded
-  * Model components are now properly cleared, fixes User Input / Blueprint crash
   * OpenSim models now correctly load init_state when initial_load = 0
   * ModelConverter now mirrors joint limits correctly
+  * ''FeedForwardController'' now displays an error message when there are no matching actuators
+  * scone_version is now added in LoadScenario() if a .par file is loaded
+  * Model components are now properly cleared, fixes User Input / Blueprint crash
   * CmaPoolOptimizer now has better documentation
 
 ==== SCONE 2.1.0 ====
