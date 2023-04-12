@@ -12,8 +12,8 @@ gait_analysis {
 	show_fit { type = bool default = 1 label = "Show data fit" }
 	force_threshold { type = float default = 0.001 label = "Force threshold [BW] for step detection" }
 	min_stance_duration { type = float default = 0.1 label = "Minimum contact length [s] for stance detection" }
-	skip_first { type = int default = 2 label = "Number of initial steps to exclude form analysis" }
-	skip_last { type = int default = 1 label = "Number of final steps to exclude form analysis" }
+	skip_first { type = int default = 2 label = "Number of initial steps to exclude from analysis" }
+	skip_last { type = int default = 1 label = "Number of final steps to exclude from analysis" }
 	title_font_size { type = int default = 11 label = "Gait plot title font point size" }
 	axis_font_size { type = int default = 10 label = "Gait plot axis font point size" }
 }
