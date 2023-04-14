@@ -147,7 +147,7 @@ namespace scone
 				xo::replace_str( str, model_file_org.str(), model_file_new.str() );
 				xo::replace_str( str, "ModelOpenSim3", "ModelHyfydy" );
 				xo::replace_str( str, "ModelOpenSim4", "ModelHyfydy" );
-				xo::save_string( str, scenario_path );
+				xo::save_string( scenario_path, str );
 				log::info( "Scenario written to ", hfd_model_path );
 				return to_qt( scenario_path );
 			}
