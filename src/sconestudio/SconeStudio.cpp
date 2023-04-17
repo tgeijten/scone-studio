@@ -1109,7 +1109,9 @@ void SconeStudio::performanceTest( bool write_stats )
 			else
 			{
 				auto f = scenario_->GetFileName();
-				scone::BenchmarkScenario( scenario_->GetScenarioPropNode(), f, f.parent_path() / "perf", 8 );
+				scone::BenchmarkOptions bopt;
+				bopt.min_samples = 8;
+				scone::BenchmarkScenario( scenario_->GetScenarioPropNode(), f, f.parent_path() / "perf", bopt );
 			}
 		}
 	}
