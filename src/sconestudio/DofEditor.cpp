@@ -60,8 +60,9 @@ namespace scone
 
 		velocity_ = new QDoubleSpinBox();
 		velocity_->setSingleStep( useDegrees ? 10.0 : 0.1 );
-		velocity_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
-		velocity_->setRange( -999.99, 999.99 );
+		velocity_->setDecimals( useDegrees ? 0 : xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
+		double max_vel = useDegrees ? 9999.0 : 99.0;
+		velocity_->setRange( -max_vel, max_vel );
 		velocity_->setAlignment( Qt::AlignRight );
 		QObject::connect( velocity_, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), deg,
 			[=]() { emit deg->valueChanged(); } );
