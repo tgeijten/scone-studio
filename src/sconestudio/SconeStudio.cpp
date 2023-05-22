@@ -58,6 +58,7 @@
 #include "file_tools.h"
 #include "model_conversion.h"
 #include "studio_tools.h"
+#include "xo/time/interval_checker.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -519,17 +520,18 @@ void SconeStudio::evaluate()
 
 	xo::scoped_thread_priority prio_raiser( xo::thread_priority::highest );
 
-	const double step_size = 0.01;
-	const xo::time visual_update = 250_ms;
-	xo::time prev_visual_time = xo::time() - visual_update;
+	double step_size = std::max( 0.001, scenario_->GetModel().GetSimulationStepSize() );
+	//double step_size = 0.01;
+	xo::interval_checker progress_update( 250_ms );
+	xo::interval_checker visualizer_update( 1000_ms );
 	xo::timer real_time;
 	for ( double t = step_size; scenario_->IsEvaluating(); t += step_size )
 	{
 		auto rt = real_time();
-		if ( rt - prev_visual_time >= visual_update )
+		if ( progress_update.check( rt ) )
 		{
 			// update 3D visuals and progress bar
-			setTime( t, true );
+			setTime( t, visualizer_update.check( rt ) );
 			dlg.setValue( int( 1000 * t / scenario_->GetMaxTime() ) );
 			if ( dlg.wasCanceled() )
 			{
@@ -537,7 +539,6 @@ void SconeStudio::evaluate()
 				scenario_->AbortEvaluation();
 				break;
 			}
-			prev_visual_time = rt;
 		}
 		else setTime( t, false );
 	}
