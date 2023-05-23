@@ -389,6 +389,8 @@ bool SconeStudio::init()
 	connect( &backgroundUpdateTimer, SIGNAL( timeout() ), this, SLOT( updateBackgroundTimer() ) );
 	backgroundUpdateTimer.start( GetStudioSetting<int>( "progress.update_interval" ) );
 
+	QObject::connect( &fileWatcher, SIGNAL( fileChanged( const QString& ) ), this, SLOT( handleFileChanged( const QString& ) ) );
+
 	QTimer::singleShot( 0, this, SLOT( windowShown() ) );
 
 	return true;
@@ -652,6 +654,7 @@ void SconeStudio::openFile( const QString& filename )
 		connect( edw, &QCodeEditor::modificationChanged, this, &SconeStudio::updateTabTitles );
 		codeEditors.push_back( edw );
 		updateRecentFilesMenu( filename );
+		fileWatcher.addPath( filename );
 		createAndVerifyActiveScenario( false );
 	} catch ( std::exception& e ) { error( "Error opening " + filename, e.what() ); }
 }
@@ -701,6 +704,12 @@ void SconeStudio::fileCloseTriggered()
 {
 	if ( auto idx = ui.tabWidget->currentIndex(); idx >= 0 )
 		tabCloseRequested( idx );
+}
+
+void SconeStudio::handleFileChanged( const QString& filename )
+{
+	if ( !reloadFiles.contains( filename ) )
+		reloadFiles.append( filename );
 }
 
 void SconeStudio::helpSearch()
@@ -1154,6 +1163,20 @@ void SconeStudio::updateBackgroundTimer()
 		updateOptimizations();
 	if ( scenario_ )
 		scenario_->CheckWriteResults();
+	checkAutoReload();
+}
+
+void SconeStudio::checkAutoReload()
+{
+	int reloads = 0;
+	for ( auto& filename : reloadFiles )
+		for ( auto e : codeEditors )
+			if ( e->fileName == filename )
+				e->reload(), reloads++;
+	if ( reloads > 0 ) {
+		createAndVerifyActiveScenario( true );
+		reloadFiles.clear();
+	}
 }
 
 void SconeStudio::updateOptimizations()

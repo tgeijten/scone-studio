@@ -20,6 +20,7 @@
 #include "QValueSlider.h"
 #include "QDockWidget"
 #include "QPropNodeItemModel.h"
+#include <QFileSystemWatcher>
 
 #include "ui_SconeStudio.h"
 
@@ -78,6 +79,7 @@ public slots:
 	virtual void fileSaveTriggered() override;
 	virtual void fileSaveAsTriggered() override;
 	virtual void fileCloseTriggered() override;
+	void handleFileChanged( const QString& filename );
 
 	void helpSearch();
 	void helpForum();
@@ -87,6 +89,7 @@ public slots:
 	void optimizeScenarioMultiple();
 	bool abortOptimizations();
 	void updateBackgroundTimer();
+	void checkAutoReload();
 	void updateOptimizations();
 	void createVideo();
 	void captureImage();
@@ -158,6 +161,8 @@ private:
 	std::vector< ProgressDockWidget* > optimizations;
 	ResultsFileSystemModel* resultsModel;
 	std::vector< QCodeEditor* > codeEditors;
+	QFileSystemWatcher fileWatcher;
+	QStringList reloadFiles;
 
 	// viewer
 	xo::flat_map< scone::ViewOption, QAction* > viewActions;
