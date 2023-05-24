@@ -1168,14 +1168,14 @@ void SconeStudio::updateBackgroundTimer()
 
 void SconeStudio::checkAutoReload()
 {
-	int reloads = 0;
+	bool reload = false;
 	for ( auto& filename : reloadFiles )
 		for ( auto e : codeEditors )
 			if ( e->fileName == filename )
-				e->reload(), reloads++;
-	if ( reloads > 0 ) {
+				reload |= e->reload();
+	reloadFiles.clear();
+	if ( reload ) {
 		createAndVerifyActiveScenario( true );
-		reloadFiles.clear();
 	}
 }
 
