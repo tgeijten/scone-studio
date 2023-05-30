@@ -289,6 +289,8 @@ namespace scone
 			return model_objective_->GetDuration();
 		else if ( !storage_.IsEmpty() )
 			return storage_.Back().GetTime();
+		else if ( model_ && model_->GetSimulationEndTime() < 1e12 )
+			return model_->GetSimulationEndTime();
 		else return 0.0;
 	}
 
