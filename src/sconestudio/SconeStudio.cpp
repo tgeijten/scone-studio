@@ -346,7 +346,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		ui.osgViewer->enableObjectCache( true );
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
-	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
+	ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud_v10_256x256.png" );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
 	scone::TimeSection( "InitViewer" );
