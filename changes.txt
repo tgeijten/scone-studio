@@ -1,6 +1,43 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.2.1 ====
+//Released June 6, 2023//
+
+=== New Features ===
+  * SCONE Studio now automatically reloads open files that were modified in another editor
+  * ScriptController can now have child Controllers, which can be enabled/disabled from within the script update() function
+  * Hyfydy now supports sphere-capsule and capsule-capsule collisions
+  * Hyfydy has a major increase in collision performance when there are many collision geometries
+
+=== Updates ===
+  * Reflex min/max_control_value can now be optimized
+  * Added SconePy.Model.get_tendon_length()
+  * Simulation statistics now includes simulation_step_size and simulation_step_count
+  * EffortMeasure now stores individual muscle efforts for Wang2012 and Uchida2016
+  * Default contact geometry transparency is now 0.5
+  * Progress bar during evaluation is now more responsive
+  * Model asymmetry check now shows specific asymmetries
+
+=== Fixes ===
+  * DofMeasure units are now in meters for translational Dofs, added "in_degrees" setting for rotational Dofs (default = 1)
+  * SequentialController now only writes data for the active controller, preventing controller data from being overwritten by inactive controllers
+
+==== SCONE 2.2.0 ====
+//Released //
+
+=== New Features ===
+  * gui_profiler
+  * Messages log level can now be set in Preferences -> Scone Studio -> User Interface Settings
+
+=== Updates ===
+  * Updated progress graph refresh rate and message
+  * 3D Viewer can now visualize contact forces using a single arrow per body (Preferences -> User Interface -> Combine body contact forces)
+  * Objectives can now be evaluated even if they contain no free parameters
+  * Analysis view now has maximum zoom level and better edge handling
+  * Data analysis and playback now remains available after simulation errors
+  * Models can now be evaluated without ModelObjective; S: scone
+
 ==== SCONE 2.2.0 ====
 //Released April 3, 2023//
 
