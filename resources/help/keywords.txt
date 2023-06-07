@@ -29,6 +29,7 @@ joint_load_measure.txt
 jump_measure.txt
 lua_actuator.txt
 lua_body.txt
+lua_controller.txt
 lua_dof.txt
 lua_frame.txt
 lua_joint.txt
