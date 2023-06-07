@@ -2,7 +2,7 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.2.1 ====
-//Released June 6, 2023//
+//Released June 7, 2023//
 
 === New Features ===
   * SCONE Studio now automatically reloads open files that were modified in another editor
