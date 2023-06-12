@@ -337,6 +337,14 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	tabifyDockWidget( ui.messagesDock, optimizationHistoryDock );
 	optimizationHistoryDock->hide();
 
+	// Muscle plot
+	musclePlot = new MusclePlot( this );
+	musclePlotDock = createDockWidget( "Model Ana&lysis", musclePlot, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( ui.messagesDock, musclePlotDock );
+	musclePlotDock->hide();
+	auto setDof = [=]( const QString& d ) { if ( scenario_ && scenario_->HasModel() ) musclePlot->setDof( scenario_->GetModel(), d ); else musclePlot->clear(); };
+	connect( musclePlot, &MusclePlot::dofChanged, this, setDof );
+
 	// finalize windows menu
 	windowMenu->addSeparator();
 	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
@@ -820,6 +828,9 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// setup dof editor
 			dofEditor->init( scenario_->GetModel() );
 			dofEditor->setEnableEditing( scenario_->IsEvaluatingStart() );
+
+			// setup muscle plots
+			musclePlot->init( scenario_->GetModel() );
 
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )

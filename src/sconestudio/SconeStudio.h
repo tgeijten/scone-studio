@@ -48,6 +48,7 @@
 #include "DofEditor.h"
 #include "ViewOptions.h"
 #include "UserInputEditor.h"
+#include "MusclePlot.h"
 
 using scone::TimeInSeconds;
 
@@ -210,6 +211,9 @@ private:
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// UserInput editor
 	scone::UserInputEditor* userInputEditor = nullptr;
+
+	scone::MusclePlot* musclePlot = nullptr;
+	QDockWidget* musclePlotDock = nullptr;
 #endif
 
 	// Optimization History

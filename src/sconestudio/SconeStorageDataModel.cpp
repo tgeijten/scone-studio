@@ -99,7 +99,7 @@ double SconeStorageDataModel::timeFinish() const
 
 double SconeStorageDataModel::timeStart() const
 {
-	return 0.0;
+	return storage && !storage->IsEmpty() ? storage->Front().GetTime() : 0.0;
 }
 
 int SconeStorageDataModel::timeIndex( double time ) const
