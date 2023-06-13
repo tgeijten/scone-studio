@@ -14,7 +14,7 @@ namespace scone
 		QHBoxLayout* l = new QHBoxLayout( this );
 		l->setMargin( 0 );
 
-		view = new QDataAnalysisView( &storageModel, this );
+		view = new QDataAnalysisView( storageModel, this );
 		view->setObjectName( "Model Analysis" );
 		view->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 		view->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
@@ -29,7 +29,7 @@ namespace scone
 
 	void MusclePlot::init( Model& model )
 	{
-		dofSelect->clear();
+		clear();
 		for ( auto* d : model.GetDofs() )
 			if ( d->IsRotational() )
 				dofSelect->addItem( to_qt( d->GetName() ) );
@@ -37,8 +37,11 @@ namespace scone
 
 	void MusclePlot::clear()
 	{
-		dofSelect->clear();
 		storage.Clear();
+		view->reloadData();
+		dofSelect->blockSignals( true );
+		dofSelect->clear();
+		dofSelect->blockSignals( false );
 	}
 
 	void MusclePlot::setDof( Model& model, const QString& dof_name )
@@ -61,7 +64,7 @@ namespace scone
 		}
 
 		storageModel.setStorage( &storage );
-		view->reset();
+		view->reloadData();
 		view->setRange( r.min, r.max );
 
 		model.SetState( original_state, 0.0 );

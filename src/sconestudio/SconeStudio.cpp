@@ -80,7 +80,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	scone::TimeSection( "SetupGui" );
 
 	// Analysis (must be done BEFORE menu, analysisView is used there)
-	analysisView = new QDataAnalysisView( &analysisStorageModel, this );
+	analysisView = new QDataAnalysisView( analysisStorageModel, this );
 	analysisView->setObjectName( "Analysis" );
 	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
@@ -329,7 +329,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 #endif
 
 	// optimization history
-	optimizationHistoryView = new QDataAnalysisView( &optimizationHistoryStorageModel, this );
+	optimizationHistoryView = new QDataAnalysisView( optimizationHistoryStorageModel, this );
 	optimizationHistoryView->setObjectName( "Optimization History" );
 	optimizationHistoryView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 	optimizationHistoryView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
@@ -487,7 +487,7 @@ void SconeStudio::refreshAnalysis()
 {
 	GUI_PROFILE_FUNCTION;
 
-	analysisView->refresh( current_time );
+	analysisView->setTime( current_time );
 }
 
 void SconeStudio::dofEditorValueChanged()
@@ -622,7 +622,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 			ui.osgViewer->setFrameTime( current_time );
 			if ( analysisView->isVisible() ) // #todo: isVisible() returns true if the tab is hidden
-				analysisView->refresh( current_time, !ui.playControl->isPlaying() );
+				analysisView->setTime( current_time, !ui.playControl->isPlaying() );
 
 			if ( dofEditor->isVisible() )
 				dofEditor->setSlidersFromDofs( scenario_->GetModel() );
@@ -804,7 +804,8 @@ void SconeStudio::clearScenario()
 	gaitAnalysis->reset();
 	parViewDock->setWindowTitle( "Parameters" );
 	ui.playControl->setRange( 0, 0 );
-	optimizationHistoryStorageModel.setStorage( nullptr );
+	optimizationHistoryStorage.Clear();
+	musclePlot->clear();
 }
 
 bool SconeStudio::createScenario( const QString& any_file )
@@ -858,7 +859,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 				if ( !optimizationHistoryStorage.IsEmpty() )
 				{
 					optimizationHistoryStorageModel.setStorage( &optimizationHistoryStorage );
-					optimizationHistoryView->reset();
+					optimizationHistoryView->reloadData();
 					optimizationHistoryView->setRange( 0, optimizationHistoryStorage.Back().GetTime() );
 				}
 			} catch ( std::exception& e ) {
@@ -1012,7 +1013,7 @@ void SconeStudio::updateModelDataWidgets()
 	SCONE_ASSERT( scenario_ && scenario_->HasData() );
 
 	analysisStorageModel.setStorage( &scenario_->GetData() );
-	analysisView->reset();
+	analysisView->reloadData();
 	ui.playControl->setRange( 0, scenario_->GetMaxTime() );
 	if ( !gaitAnalysisDock->visibleRegion().isEmpty() )
 		updateGaitAnalysis(); // automatic gait analysis if visible
