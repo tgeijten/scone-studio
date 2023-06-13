@@ -213,10 +213,11 @@ private:
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	// UserInput editor
 	scone::UserInputEditor* userInputEditor = nullptr;
-
-	scone::MuscleAnalysis* musclePlot = nullptr;
-	QDockWidget* musclePlotDock = nullptr;
 #endif
+
+	// Muscle Analysis
+	scone::MuscleAnalysis* muscleAnalysis = nullptr;
+	QDockWidget* muscleAnalysisDock = nullptr;
 
 	// Optimization History
 	scone::Storage<> optimizationHistoryStorage;

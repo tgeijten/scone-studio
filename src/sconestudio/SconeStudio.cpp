@@ -338,12 +338,12 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	optimizationHistoryDock->hide();
 
 	// Muscle plot
-	musclePlot = new MuscleAnalysis( this );
-	musclePlotDock = createDockWidget( "Model Ana&lysis", musclePlot, Qt::BottomDockWidgetArea );
-	tabifyDockWidget( ui.messagesDock, musclePlotDock );
-	musclePlotDock->hide();
-	connect( musclePlot, &MuscleAnalysis::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) musclePlot->setDof( scenario_->GetModel(), d ); } );
-	connect( musclePlot, &MuscleAnalysis::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
+	muscleAnalysis = new MuscleAnalysis( this );
+	muscleAnalysisDock = createDockWidget( "Model Ana&lysis", muscleAnalysis, Qt::BottomDockWidgetArea );
+	tabifyDockWidget( ui.messagesDock, muscleAnalysisDock );
+	muscleAnalysisDock->hide();
+	connect( muscleAnalysis, &MuscleAnalysis::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) muscleAnalysis->setDof( scenario_->GetModel(), d ); } );
+	connect( muscleAnalysis, &MuscleAnalysis::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
 
 	// finalize windows menu
 	windowMenu->addSeparator();
@@ -816,7 +816,7 @@ void SconeStudio::clearScenario()
 	parViewDock->setWindowTitle( "Parameters" );
 	ui.playControl->setRange( 0, 0 );
 	optimizationHistoryStorage.Clear();
-	musclePlot->clear();
+	muscleAnalysis->clear();
 }
 
 bool SconeStudio::createScenario( const QString& any_file )
@@ -842,7 +842,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 			dofEditor->setEnableEditing( scenario_->IsEvaluatingStart() );
 
 			// setup muscle plots
-			musclePlot->init( scenario_->GetModel() );
+			muscleAnalysis->init( scenario_->GetModel() );
 
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )
