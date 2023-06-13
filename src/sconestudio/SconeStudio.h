@@ -74,6 +74,7 @@ public slots:
 	void refreshAnalysis();
 	void dofEditorValueChanged();
 	void userInputValueChanged();
+	void muscleAnalysisValueChanged();
 
 	virtual void fileOpenTriggered() override;
 	virtual void fileReloadTriggered();
@@ -122,6 +123,7 @@ public:
 	bool close_all;
 	bool isRecording() { return !captureFilename.isEmpty(); }
 	bool isEvalutating() { return scenario_ && scenario_->IsEvaluating(); }
+	bool hasModel() const { return scenario_ && scenario_->HasModel(); }
 
 private:
 	QCodeEditor* getActiveCodeEditor();

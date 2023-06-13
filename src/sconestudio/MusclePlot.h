@@ -22,13 +22,15 @@ namespace scone
 
 	signals:
 		void dofChanged( const QString& );
+		void dofValueChanged( Real );
 
 	private:
 		void StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const;
 
 		scone::Storage<> storage;
 		SconeStorageDataModel storageModel;
-		QDataAnalysisView* view = nullptr;
 		QComboBox* dofSelect;
+		QDataAnalysisView* view = nullptr;
+		Dof* activeDof = nullptr;
 	};
 }

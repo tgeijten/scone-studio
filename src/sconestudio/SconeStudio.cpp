@@ -100,8 +100,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	fileMenu->addAction( "Save &Model Inputs", this, [=]() { saveUserInputs( false ); } );
-	fileMenu->addAction( "Save &Model Inputs As...", this, [=]() { saveUserInputs( true ); } );
+	fileMenu->addAction( "Save &Model Inputs", this, [this]() { saveUserInputs( false ); } );
+	fileMenu->addAction( "Save &Model Inputs As...", this, [this]() { saveUserInputs( true ); } );
 #endif
 	fileMenu->addSeparator();
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
@@ -112,11 +112,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	editMenu->addAction( "Find &Next", this, &SconeStudio::findNext, Qt::Key_F3 );
 	editMenu->addAction( "Find &Previous", this, &SconeStudio::findPrevious, QKeySequence( "Shift+F3" ) );
 	editMenu->addSeparator();
-	editMenu->addAction( "P&revious Tab", this, [=]() { cycleTabWidget( ui.tabWidget, -1 ); }, QKeySequence( "Ctrl+PgUp" ) );
-	editMenu->addAction( "Ne&xt Tab", this, [=]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
+	editMenu->addAction( "P&revious Tab", this, [this]() { cycleTabWidget( ui.tabWidget, -1 ); }, QKeySequence( "Ctrl+PgUp" ) );
+	editMenu->addAction( "Ne&xt Tab", this, [this]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
 	editMenu->addSeparator();
 	editMenu->addAction( "Toggle &Comments", this, &SconeStudio::toggleComments, QKeySequence( "Ctrl+/" ) );
-	editMenu->addAction( "&Duplicate Selection", this, [=]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
+	editMenu->addAction( "&Duplicate Selection", this, [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
 
 	// View menu
 	auto viewMenu = menuBar()->addMenu( "&View" );
@@ -169,7 +169,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
 	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
-	toolsMenu->addAction( "Convert OpenSim3 &Model...", [=]() { ShowModelConversionDialog( this ); } );
+	toolsMenu->addAction( "Convert OpenSim3 &Model...", [this]() { ShowModelConversionDialog( this ); } );
 	toolsMenu->addSeparator();
 #endif
 	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
@@ -201,7 +201,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
 	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
 	helpMenu->addSeparator();
-	helpMenu->addAction( "&About...", this, [=]() { showAbout( this ); } );
+	helpMenu->addAction( "&About...", this, [this]() { showAbout( this ); } );
 	scone::TimeSection( "InitMenu" );
 
 	// Results Browser
@@ -322,7 +322,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// model input editor
 	userInputEditor = new UserInputEditor( this );
 	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
-	connect( userInputEditor, &UserInputEditor::savePressed, this, [=]() { saveUserInputs( true ); } );
+	connect( userInputEditor, &UserInputEditor::savePressed, this, [this]() { saveUserInputs( true ); } );
 	auto userInputDock = createDockWidget( "Model &Inputs", userInputEditor, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, userInputDock );
 	userInputDock->hide();
@@ -342,8 +342,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	musclePlotDock = createDockWidget( "Model Ana&lysis", musclePlot, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, musclePlotDock );
 	musclePlotDock->hide();
-	auto setDof = [=]( const QString& d ) { if ( scenario_ && scenario_->HasModel() ) musclePlot->setDof( scenario_->GetModel(), d ); else musclePlot->clear(); };
-	connect( musclePlot, &MusclePlot::dofChanged, this, setDof );
+	connect( musclePlot, &MusclePlot::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) musclePlot->setDof( scenario_->GetModel(), d ); } );
+	connect( musclePlot, &MusclePlot::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
 
 	// finalize windows menu
 	windowMenu->addSeparator();
@@ -508,6 +508,17 @@ void SconeStudio::userInputValueChanged()
 		scenario_->GetModel().UpdateModelFromUserInputs();
 		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 		scenario_->ResetModelVis( scene_, getViewOptionsFromMenu() );
+		ui.osgViewer->update();
+	}
+}
+
+void SconeStudio::muscleAnalysisValueChanged()
+{
+	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
+	{
+		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
+		scenario_->GetModel().UpdateStateFromDofs();
+		scenario_->UpdateVis( 0.0 );
 		ui.osgViewer->update();
 	}
 }
