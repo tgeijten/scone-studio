@@ -339,7 +339,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// Muscle plot
 	muscleAnalysis = new MuscleAnalysis( this );
-	muscleAnalysisDock = createDockWidget( "Model Ana&lysis", muscleAnalysis, Qt::BottomDockWidgetArea );
+	muscleAnalysisDock = createDockWidget( "Muscle Ana&lysis", muscleAnalysis, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, muscleAnalysisDock );
 	muscleAnalysisDock->hide();
 	connect( muscleAnalysis, &MuscleAnalysis::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) muscleAnalysis->setDof( scenario_->GetModel(), d ); } );

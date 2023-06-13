@@ -17,7 +17,7 @@ namespace scone
 		l->setMargin( 0 );
 
 		view = new QDataAnalysisView( storageModel, this );
-		view->setObjectName( "Model Analysis" );
+		view->setObjectName( "Muscle Analysis" );
 		view->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 		view->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
 		connect( view, &QDataAnalysisView::timeChanged, this,
@@ -28,7 +28,9 @@ namespace scone
 			} );
 
 		dofSelect = new QComboBox( view );
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		dofSelect->setPlaceholderText( "Select Coordinate" );
+#endif
 		view->itemGroupWidget()->layout_->insertWidget( 0, dofSelect );
 		connect( dofSelect, &QComboBox::currentTextChanged, this, &MuscleAnalysis::dofChanged );
 
