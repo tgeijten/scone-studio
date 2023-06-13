@@ -96,7 +96,6 @@ public slots:
 	void createVideo();
 	void captureImage();
 	void modelAnalysis();
-	void muscleAnalysis();
 	void updateGaitAnalysis();
 	void tabCloseRequested( int idx );
 	void applyViewOptions();

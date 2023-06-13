@@ -588,12 +588,6 @@ void SconeStudio::modelAnalysis()
 		xo::log_prop_node( scenario_->GetModel().GetInfo() );
 }
 
-void SconeStudio::muscleAnalysis()
-{
-	if ( scenario_ && scenario_->HasModel() )
-		scone::WriteMuscleInfo( scenario_->GetModel() );
-}
-
 void SconeStudio::updateGaitAnalysis()
 {
 	GUI_PROFILE_FUNCTION;
