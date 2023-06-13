@@ -48,7 +48,7 @@
 #include "DofEditor.h"
 #include "ViewOptions.h"
 #include "UserInputEditor.h"
-#include "MusclePlot.h"
+#include "MuscleAnalysis.h"
 
 using scone::TimeInSeconds;
 
@@ -214,7 +214,7 @@ private:
 	// UserInput editor
 	scone::UserInputEditor* userInputEditor = nullptr;
 
-	scone::MusclePlot* musclePlot = nullptr;
+	scone::MuscleAnalysis* musclePlot = nullptr;
 	QDockWidget* musclePlotDock = nullptr;
 #endif
 

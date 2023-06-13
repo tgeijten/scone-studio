@@ -1,4 +1,4 @@
-#include "MusclePlot.h"
+#include "MuscleAnalysis.h"
 #include "StudioSettings.h"
 #include "scone/model/Dof.h"
 #include "scone/model/Model.h"
@@ -8,7 +8,7 @@
 
 namespace scone
 {
-	MusclePlot::MusclePlot( QWidget* parent ) :
+	MuscleAnalysis::MuscleAnalysis( QWidget* parent ) :
 		storage(),
 		storageModel( &storage )
 	{
@@ -29,12 +29,12 @@ namespace scone
 		dofSelect = new QComboBox( view );
 		dofSelect->setPlaceholderText( "Select Coordinate" );
 		view->itemGroupWidget()->layout_->insertWidget( 0, dofSelect );
-		connect( dofSelect, &QComboBox::currentTextChanged, this, &MusclePlot::dofChanged );
+		connect( dofSelect, &QComboBox::currentTextChanged, this, &MuscleAnalysis::dofChanged );
 
 		l->addWidget( view );
 	}
 
-	void MusclePlot::init( Model& model )
+	void MuscleAnalysis::init( Model& model )
 	{
 		clear();
 		for ( auto* d : model.GetDofs() )
@@ -43,7 +43,7 @@ namespace scone
 		activeDof = nullptr;
 	}
 
-	void MusclePlot::clear()
+	void MuscleAnalysis::clear()
 	{
 		storage.Clear();
 		view->reloadData();
@@ -53,7 +53,7 @@ namespace scone
 		activeDof = nullptr;
 	}
 
-	void MusclePlot::setDof( Model& model, const QString& dof_name )
+	void MuscleAnalysis::setDof( Model& model, const QString& dof_name )
 	{
 		activeDof = FindByName( model.GetDofs(), dof_name.toStdString() );
 		storage.Clear();
@@ -81,7 +81,7 @@ namespace scone
 		model.UpdateStateFromDofs();
 	}
 
-	void MusclePlot::StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const
+	void MuscleAnalysis::StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const
 	{
 		const auto& name = mus.GetName();
 		bool normalized_only = true;

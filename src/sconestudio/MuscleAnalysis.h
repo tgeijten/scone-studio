@@ -8,13 +8,13 @@
 
 namespace scone
 {
-	class MusclePlot : public QWidget
+	class MuscleAnalysis : public QWidget
 	{
 		Q_OBJECT
 
 	public:
-		MusclePlot( QWidget* parent );
-		virtual ~MusclePlot() = default;
+		MuscleAnalysis( QWidget* parent );
+		virtual ~MuscleAnalysis() = default;
 
 		void init( Model& model );
 		void clear();

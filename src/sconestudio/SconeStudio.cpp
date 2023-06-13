@@ -338,12 +338,12 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	optimizationHistoryDock->hide();
 
 	// Muscle plot
-	musclePlot = new MusclePlot( this );
+	musclePlot = new MuscleAnalysis( this );
 	musclePlotDock = createDockWidget( "Model Ana&lysis", musclePlot, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, musclePlotDock );
 	musclePlotDock->hide();
-	connect( musclePlot, &MusclePlot::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) musclePlot->setDof( scenario_->GetModel(), d ); } );
-	connect( musclePlot, &MusclePlot::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
+	connect( musclePlot, &MuscleAnalysis::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) musclePlot->setDof( scenario_->GetModel(), d ); } );
+	connect( musclePlot, &MuscleAnalysis::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
 
 	// finalize windows menu
 	windowMenu->addSeparator();

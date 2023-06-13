@@ -45,8 +45,8 @@ set(STUDIOFILES
 	OptimizerTaskThreaded.cpp
 	DofEditor.h
 	DofEditor.cpp
-	MusclePlot.h
-	MusclePlot.cpp
+	MuscleAnalysis.h
+	MuscleAnalysis.cpp
 	UserInputEditor.h
 	UserInputEditor.cpp
 	)
