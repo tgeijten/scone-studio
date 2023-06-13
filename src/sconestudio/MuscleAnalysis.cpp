@@ -3,8 +3,9 @@
 #include "scone/model/Dof.h"
 #include "scone/model/Model.h"
 #include "scone/model/Muscle.h"
-#include "qt_convert.h"
 #include "scone/core/Angle.h"
+#include "qt_convert.h"
+#include <QHBoxLayout>
 
 namespace scone
 {
