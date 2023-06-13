@@ -113,7 +113,8 @@ int SconeStorageDataModel::timeIndex( double time ) const
 	int idx = -1;
 	if ( equidistant_delta_time )
 	{
-		double reltime = time / storage->Back().GetTime();
+		auto front_time = storage->Front().GetTime(), back_time = storage->Back().GetTime();
+		double reltime = ( time - front_time ) / ( back_time - front_time );
 		idx = xo::clamped( int( reltime * ( storage->GetFrameCount() - 1 ) + 0.5 ), 0, int( storage->GetFrameCount() - 1 ) );
 	}
 	else 
