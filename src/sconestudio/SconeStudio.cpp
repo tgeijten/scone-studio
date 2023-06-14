@@ -955,19 +955,18 @@ QCodeEditor* SconeStudio::getActiveCodeEditor()
 
 QCodeEditor* SconeStudio::getActiveScenario()
 {
-	QCodeEditor* first_scenario = nullptr;
+	QCodeEditor* best_guess = nullptr;
 	for ( auto s : codeEditors )
 	{
-		auto ext = path_from_qt( s->fileName ).extension_no_dot().str();
-		if ( ext == "scone" )
+		if ( s->filePath().extension_no_dot() == "scone" )
 		{
 			if ( !s->visibleRegion().isEmpty() && !s->document()->find( "Optimizer" ).isNull() )
 				return s; // active scone file
-			else if ( first_scenario == nullptr )
-				first_scenario = s; // could be single .scone file
+			else if ( best_guess == nullptr || s == getActiveCodeEditor() )
+				best_guess = s; // could be single .scone file
 		}
 	}
-	return first_scenario; // either first .scone file, or none
+	return best_guess; // either active or first .scone file, or none
 }
 
 bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_have_parameters )
