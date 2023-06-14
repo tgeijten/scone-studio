@@ -43,7 +43,7 @@ namespace scone
 		for ( auto* d : model.GetDofs() )
 			if ( d->GetJoint() )
 				dofSelect->addItem( to_qt( d->GetName() ) );
-		activeDof = nullptr;
+		dofSelect->setCurrentText( lastSelectedDof );
 	}
 
 	void MuscleAnalysis::clear()
@@ -59,6 +59,7 @@ namespace scone
 	void MuscleAnalysis::setDof( Model& model, const QString& dof_name )
 	{
 		activeDof = FindByName( model.GetDofs(), dof_name.toStdString() );
+		lastSelectedDof = dof_name;
 		storage.Clear();
 
 		State original_state = model.GetState();
@@ -66,7 +67,7 @@ namespace scone
 
 		auto rr = activeDof->GetRange();
 		BoundsDeg r = BoundsRad( rr.min, rr.max );
-		auto step = Degree( 1 );
+		auto step = Degree( r.len1 );
 		for ( auto v = r.lower; v <= r.upper; v += step ) {
 			activeDof->SetPos( v.rad_value() );
 			model.UpdateStateFromDofs();

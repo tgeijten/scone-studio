@@ -32,5 +32,6 @@ namespace scone
 		QComboBox* dofSelect;
 		QDataAnalysisView* view = nullptr;
 		Dof* activeDof = nullptr;
+		QString lastSelectedDof;
 	};
 }
