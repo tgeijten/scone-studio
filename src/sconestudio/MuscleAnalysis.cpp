@@ -6,6 +6,7 @@
 #include "scone/core/Angle.h"
 #include "qt_convert.h"
 #include <QHBoxLayout>
+#include <QSizePolicy>
 
 namespace scone
 {
@@ -13,8 +14,8 @@ namespace scone
 		storage(),
 		storageModel( &storage )
 	{
-		QHBoxLayout* l = new QHBoxLayout( this );
-		l->setMargin( 0 );
+		QHBoxLayout* baseLayout = new QHBoxLayout( this );
+		baseLayout->setMargin( 0 );
 
 		view = new QDataAnalysisView( storageModel, this );
 		view->setObjectName( "Muscle Analysis" );
@@ -27,14 +28,24 @@ namespace scone
 				view->setTime( t, true );
 			} );
 
+		// add combobox and button
 		dofSelect = new QComboBox( view );
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		dofSelect->setPlaceholderText( "Select Coordinate" );
 #endif
-		view->itemGroupWidget()->layout_->insertWidget( 0, dofSelect );
 		connect( dofSelect, &QComboBox::currentTextChanged, this, &MuscleAnalysis::dofChanged );
 
-		l->addWidget( view );
+		dofReload = new QPushButton( view );
+		dofReload->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum );
+		dofReload->setIcon( style()->standardIcon( QStyle::SP_BrowserReload ) );
+		connect( dofReload, &QPushButton::clicked, this, [this]() { dofChanged( lastSelectedDof ); } );
+
+		auto* comboLayout = new QHBoxLayout();
+		comboLayout->addWidget( dofSelect );
+		comboLayout->addWidget( dofReload );
+		view->itemGroupWidget()->layout_->insertItem( 0, comboLayout );
+
+		baseLayout->addWidget( view );
 	}
 
 	void MuscleAnalysis::init( Model& model )

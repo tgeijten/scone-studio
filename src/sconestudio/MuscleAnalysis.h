@@ -2,6 +2,8 @@
 
 #include <QWidget>
 #include <QComboBox>
+#include <QPushButton>
+#include <QString>
 #include "scone/core/Storage.h"
 #include "SconeStorageDataModel.h"
 #include "QDataAnalysisView.h"
@@ -30,6 +32,7 @@ namespace scone
 		scone::Storage<> storage;
 		SconeStorageDataModel storageModel;
 		QComboBox* dofSelect;
+		QPushButton* dofReload;
 		QDataAnalysisView* view = nullptr;
 		Dof* activeDof = nullptr;
 		QString lastSelectedDof;
