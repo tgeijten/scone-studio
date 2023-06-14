@@ -592,8 +592,7 @@ void SconeStudio::updateGaitAnalysis()
 {
 	GUI_PROFILE_FUNCTION;
 
-	try
-	{
+	try {
 		if ( scenario_ && !scenario_->IsEvaluating() )
 		{
 			gaitAnalysis->update( scenario_->GetData(), scenario_->GetFileName() );
@@ -601,7 +600,8 @@ void SconeStudio::updateGaitAnalysis()
 			gaitAnalysisDock->show();
 			gaitAnalysisDock->raise();
 		}
-	} catch ( const std::exception& e ) { error( "Error", e.what() ); }
+	}
+	catch ( const std::exception& e ) { error( "Error", e.what() ); }
 }
 
 void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
@@ -658,8 +658,7 @@ void SconeStudio::fileReloadTriggered()
 
 void SconeStudio::openFile( const QString& filename )
 {
-	try
-	{
+	try {
 		QCodeEditor* edw = new QCodeEditor( this );
 		edw->open( filename );
 		int idx = ui.tabWidget->addTab( edw, edw->getTitle() );
@@ -669,7 +668,8 @@ void SconeStudio::openFile( const QString& filename )
 		updateRecentFilesMenu( filename );
 		fileWatcher.addPath( filename );
 		createAndVerifyActiveScenario( false );
-	} catch ( std::exception& e ) { error( "Error opening " + filename, e.what() ); }
+	}
+	catch ( std::exception& e ) { error( "Error opening " + filename, e.what() ); }
 }
 
 void SconeStudio::fileSaveTriggered()
@@ -685,8 +685,7 @@ void SconeStudio::fileSaveTriggered()
 
 void SconeStudio::fileSaveAsTriggered()
 {
-	try
-	{
+	try {
 		if ( auto* s = getActiveCodeEditor() )
 		{
 			// apparently, the mess below is needed to setup the (trivially) correct file filter in Qt
@@ -710,7 +709,8 @@ void SconeStudio::fileSaveAsTriggered()
 				createAndVerifyActiveScenario( true );
 			}
 		}
-	} catch ( std::exception& e ) { error( "Error saving file", e.what() ); }
+	}
+	catch ( std::exception& e ) { error( "Error saving file", e.what() ); }
 }
 
 void SconeStudio::fileCloseTriggered()
@@ -819,8 +819,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 	clearScenario();
 
-	try
-	{
+	try {
 		// create scenario and update viewer
 		currentFilename = any_file;
 		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ), getViewOptionsFromMenu() );
@@ -867,12 +866,13 @@ bool SconeStudio::createScenario( const QString& any_file )
 					optimizationHistoryView->reloadData();
 					optimizationHistoryView->setRange( 0, optimizationHistoryStorage.Back().GetTime() );
 				}
-			} catch ( std::exception& e ) {
+			}
+			catch ( std::exception& e ) {
 				log::error( e.what() );
 			}
 		}
-	} catch ( FactoryNotFoundException& e )
-	{
+	}
+	catch ( FactoryNotFoundException& e ) {
 		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd", "HyfydyModel" } ) )
 			error( "Error creating scenario",
 				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
@@ -880,8 +880,8 @@ bool SconeStudio::createScenario( const QString& any_file )
 		else error( "Error creating scenario", e.what() );
 		clearScenario();
 		return false;
-	} catch ( std::exception& e )
-	{
+	}
+	catch ( std::exception& e ) {
 		error( "Error creating scenario", e.what() );
 		clearScenario();
 		return false;
@@ -1026,24 +1026,22 @@ void SconeStudio::updateModelDataWidgets()
 
 void SconeStudio::optimizeScenario()
 {
-	try
-	{
+	try {
 		if ( createAndVerifyActiveScenario( true, true ) )
 		{
 			auto task = scone::createOptimizerTask( scenario_->GetScenarioFileName() );
 			addProgressDock( new ProgressDockWidget( this, std::move( task ) ) );
 			updateOptimizations();
 		}
-	} catch ( const std::exception& e )
-	{
+	}
+	catch ( const std::exception& e ) {
 		error( "Error optimizing " + scenario_->GetScenarioFileName(), e.what() );
 	}
 }
 
 void SconeStudio::optimizeScenarioMultiple()
 {
-	try
-	{
+	try {
 		if ( createAndVerifyActiveScenario( true, true ) )
 		{
 			bool ok = true;
@@ -1060,8 +1058,8 @@ void SconeStudio::optimizeScenarioMultiple()
 				updateOptimizations();
 			}
 		}
-	} catch ( const std::exception& e )
-	{
+	}
+	catch ( const std::exception& e ) {
 		error( "Error optimizing " + scenario_->GetScenarioFileName(), e.what() );
 	}
 }
