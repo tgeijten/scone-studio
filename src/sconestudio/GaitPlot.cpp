@@ -159,7 +159,7 @@ namespace scone
 		{
 			double error = 0.0;
 			for ( const auto& [x, r] : norm_data_ )
-				error += xo::abs( r.get_violation( xo::lerp_map( avg_data, x ) ) ) / xo::max( 0.01, r.range() );
+				error += xo::abs( r.get_violation( xo::lerp_map( avg_data, x ) ) ) / xo::max( 0.01, r.length() );
 			error /= norm_data_.size();
 			auto fit_perc = 100.0 * xo::clamped( 1.0 - error, 0.0, 1.0 );
 			if ( plot_title_ && GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
