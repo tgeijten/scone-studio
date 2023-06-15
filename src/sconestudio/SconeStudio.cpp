@@ -342,7 +342,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	muscleAnalysisDock = createDockWidget( "Muscle Ana&lysis", muscleAnalysis, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, muscleAnalysisDock );
 	muscleAnalysisDock->hide();
-	connect( muscleAnalysis, &MuscleAnalysis::dofChanged, this, [this]( const QString& d ) { if ( hasModel() ) muscleAnalysis->setDof( scenario_->GetModel(), d ); } );
+	connect( muscleAnalysis, &MuscleAnalysis::dofChanged, this,
+		[this]( const QString& d ) { if ( hasModel() ) muscleAnalysis->setDof( scenario_->GetModel(), d ); } );
 	connect( muscleAnalysis, &MuscleAnalysis::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
 
 	// finalize windows menu
@@ -512,14 +513,19 @@ void SconeStudio::userInputValueChanged()
 	}
 }
 
-void SconeStudio::muscleAnalysisValueChanged()
+void SconeStudio::muscleAnalysisValueChanged( const QString& dof, double value )
 {
 	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
 	{
-		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
-		scenario_->GetModel().UpdateStateFromDofs();
-		scenario_->UpdateVis( 0.0 );
-		ui.osgViewer->update();
+		auto& model = scenario_->GetModel();
+		auto dofIt = TryFindByName( model.GetDofs(), dof.toStdString() );
+		if ( dofIt != model.GetDofs().end() ) {
+			( *dofIt )->SetPos( value );
+			dofEditor->setSlidersFromDofs( model );
+			model.UpdateStateFromDofs();
+			scenario_->UpdateVis( 0.0 );
+			ui.osgViewer->update();
+		}
 	}
 }
 
@@ -530,6 +536,7 @@ void SconeStudio::evaluate()
 
 	// disable dof editor and model input editor
 	dofEditor->setEnableEditing( false );
+	muscleAnalysis->setEnableEditing( false );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	userInputEditor->setEnableEditing( false );
 #endif
@@ -836,6 +843,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 			// setup muscle plots
 			muscleAnalysis->init( scenario_->GetModel() );
+			muscleAnalysis->setEnableEditing( scenario_->IsEvaluatingStart() );
 
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )

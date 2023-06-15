@@ -74,7 +74,7 @@ public slots:
 	void refreshAnalysis();
 	void dofEditorValueChanged();
 	void userInputValueChanged();
-	void muscleAnalysisValueChanged();
+	void muscleAnalysisValueChanged( const QString& dof, double value );
 
 	virtual void fileOpenTriggered() override;
 	virtual void fileReloadTriggered();

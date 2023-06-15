@@ -22,11 +22,7 @@ namespace scone
 		view->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 		view->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
 		connect( view, &QDataAnalysisView::timeChanged, this,
-			[=]( TimeInSeconds t ) {
-				if ( activeDof ) activeDof->SetPos( DegToRad( t ) );
-				emit dofValueChanged( t );
-				view->setTime( t, true );
-			} );
+			[this]( TimeInSeconds t ) { emit dofValueChanged( dofName, DegToRad( t ) ); view->setTime( t, true ); } );
 
 		// add combobox and button
 		dofSelect = new QComboBox( view );
@@ -38,7 +34,7 @@ namespace scone
 		dofReload = new QPushButton( view );
 		dofReload->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Minimum );
 		dofReload->setIcon( style()->standardIcon( QStyle::SP_BrowserReload ) );
-		connect( dofReload, &QPushButton::clicked, this, [this]() { dofChanged( lastSelectedDof ); } );
+		connect( dofReload, &QPushButton::clicked, this, [this]() { dofChanged( dofName ); } );
 
 		auto* comboLayout = new QHBoxLayout();
 		comboLayout->addWidget( dofSelect );
@@ -54,7 +50,9 @@ namespace scone
 		for ( auto* d : model.GetDofs() )
 			if ( d->GetJoint() )
 				dofSelect->addItem( to_qt( d->GetName() ) );
-		dofSelect->setCurrentText( lastSelectedDof );
+		dofSelect->blockSignals( true );
+		dofSelect->setCurrentText( dofName );
+		dofSelect->blockSignals( false );
 	}
 
 	void MuscleAnalysis::clear()
@@ -70,7 +68,7 @@ namespace scone
 	void MuscleAnalysis::setDof( Model& model, const QString& dof_name )
 	{
 		activeDof = FindByName( model.GetDofs(), dof_name.toStdString() );
-		lastSelectedDof = dof_name;
+		dofName = dof_name;
 		storage.Clear();
 
 		State original_state = model.GetState();
@@ -93,6 +91,12 @@ namespace scone
 
 		model.SetState( original_state, 0.0 );
 		model.UpdateStateFromDofs();
+	}
+
+	void MuscleAnalysis::setEnableEditing( bool enable )
+	{
+		dofSelect->setDisabled( !enable );
+		dofReload->setDisabled( !enable );
 	}
 
 	void MuscleAnalysis::StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const

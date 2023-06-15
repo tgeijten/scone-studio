@@ -21,10 +21,11 @@ namespace scone
 		void init( Model& model );
 		void clear();
 		void setDof( Model& model, const QString& dof );
+		void setEnableEditing( bool enable );
 
 	signals:
 		void dofChanged( const QString& );
-		void dofValueChanged( Real );
+		void dofValueChanged( const QString&, double );
 
 	private:
 		void StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const;
@@ -35,6 +36,6 @@ namespace scone
 		QPushButton* dofReload;
 		QDataAnalysisView* view = nullptr;
 		Dof* activeDof = nullptr;
-		QString lastSelectedDof;
+		QString dofName;
 	};
 }
