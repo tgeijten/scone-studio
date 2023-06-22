@@ -4,6 +4,8 @@
 #include "scone/model/Model.h"
 #include "scone/model/Muscle.h"
 #include "scone/core/Angle.h"
+#include "xo/time/timer.h"
+#include "xo/string/string_cast.h"
 #include "qt_convert.h"
 #include <QHBoxLayout>
 #include <QSizePolicy>
@@ -67,6 +69,7 @@ namespace scone
 
 	void MuscleAnalysis::setDof( Model& model, const QString& dof_name )
 	{
+		xo::timer t;
 		activeDof = FindByName( model.GetDofs(), dof_name.toStdString() );
 		dofName = dof_name;
 		storage.Clear();
@@ -91,6 +94,7 @@ namespace scone
 
 		model.SetState( original_state, 0.0 );
 		model.UpdateStateFromDofs();
+		xo::log::debug( "Muscle Analysis for ", dofName.toStdString(), " completed in ", t(), "s" );
 	}
 
 	void MuscleAnalysis::setEnableEditing( bool enable )

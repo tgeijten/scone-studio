@@ -328,7 +328,7 @@ void ProgressDockWidget::updateText()
 	string s;
 
 	auto* opt = ( best_idx != -1 ) ? &optimizations[ best_idx ] : nullptr;
-	std::string tstr = opt ? xo::to_str( xo::time_from_seconds( opt->duration ), 0.0 ) : "0";
+	std::string tstr = opt ? xo::to_str( xo::time_from_seconds( opt->duration ), 0 ) : "0";
 
 	switch ( state )
 	{
