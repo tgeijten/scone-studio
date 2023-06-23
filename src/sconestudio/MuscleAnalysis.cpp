@@ -75,6 +75,9 @@ namespace scone
 		storage.Clear();
 
 		State original_state = model.GetState();
+		PropNode original_settings = model.GetModelSettings();
+		model.SetModelSettings( xo::make_prop_node( "max_equilibrate_velocity_error", 0.001 ) );
+
 		auto rr = activeDof->GetRange();
 		BoundsDeg r = BoundsRad( rr.min, rr.max );
 		Real max_steps = 180.0;
@@ -92,6 +95,7 @@ namespace scone
 		view->reloadData();
 		view->setRange( r.lower.deg_value(), r.upper.deg_value() );
 
+		model.SetModelSettings( original_settings );
 		model.SetState( original_state, 0.0 );
 		model.UpdateStateFromDofs();
 		xo::log::debug( "Muscle Analysis for ", dofName.toStdString(), " completed in ", t(), "s" );
