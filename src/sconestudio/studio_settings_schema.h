@@ -90,6 +90,7 @@ ui {
 	label = "User Interface Settings"
 	log_level { type = int default = 2 label = "Messages log level (1-7)" }
 	enable_profiler { type = bool default = 0 label = "Enable GUI profiler" }
+	show_conversion_support_message { type = bool default = 1 label = "Show support message after convert to Hyfydy" }
 	reset_layout { type = bool default = 0 label = "Reset window layout on start" }
 	last_version_run { type = string default = "" label = "Last version run" }
 	show_startup_time { type = bool default = 0 label = "Show startup time" }

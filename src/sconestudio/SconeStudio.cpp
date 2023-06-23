@@ -1342,7 +1342,7 @@ void SconeStudio::convertScenario()
 		return information( "Cannot Convert Scenario", "This scenario already uses a Hyfdy model" );
 
 	auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
-	if ( !new_scenario.isEmpty() ) {
+	if ( !new_scenario.isEmpty() && GetStudioSetting<bool>( "ui.show_conversion_support_message" ) ) {
 		openFile( new_scenario );
 		QString msg = "<b></b>The scenario has been converted to:<br><br>" + new_scenario;
 		msg += "<br><br>Please note that <b>some elements way not work directly as intended</b> and require further adjustment. ";
