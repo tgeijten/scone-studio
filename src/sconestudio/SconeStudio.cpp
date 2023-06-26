@@ -628,8 +628,10 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 			scenario_->UpdateVis( t );
 			if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() )
 			{
-				auto d = com_delta( scenario_->GetFollowPoint() );
-				ui.osgViewer->moveCamera( osg::Vec3( d.x, d.y, d.z ) );
+				auto p = scenario_->GetFollowPoint();
+				ui.osgViewer->setFocusPoint( osg::Vec3( p.x, p.y, p.z ) );
+				//auto d = com_delta( scenario_->GetFollowPoint() );
+				//ui.osgViewer->moveCamera( osg::Vec3( d.x, d.y, d.z ) );
 			}
 
 			ui.osgViewer->setFrameTime( current_time );
