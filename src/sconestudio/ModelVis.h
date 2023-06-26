@@ -47,6 +47,9 @@ namespace scone
 		// view settings
 		ViewOptions view_flags;
 		vis::plane ground_;
+		vis::transformf ground_tf_;
+		float ground_tile_size_;
+		bool ground_follows_com_;
 		vis::node root_node_;
 		vis::arrow heading_;
 		float specular_;

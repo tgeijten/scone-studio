@@ -16,25 +16,27 @@ namespace scone
 
 	ModelVis::ModelVis( const Model& model, vis::scene& s, const ViewOptions& settings ) :
 		view_flags( settings ),
+		ground_tile_size_( GetStudioSetting<float>( "viewer.tile_size" ) ),
+		ground_follows_com_( GetStudioSetting<bool>( "viewer.tiles_follow_body" ) ),
 		root_node_( &s ),
-		specular_( GetStudioSetting< float >( "viewer.specular" ) ),
-		shininess_( GetStudioSetting< float >( "viewer.shininess" ) ),
-		ambient_( GetStudioSetting< float >( "viewer.ambient" ) ),
-		combine_contact_forces_( GetStudioSetting< bool >( "viewer.combine_contact_forces" ) ),
-		bone_mat( { GetStudioSetting< xo::color >( "viewer.bone" ), specular_, shininess_, ambient_ } ),
-		joint_mat( { GetStudioSetting< xo::color >( "viewer.joint" ), specular_, shininess_, ambient_ } ),
-		com_mat( { GetStudioSetting< xo::color >( "viewer.com" ), specular_, shininess_, ambient_ } ),
-		muscle_mat( { GetStudioSetting< xo::color >( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
-		tendon_mat( { GetStudioSetting< xo::color >( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
-		arrow_mat( { GetStudioSetting< xo::color >( "viewer.force" ), specular_, shininess_, ambient_ } ),
-		moment_mat( { GetStudioSetting< xo::color >( "viewer.moment" ), specular_, shininess_, ambient_ } ),
-		contact_mat( { GetStudioSetting< xo::color >( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
-		static_mat( { GetStudioSetting< xo::color >( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
+		specular_( GetStudioSetting<float>( "viewer.specular" ) ),
+		shininess_( GetStudioSetting<float>( "viewer.shininess" ) ),
+		ambient_( GetStudioSetting<float>( "viewer.ambient" ) ),
+		combine_contact_forces_( GetStudioSetting<bool>( "viewer.combine_contact_forces" ) ),
+		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
+		joint_mat( { GetStudioSetting<xo::color>( "viewer.joint" ), specular_, shininess_, ambient_ } ),
+		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
+		muscle_mat( { GetStudioSetting<xo::color>( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
+		tendon_mat( { GetStudioSetting<xo::color>( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
+		arrow_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_ } ),
+		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
+		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
+		static_mat( { GetStudioSetting<xo::color>( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
 		muscle_gradient( {
-			{ -1.0f, GetStudioSetting< xo::color >( "viewer.muscle_min100" ) },
-			{ 0.0f, GetStudioSetting< xo::color >( "viewer.muscle_0" ) },
-			{ 0.5f, GetStudioSetting< xo::color >( "viewer.muscle_50" ) },
-			{ 1.0f, GetStudioSetting< xo::color >( "viewer.muscle_100" ) } } ),
+			{ -1.0f, GetStudioSetting<xo::color>( "viewer.muscle_min100" ) },
+			{ 0.0f, GetStudioSetting<xo::color>( "viewer.muscle_0" ) },
+			{ 0.5f, GetStudioSetting<xo::color>( "viewer.muscle_50" ) },
+			{ 1.0f, GetStudioSetting<xo::color>( "viewer.muscle_100" ) } } ),
 			color_materials_( [&]( const xo::color& c ) { return vis::material( { c, specular_, shininess_, ambient_, c.a } ); } )
 	{
 		// ground plane
@@ -43,13 +45,14 @@ namespace scone
 			auto& plane = std::get<xo::plane>( gp->GetShape() );
 			auto col1 = GetStudioSetting<xo::color>( "viewer.tile1" );
 			auto col2 = GetStudioSetting<xo::color>( "viewer.tile2" );
-			auto tile_size = GetStudioSetting<float>( "viewer.tile_size" );
 			auto tile_count_x = GetStudioSetting<int>( "viewer.tile_count_x" );
 			auto tile_count_z = GetStudioSetting<int>( "viewer.tile_count_z" );
-			ground_ = vis::plane( root_node_, tile_count_x, tile_count_z, tile_size, col1, col2 );
+			ground_ = vis::plane( root_node_, tile_count_x, tile_count_z, ground_tile_size_, col1, col2 );
 			auto normal_rot = xo::quat_from_directions( xo::vec3f::unit_y(), plane.normal_ );
 			//ground_plane = scene_.add< vis::plane >( xo::vec3f( 64, 0, 0 ), xo::vec3f( 0, 0, -64 ), GetFolder( SCONE_UI_RESOURCE_FOLDER ) / "stile160.png", 64, 64 );
-			ground_.pos_ori( vis::vec3f( gp->GetPos() ), normal_rot * xo::quatf( gp->GetOri() ) );
+			ground_tf_.p = vis::vec3f( gp->GetPos() );
+			ground_tf_.q = normal_rot * xo::quatf( gp->GetOri() );
+			ground_.pos_ori( ground_tf_.p, ground_tf_.q );
 		}
 
 		for ( auto& body : model.GetBodies() )
@@ -237,6 +240,15 @@ namespace scone
 				auto dir = xo::quatf( model.GetRootBody().GetOrientation() ) * xo::vec3f( 0.5f, 0, 0 );
 				heading_.pos_ofs( pos, dir );
 			}
+		}
+
+		if ( ground_follows_com_ && ground_ ) {
+			auto d = ground_tile_size_ * 2;
+			auto pos = xo::vec3f( model.GetProjectedOntoGround( model.GetComPos() ) );
+			auto x_pos = std::floor( xo::dot_product( ground_tf_ * xo::vec3f::unit_x(), pos ) / d + 0.5f ) * d;
+			auto z_pos = std::floor( xo::dot_product( ground_tf_ * xo::vec3f::unit_z(), pos ) / d + 0.5f ) * d;
+			auto new_pos = ground_tf_.q * xo::vec3f( x_pos, ground_tf_.p.y, z_pos );
+			ground_.pos( new_pos );
 		}
 
 		// finalize update: remove remaining arrows

@@ -33,8 +33,9 @@ viewer {
 	tile1 { type = color label = "Viewer Tile A color" default = 0xc4c4c4 }
 	tile2 { type = color label = "Viewer Tile B color" default = 0xbcbcbc }
 	tile_size { type = float label = "Viewer tile size" default = 0.5 }
-	tile_count_x { type = int label = "Viewer tile count in x direction" default = 128 }
-	tile_count_z { type = int label = "Viewer tile count in z direction" default = 128 }
+	tile_count_x { type = int label = "Viewer tile count in x direction" default = 64 }
+	tile_count_z { type = int label = "Viewer tile count in z direction" default = 64 }
+	tiles_follow_body { type = bool label = "Automatically adjust ground tiles to always remain visible" default = 1 }
 	bone { type = color label = "Bone color" default { h = 40 s = 0.2 v = 0.8 } }
 	tendon { type = color label = "Tendon color" default { h = 40 s = 0.02 v = 0.8 } }
 	force { type = color label = "Force color" default { h = 60 s = 0.8 v = 0.8 } }
