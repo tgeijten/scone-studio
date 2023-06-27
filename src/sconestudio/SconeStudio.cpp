@@ -166,6 +166,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "Clear Analysis Fi&lter", this, [&]() { analysisView->setFilterText( "" ); analysisView->selectNone();
 	analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
+	toolsMenu->addAction( "Refresh Muscle Analysis", muscleAnalysis, &MuscleAnalysis::refresh, QKeySequence( "Ctrl+Shift+M" ) );
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
 	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
