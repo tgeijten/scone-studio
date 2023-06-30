@@ -56,6 +56,7 @@ namespace scone
 		float shininess_;
 		float ambient_;
 		const bool combine_contact_forces_;
+		const bool forces_cast_shadows_;
 
 		vis::material bone_mat;
 		vis::material joint_mat;
@@ -75,6 +76,7 @@ namespace scone
 		std::vector< vis::axes > body_axes;
 		std::vector< vis::mesh > body_com;
 		std::vector< vis::node > bodies;
+		std::vector< vis::mesh > individual_contact_geoms;
 		std::vector< vis::mesh > contact_geoms;
 		xo::memoize< vis::material( xo::color ) > color_materials_;
 	};

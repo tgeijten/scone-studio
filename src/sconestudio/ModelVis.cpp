@@ -23,12 +23,13 @@ namespace scone
 		shininess_( GetStudioSetting<float>( "viewer.shininess" ) ),
 		ambient_( GetStudioSetting<float>( "viewer.ambient" ) ),
 		combine_contact_forces_( GetStudioSetting<bool>( "viewer.combine_contact_forces" ) ),
+		forces_cast_shadows_( GetStudioSetting<bool>( "viewer.forces_cast_shadows" ) ),
 		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
 		joint_mat( { GetStudioSetting<xo::color>( "viewer.joint" ), specular_, shininess_, ambient_ } ),
 		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
 		muscle_mat( { GetStudioSetting<xo::color>( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
 		tendon_mat( { GetStudioSetting<xo::color>( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
-		arrow_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_ } ),
+		arrow_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.force_alpha" ) } ),
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
 		static_mat( { GetStudioSetting<xo::color>( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
@@ -74,8 +75,7 @@ namespace scone
 			{
 				if ( !geom.filename_.empty() )
 				{
-					try
-					{
+					try {
 						auto model_folder = model.GetModelFile().parent_path();
 						auto file_options = {
 							geom.filename_,
@@ -93,8 +93,7 @@ namespace scone
 						}
 						else log::warning( "Could not find ", geom.filename_ );
 					}
-					catch ( std::exception& e )
-					{
+					catch ( std::exception& e ) {
 						log::warning( "Could not load ", geom.filename_, ": ", e.what() );
 					}
 				}
@@ -114,21 +113,26 @@ namespace scone
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b; } );
 			auto& parent_node = idx != NoIndex ? bodies[ idx ] : root_node_;
 			bool is_static = idx == 0 || idx == NoIndex;
+			bool use_bone_mat = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
+			vis::mesh geom_mesh;
 			if ( cg->HasFileName() )
 			{
 				auto model_folder = model.GetModelFile().parent_path();
 				auto geom_file = FindFile( model_folder / cg->GetFileName() );
-				contact_geoms.push_back( MakeMesh( parent_node, geom_file, is_static ? static_mat : contact_mat, cg->GetPos(), cg->GetOri() ) );
-				contact_geoms.back().set_name( cg->GetName().c_str() );
+				geom_mesh = MakeMesh( parent_node, geom_file, is_static ? static_mat : contact_mat, cg->GetPos(), cg->GetOri() );
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
-				bool use_bone_mat = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
 				auto& mat = is_static ? static_mat : ( use_bone_mat ? bone_mat : contact_mat );
-				contact_geoms.push_back( MakeMesh(
-					parent_node, cg->GetShape(), xo::color::cyan(), mat,
-					cg->GetPos(), cg->GetOri() ) );
-				contact_geoms.back().set_name( cg->GetName().c_str() );
+				geom_mesh = MakeMesh( parent_node, cg->GetShape(), xo::color::cyan(), mat, cg->GetPos(), cg->GetOri() );
+			}
+
+			// add the mesh to the right container
+			if ( geom_mesh ) {
+				geom_mesh.set_name( cg->GetName().c_str() );
+				geom_mesh.set_cast_shadows( GetStudioSetting<bool>( "viewer.contact_geometries_cast_shadows" ) );
+				auto& geom_container = is_static || use_bone_mat ? individual_contact_geoms : contact_geoms;
+				geom_container.push_back( std::move( geom_mesh ) );
 			}
 		}
 
@@ -265,6 +269,7 @@ namespace scone
 			forces.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::yellow(), 0.3f } );
 			forces.back().set_material( arrow_mat );
 			forces.back().show( view_flags( ViewOption::ExternalForces ) );
+			forces.back().set_cast_shadows( forces_cast_shadows_ );
 		}
 		forces[ force_idx ].pos_ofs( vis::vec3f( cop ), len_scale * vis::vec3f( force ), rad_scale );
 	}
@@ -276,6 +281,7 @@ namespace scone
 			moments.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::blue(), 0.3f } );
 			moments.back().set_material( moment_mat );
 			moments.back().show( view_flags( ViewOption::ExternalForces ) );
+			moments.back().set_cast_shadows( forces_cast_shadows_ );
 		}
 		moments[ moment_idx ].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
 	}

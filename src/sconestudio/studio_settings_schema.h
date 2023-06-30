@@ -33,15 +33,19 @@ viewer {
 	tile1 { type = color label = "Viewer Tile A color" default = 0xc4c4c4 }
 	tile2 { type = color label = "Viewer Tile B color" default = 0xbcbcbc }
 	tile_size { type = float label = "Viewer tile size" default = 0.5 }
-	tile_count_x { type = int label = "Viewer tile count in x direction" default = 64 }
-	tile_count_z { type = int label = "Viewer tile count in z direction" default = 64 }
+	tile_count_x { type = int label = "Viewer tile count in x direction" default = 128 }
+	tile_count_z { type = int label = "Viewer tile count in z direction" default = 128 }
 	tiles_follow_body { type = bool label = "Automatically adjust ground tiles to always remain visible" default = 1 }
 	bone { type = color label = "Bone color" default { h = 40 s = 0.2 v = 0.8 } }
 	tendon { type = color label = "Tendon color" default { h = 40 s = 0.02 v = 0.8 } }
-	force { type = color label = "Force color" default { h = 60 s = 0.8 v = 0.8 } }
+	force { type = color label = "Force arrow color" default { h = 60 s = 0.8 v = 0.8 } }
+	force_alpha { type = float label = "Force arrow transparency" default = 1 }
+	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
+	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
 	moment { type = color label = "Moment color" default { h = 5 s = 0.8 v = 0.8 } }
 	contact { type = color label = "Contact color" default { h = 180 s = 0.5 v = 0.5 } }
 	contact_alpha { type = float label = "Contact color transparency" default = 0.5 }
+	contact_geometries_cast_shadows { type = bool label = "Contact geometries cast shadows" default = 0 }
 	static { type = color label = "Static geometry color" default { h = 180 s = 0.25 v = 0.4 } }
 	joint { type = color label = "Joint color" default { h = 40 s = 0.2 v = 0.5 } }
 	com { type = color label = "Center of Mass color" default { h = 105 s = 0.5 v = 0.5 } }
@@ -59,7 +63,6 @@ viewer {
 	muscle_position { type = float label = "Relative muscle belly position (0-1)" range = [ 0 1 ] default = 0.333 }
 	relative_tendon_width { type = float label = "Tendon diameter relative to muscle" range = [ 0.1 1 ] default = 0.618 }
 	joint_radius { type = float label = "Joint sphere radius" range = [ 0.001 1 ] default = 0.015 }
-	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
 	enable_object_cache { type = bool label = "Enable mesh caching for faster reloading (needs restart)" default = 1 }
 	camera_follow_body { type = string label = "Body to follow by camera (leave blank for CoM)" default = "" }
 }
