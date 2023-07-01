@@ -63,7 +63,7 @@ namespace scone
 
 			for ( auto* p : plots_ )
 				if ( auto em = p->update( sto, cycles ); em.bad() )
-					log::error( em.message() );
+					log::warning( em.message() );
 
 			auto f = 1.0 / cycles.size();
 			auto avg_length = f * std::accumulate( cycles.begin(), cycles.end(), 0.0,
