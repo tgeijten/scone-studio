@@ -137,13 +137,25 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	musGroup->addAction( viewActions[ ViewOption::MuscleFiberLength ] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
 	musGroup->setExclusive( true );
 	viewMenu->addSeparator();
+	auto orbitMenu = viewMenu->addMenu( "Automatic Camera Orbit" );
 	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
+
+	// init view options
 	auto defaultOptions = MakeDefaultViewOptions();
-	for ( auto& va : viewActions )
-	{
+	for ( auto& va : viewActions ) {
 		va.second->setCheckable( true );
 		va.second->setChecked( defaultOptions.get( va.first ) );
 	}
+
+	// init orbit menu
+	auto og = new QActionGroup( this );
+	og->addAction( orbitMenu->addAction( "None", this, [&]() { ui.osgViewer->yawAnimationVelocity = vis::degree( 0 ); } ) );
+	og->addAction( orbitMenu->addAction( "Left", this, [&]() { ui.osgViewer->yawAnimationVelocity = -GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->addAction( orbitMenu->addAction( "Right", this, [&]() { ui.osgViewer->yawAnimationVelocity = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->setExclusive( true );
+	for ( auto& a : og->actions() )
+		a->setCheckable( true );
+	og->actions().first()->setChecked( true );
 
 	// Scenario menu
 	auto scenarioMenu = menuBar()->addMenu( "&Scenario" );
