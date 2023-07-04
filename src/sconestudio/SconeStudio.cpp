@@ -727,7 +727,9 @@ void SconeStudio::fileSaveAsTriggered()
 			QString filename = QFileDialog::getSaveFileName( this, "Save File As", s->fileName, filter, default_filter );
 			if ( !filename.isEmpty() )
 			{
+				fileWatcher.removePath( s->fileName );
 				s->saveAs( filename );
+				fileWatcher.addPath( filename );
 				ui.tabWidget->setTabText( getTabIndex( s ), s->getTitle() );
 				updateRecentFilesMenu( s->fileName );
 				createAndVerifyActiveScenario( true );
@@ -745,6 +747,7 @@ void SconeStudio::fileCloseTriggered()
 
 void SconeStudio::handleFileChanged( const QString& filename )
 {
+	log::trace( "File changed: ", filename.toStdString() );
 	if ( !reloadFiles.contains( filename ) )
 		reloadFiles.append( filename );
 }
@@ -762,7 +765,7 @@ void SconeStudio::helpSearch()
 
 void SconeStudio::helpForum()
 {
-	QDesktopServices::openUrl( QUrl( "https://simtk.org/plugins/phpBB/indexPhpbb.php?group_id=1180&pluginname=phpBB" ) );
+	QDesktopServices::openUrl( GetForumUrl() );
 }
 
 bool SconeStudio::tryExit()
