@@ -562,6 +562,8 @@ void SconeStudio::evaluate()
 	xo::scoped_thread_priority prio_raiser( xo::thread_priority::highest );
 
 	double step_size = std::max( 0.001, scenario_->GetModel().GetSimulationStepSize() );
+	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
+
 	//double step_size = 0.01;
 	xo::interval_checker progress_update( 250_ms );
 	xo::interval_checker visualizer_update( 1000_ms );
@@ -573,7 +575,7 @@ void SconeStudio::evaluate()
 		{
 			// update 3D visuals and progress bar
 			setTime( t, visualizer_update.check( rt ) );
-			dlg.setValue( int( 1000 * t / scenario_->GetMaxTime() ) );
+			dlg.setValue( int( 1000 * t / max_time ) );
 			if ( dlg.wasCanceled() )
 			{
 				// user pressed cancel: update data so that user can see results so far
