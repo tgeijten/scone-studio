@@ -1419,8 +1419,8 @@ void SconeStudio::createVideo()
 	ui.progressBar->setFormat( " Creating Video (%p%)" );
 	ui.stackedWidget->setCurrentIndex( 1 );
 
-	const double step_size = ui.playControl->slowMotionFactor() / GetStudioSettings().get<double>( "video.frame_rate" );
-	for ( double t = 0.0; t <= scenario_->GetMaxTime(); t += step_size )
+	const double frame_rate = GetStudioSettings().get<double>( "video.frame_rate" );
+	for ( double t = 0.0; t <= scenario_->GetMaxTime(); t += ui.playControl->slowMotionFactor() / frame_rate )
 	{
 		setTime( t, true );
 		ui.progressBar->setValue( int( t / scenario_->GetMaxTime() * 100 ) );
