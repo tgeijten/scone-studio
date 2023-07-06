@@ -79,143 +79,16 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	scone::TimeSection( "SetupGui" );
 
+	//
+	// Components
+	//
+
 	// Analysis (must be done BEFORE menu, analysisView is used there)
 	analysisView = new QDataAnalysisView( analysisStorageModel, this );
 	analysisView->setObjectName( "Analysis" );
 	analysisView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 	analysisView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
 	scone::TimeSection( "InitAnalysys" );
-
-	// File menu
-	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
-	fileMenu->addAction( "&Open...", this, &SconeStudio::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
-	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence() );
-	fileMenu->addAction( "Re&load", this, &SconeStudio::fileReloadTriggered, QKeySequence( "Ctrl+R" ) );
-	fileMenu->addSeparator();
-	fileMenu->addAction( "&Save", this, &SconeStudio::fileSaveTriggered, QKeySequence( "Ctrl+S" ) );
-	fileMenu->addAction( "Save &As...", this, &SconeStudio::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
-	fileMenu->addAction( "&Close", this, &SconeStudio::fileCloseTriggered, QKeySequence( "Ctrl+W" ) );
-	fileMenu->addSeparator();
-	fileMenu->addAction( "Save Evaluation &Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
-	fileMenu->addSeparator();
-	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
-#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	fileMenu->addAction( "Save &Model Inputs", this, [this]() { saveUserInputs( false ); } );
-	fileMenu->addAction( "Save &Model Inputs As...", this, [this]() { saveUserInputs( true ); } );
-#endif
-	fileMenu->addSeparator();
-	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
-
-	// Edit menu
-	auto editMenu = menuBar()->addMenu( "&Edit" );
-	editMenu->addAction( "&Find...", this, &SconeStudio::findDialog, QKeySequence( "Ctrl+F" ) );
-	editMenu->addAction( "Find &Next", this, &SconeStudio::findNext, Qt::Key_F3 );
-	editMenu->addAction( "Find &Previous", this, &SconeStudio::findPrevious, QKeySequence( "Shift+F3" ) );
-	editMenu->addSeparator();
-	editMenu->addAction( "P&revious Tab", this, [this]() { cycleTabWidget( ui.tabWidget, -1 ); }, QKeySequence( "Ctrl+PgUp" ) );
-	editMenu->addAction( "Ne&xt Tab", this, [this]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
-	editMenu->addSeparator();
-	editMenu->addAction( "Toggle &Comments", this, &SconeStudio::toggleComments, QKeySequence( "Ctrl+/" ) );
-	editMenu->addAction( "&Duplicate Selection", this, [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
-
-	// View menu
-	auto viewMenu = menuBar()->addMenu( "&View" );
-	viewActions[ ViewOption::ExternalForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::Muscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::Tendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::BodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::BodyAxes ] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::BodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::Joints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::GroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
-	viewMenu->addSeparator();
-	auto musGroup = new QActionGroup( this );
-	musGroup->addAction( viewActions[ ViewOption::MuscleActivation ] = viewMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
-	musGroup->addAction( viewActions[ ViewOption::MuscleForce ] = viewMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
-	musGroup->addAction( viewActions[ ViewOption::MuscleFiberLength ] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
-	musGroup->setExclusive( true );
-	viewMenu->addSeparator();
-	auto orbitMenu = viewMenu->addMenu( "Automatic Camera Orbit" );
-	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
-
-	// init view options
-	auto defaultOptions = MakeDefaultViewOptions();
-	for ( auto& va : viewActions ) {
-		va.second->setCheckable( true );
-		va.second->setChecked( defaultOptions.get( va.first ) );
-	}
-
-	// init orbit menu
-	auto og = new QActionGroup( this );
-	og->addAction( orbitMenu->addAction( "None", this, [&]() { ui.osgViewer->yawAnimationVelocity = vis::degree( 0 ); } ) );
-	og->addAction( orbitMenu->addAction( "Left", this, [&]() { ui.osgViewer->yawAnimationVelocity = -GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
-	og->addAction( orbitMenu->addAction( "Right", this, [&]() { ui.osgViewer->yawAnimationVelocity = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
-	og->setExclusive( true );
-	for ( auto& a : og->actions() )
-		a->setCheckable( true );
-	og->actions().first()->setChecked( true );
-
-	// Scenario menu
-	auto scenarioMenu = menuBar()->addMenu( "&Scenario" );
-	scenarioMenu->addAction( "&Evaluate Scenario", this, &SconeStudio::evaluateActiveScenario, QKeySequence( "Ctrl+E" ) );
-	scenarioMenu->addSeparator();
-	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
-	scenarioMenu->addAction( "Run &Multiple Optimizations", this, &SconeStudio::optimizeScenarioMultiple, QKeySequence( "Ctrl+Shift+F5" ) );
-	scenarioMenu->addSeparator();
-	scenarioMenu->addAction( "&Abort Optimizations", this, &SconeStudio::abortOptimizations, QKeySequence() );
-	scenarioMenu->addSeparator();
-	scenarioMenu->addAction( "&Performance Test", this, [&]() { performanceTest( false ); }, QKeySequence( "Ctrl+P" ) );
-	scenarioMenu->addAction( "Performance Test (Write Stats)", this, [&]() { performanceTest( true ); }, QKeySequence( "Ctrl+Shift+P" ) );
-
-	// Tools menu
-	auto toolsMenu = menuBar()->addMenu( "&Tools" );
-	toolsMenu->addAction( "Generate &Video...", this, &SconeStudio::createVideo );
-	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
-	toolsMenu->addSeparator();
-	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
-	toolsMenu->addAction( "Clear Analysis Fi&lter", this, [&]() { analysisView->setFilterText( "" ); analysisView->selectNone();
-	analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
-	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
-	toolsMenu->addAction( "Refresh Muscle Analysis", muscleAnalysis, &MuscleAnalysis::refresh, QKeySequence( "Ctrl+Shift+M" ) );
-	toolsMenu->addSeparator();
-#if SCONE_HYFYDY_ENABLED
-	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
-	toolsMenu->addAction( "Convert OpenSim3 &Model...", [this]() { ShowModelConversionDialog( this ); } );
-	toolsMenu->addSeparator();
-#endif
-	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
-
-	// Action menu
-	auto* actionMenu = menuBar()->addMenu( "&Playback" );
-	actionMenu->addAction( "&Play or Evaluate", ui.playControl, &QPlayControl::togglePlay, Qt::Key_F5 );
-	actionMenu->addAction( "&Stop / Reset", ui.playControl, &QPlayControl::stopReset, Qt::Key_F8 );
-	actionMenu->addAction( "Toggle Play", ui.playControl, &QPlayControl::togglePlay, QKeySequence( "Ctrl+Space" ) );
-	actionMenu->addAction( "Toggle Loop", ui.playControl, &QPlayControl::toggleLoop, QKeySequence( "Ctrl+Alt+L" ) );
-	actionMenu->addAction( "Play F&aster", ui.playControl, &QPlayControl::faster, QKeySequence( "Ctrl+Up" ) );
-	actionMenu->addAction( "Play S&lower", ui.playControl, &QPlayControl::slower, QKeySequence( "Ctrl+Down" ) );
-	actionMenu->addSeparator();
-	actionMenu->addAction( "Step &Back", ui.playControl, &QPlayControl::stepBack, QKeySequence( "Alt+Left" ) );
-	actionMenu->addAction( "Step &Forward", ui.playControl, &QPlayControl::stepForward, QKeySequence( "Alt+Right" ) );
-	actionMenu->addAction( "Page &Back", ui.playControl, &QPlayControl::pageBack, QKeySequence( "Alt+PgUp" ) );
-	actionMenu->addAction( "Page &Forward", ui.playControl, &QPlayControl::pageForward, QKeySequence( "Alt+PgDown" ) );
-	actionMenu->addAction( "Goto &Begin", ui.playControl, &QPlayControl::reset, QKeySequence( "Alt+Home" ) );
-	actionMenu->addAction( "Go to &End", ui.playControl, &QPlayControl::end, QKeySequence( "Alt+End" ) );
-
-	// Window menu
-	auto windowMenu = createWindowMenu();
-
-	// Help menu
-	auto helpMenu = menuBar()->addMenu( ( "&Help" ) );
-	helpMenu->addAction( "View &Help...", this, &SconeStudio::helpSearch, QKeySequence( "F1" ) );
-	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
-	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
-	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
-	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
-	helpMenu->addSeparator();
-	helpMenu->addAction( "&About...", this, [this]() { showAbout( this ); } );
-	scone::TimeSection( "InitMenu" );
 
 	// Results Browser
 	auto results_folder = scone::GetFolder( SconeFolder::Results );
@@ -359,9 +232,148 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		[this]( const QString& d ) { if ( hasModel() ) muscleAnalysis->setDof( scenario_->GetModel(), d ); } );
 	connect( muscleAnalysis, &MuscleAnalysis::dofValueChanged, this, &SconeStudio::muscleAnalysisValueChanged );
 
+	//
+	// Menu
+	//
+
+	// File menu
+	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
+	fileMenu->addAction( "&Open...", this, &SconeStudio::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
+	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence() );
+	fileMenu->addAction( "Re&load", this, &SconeStudio::fileReloadTriggered, QKeySequence( "Ctrl+R" ) );
+	fileMenu->addSeparator();
+	fileMenu->addAction( "&Save", this, &SconeStudio::fileSaveTriggered, QKeySequence( "Ctrl+S" ) );
+	fileMenu->addAction( "Save &As...", this, &SconeStudio::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
+	fileMenu->addAction( "&Close", this, &SconeStudio::fileCloseTriggered, QKeySequence( "Ctrl+W" ) );
+	fileMenu->addSeparator();
+	fileMenu->addAction( "Save Evaluation &Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
+	fileMenu->addSeparator();
+	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	fileMenu->addAction( "Save &Model Inputs", this, [this]() { saveUserInputs( false ); } );
+	fileMenu->addAction( "Save &Model Inputs As...", this, [this]() { saveUserInputs( true ); } );
+#endif
+	fileMenu->addSeparator();
+	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
+
+	// Edit menu
+	auto editMenu = menuBar()->addMenu( "&Edit" );
+	editMenu->addAction( "&Find...", this, &SconeStudio::findDialog, QKeySequence( "Ctrl+F" ) );
+	editMenu->addAction( "Find &Next", this, &SconeStudio::findNext, Qt::Key_F3 );
+	editMenu->addAction( "Find &Previous", this, &SconeStudio::findPrevious, QKeySequence( "Shift+F3" ) );
+	editMenu->addSeparator();
+	editMenu->addAction( "P&revious Tab", this, [this]() { cycleTabWidget( ui.tabWidget, -1 ); }, QKeySequence( "Ctrl+PgUp" ) );
+	editMenu->addAction( "Ne&xt Tab", this, [this]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
+	editMenu->addSeparator();
+	editMenu->addAction( "Toggle &Comments", this, &SconeStudio::toggleComments, QKeySequence( "Ctrl+/" ) );
+	editMenu->addAction( "&Duplicate Selection", this, [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
+
+	// View menu
+	auto viewMenu = menuBar()->addMenu( "&View" );
+	viewActions[ ViewOption::ExternalForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::Muscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::Tendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::BodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::BodyAxes ] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::BodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::Joints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::GroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
+	viewActions[ ViewOption::ModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
+	viewMenu->addSeparator();
+	auto musGroup = new QActionGroup( this );
+	musGroup->addAction( viewActions[ ViewOption::MuscleActivation ] = viewMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ ViewOption::MuscleForce ] = viewMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ ViewOption::MuscleFiberLength ] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
+	musGroup->setExclusive( true );
+	viewMenu->addSeparator();
+	auto orbitMenu = viewMenu->addMenu( "Automatic Camera Orbit" );
+	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
+
+	// init view options
+	auto defaultOptions = MakeDefaultViewOptions();
+	for ( auto& va : viewActions ) {
+		va.second->setCheckable( true );
+		va.second->setChecked( defaultOptions.get( va.first ) );
+	}
+
+	// init orbit menu
+	auto og = new QActionGroup( this );
+	og->addAction( orbitMenu->addAction( "None", this, [&]() { ui.osgViewer->yawAnimationVelocity = vis::degree( 0 ); } ) );
+	og->addAction( orbitMenu->addAction( "Left", this, [&]() { ui.osgViewer->yawAnimationVelocity = -GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->addAction( orbitMenu->addAction( "Right", this, [&]() { ui.osgViewer->yawAnimationVelocity = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->setExclusive( true );
+	for ( auto& a : og->actions() )
+		a->setCheckable( true );
+	og->actions().first()->setChecked( true );
+
+	// Scenario menu
+	auto scenarioMenu = menuBar()->addMenu( "&Scenario" );
+	scenarioMenu->addAction( "&Evaluate Scenario", this, &SconeStudio::evaluateActiveScenario, QKeySequence( "Ctrl+E" ) );
+	scenarioMenu->addSeparator();
+	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
+	scenarioMenu->addAction( "Run &Multiple Optimizations", this, &SconeStudio::optimizeScenarioMultiple, QKeySequence( "Ctrl+Shift+F5" ) );
+	scenarioMenu->addSeparator();
+	scenarioMenu->addAction( "&Abort Optimizations", this, &SconeStudio::abortOptimizations, QKeySequence() );
+	scenarioMenu->addSeparator();
+	scenarioMenu->addAction( "&Performance Test", this, [&]() { performanceTest( false ); }, QKeySequence( "Ctrl+P" ) );
+	scenarioMenu->addAction( "Performance Test (Write Stats)", this, [&]() { performanceTest( true ); }, QKeySequence( "Ctrl+Shift+P" ) );
+
+	// Tools menu
+	auto toolsMenu = menuBar()->addMenu( "&Tools" );
+	toolsMenu->addAction( "Generate &Video...", this, &SconeStudio::createVideo );
+	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
+	toolsMenu->addSeparator();
+	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
+	toolsMenu->addAction( "Clear Analysis Fi&lter", this, [&]() { analysisView->setFilterText( "" ); analysisView->selectNone();
+	analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
+	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
+	toolsMenu->addAction( "Refresh Muscle Analysis", muscleAnalysis, &MuscleAnalysis::refresh, QKeySequence( "Ctrl+Shift+M" ) );
+	toolsMenu->addSeparator();
+#if SCONE_HYFYDY_ENABLED
+	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
+	toolsMenu->addAction( "Convert OpenSim3 &Model...", [this]() { ShowModelConversionDialog( this ); } );
+	toolsMenu->addSeparator();
+#endif
+	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
+
+	// Action menu
+	auto* actionMenu = menuBar()->addMenu( "&Playback" );
+	actionMenu->addAction( "&Play or Evaluate", ui.playControl, &QPlayControl::togglePlay, Qt::Key_F5 );
+	actionMenu->addAction( "&Stop / Reset", ui.playControl, &QPlayControl::stopReset, Qt::Key_F8 );
+	actionMenu->addAction( "Toggle Play", ui.playControl, &QPlayControl::togglePlay, QKeySequence( "Ctrl+Space" ) );
+	actionMenu->addAction( "Toggle Loop", ui.playControl, &QPlayControl::toggleLoop, QKeySequence( "Ctrl+Alt+L" ) );
+	actionMenu->addAction( "Play F&aster", ui.playControl, &QPlayControl::faster, QKeySequence( "Ctrl+Up" ) );
+	actionMenu->addAction( "Play S&lower", ui.playControl, &QPlayControl::slower, QKeySequence( "Ctrl+Down" ) );
+	actionMenu->addSeparator();
+	actionMenu->addAction( "Step &Back", ui.playControl, &QPlayControl::stepBack, QKeySequence( "Alt+Left" ) );
+	actionMenu->addAction( "Step &Forward", ui.playControl, &QPlayControl::stepForward, QKeySequence( "Alt+Right" ) );
+	actionMenu->addAction( "Page &Back", ui.playControl, &QPlayControl::pageBack, QKeySequence( "Alt+PgUp" ) );
+	actionMenu->addAction( "Page &Forward", ui.playControl, &QPlayControl::pageForward, QKeySequence( "Alt+PgDown" ) );
+	actionMenu->addAction( "Goto &Begin", ui.playControl, &QPlayControl::reset, QKeySequence( "Alt+Home" ) );
+	actionMenu->addAction( "Go to &End", ui.playControl, &QPlayControl::end, QKeySequence( "Alt+End" ) );
+
+	// Window menu
+	auto windowMenu = createWindowMenu();
+
+	// Help menu
+	auto helpMenu = menuBar()->addMenu( ( "&Help" ) );
+	helpMenu->addAction( "View &Help...", this, &SconeStudio::helpSearch, QKeySequence( "F1" ) );
+	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
+	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
+	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
+	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
+	helpMenu->addSeparator();
+	helpMenu->addAction( "&About...", this, [this]() { showAbout( this ); } );
+	scone::TimeSection( "InitMenu" );
+
 	// finalize windows menu
 	windowMenu->addSeparator();
 	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
+
+	//
+	// Viewer
+	//
 
 	// init viewer / scene
 	if ( GetStudioSetting<bool>( "viewer.enable_object_cache" ) )
