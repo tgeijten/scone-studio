@@ -33,6 +33,7 @@ namespace scone
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
 		static_mat( { GetStudioSetting<xo::color>( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
+		object_mat( { GetStudioSetting<xo::color>( "viewer.object" ), 0.0f, 0.0f, ambient_ } ),
 		muscle_gradient( {
 			{ -1.0f, GetStudioSetting<xo::color>( "viewer.muscle_min100" ) },
 			{ 0.0f, GetStudioSetting<xo::color>( "viewer.muscle_0" ) },
@@ -99,7 +100,7 @@ namespace scone
 				}
 				else {
 					// shape
-					const vis::material& mat = geom.color_.is_null() ? bone_mat : color_materials_( geom.color_ );
+					const vis::material& mat = geom.color_.is_null() ? object_mat : color_materials_( geom.color_ );
 					body_meshes.push_back( MakeMesh(
 						bodies.back(), geom.shape_, xo::color::cyan(), mat, geom.pos_, geom.ori_, geom.scale_ ) );
 					bool clickable = geom.color_.is_null() || geom.color_.a == 1;
@@ -123,7 +124,7 @@ namespace scone
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
-				auto& mat = is_static ? static_mat : ( use_bone_mat ? bone_mat : contact_mat );
+				auto& mat = is_static ? static_mat : ( use_bone_mat ? object_mat : contact_mat );
 				geom_mesh = MakeMesh( parent_node, cg->GetShape(), xo::color::cyan(), mat, cg->GetPos(), cg->GetOri() );
 			}
 

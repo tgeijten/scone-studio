@@ -47,6 +47,7 @@ viewer {
 	contact_alpha { type = float label = "Contact color transparency" default = 0.5 }
 	contact_geometries_cast_shadows { type = bool label = "Contact geometries cast shadows" default = 0 }
 	static { type = color label = "Static geometry color" default { h = 180 s = 0.25 v = 0.4 } }
+	object { type = color label = "Object geometry color" default { h = 180 s = 0.02 v = 0.55 } }
 	joint { type = color label = "Joint color" default { h = 40 s = 0.2 v = 0.5 } }
 	com { type = color label = "Center of Mass color" default { h = 105 s = 0.5 v = 0.5 } }
 	muscle_min100 { type = color label = "Muscle color at -100%" default { h = 120 s = 0.7 v = 0.65 } }
