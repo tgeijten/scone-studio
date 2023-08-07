@@ -1,6 +1,30 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.2.2 ====
+//Released //
+
+=== New Features ===
+  * New Model settings: max_individual_muscle_activation and min/max_muscle_activation; both can be used as optimization parameters
+  * 3D viewer ground tiles now remain visible when the model moves beyond the ground plane size
+  * Added automatic camera orbit (preview)
+  * New Model Analysis window, for plotting muscles properties against coordinates (preview)
+
+=== Updates ===
+  * Playback speed can now be changed while making a video
+  * Viewer now has a separate default color for object geometry
+  * Missing Gait Analysis plot data is now a warning instead of an error
+  * Improved shadow rendering for scenes with static geometry
+  *: Contact geometry can now be hidden without hiding static geometry U*: Contact force arrows can now be semi-transparent U*: Added option to disable shadow casting for force arrows and static geometry
+  * You can now click on a graph legend to switch its position between top and bottom
+
+=== Fixes ===
+  * 3D viewer camera now keeps focus point when setting the camera position (using the r, x, y or z key)
+  * Muscle excitation values in OpenSim models are now correctly clamped when queried; this slightly increases the overall metabolic energy consumption measures for OpenSim models (fixes #7)
+  * Removed defunct sconepy.Muscle.set_excitation(), fixes #6
+  * Automatic reload now also works after Save As
+  * Active scenario now favors current tab
+
 ==== SCONE 2.2.1 ====
 //Released June 7, 2023//
 
