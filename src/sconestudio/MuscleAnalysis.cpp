@@ -49,10 +49,10 @@ namespace scone
 	void MuscleAnalysis::init( Model& model )
 	{
 		clear();
+		dofSelect->blockSignals( true );
 		for ( auto* d : model.GetDofs() )
 			if ( d->GetJoint() )
 				dofSelect->addItem( to_qt( d->GetName() ) );
-		dofSelect->blockSignals( true );
 		dofSelect->setCurrentText( dofName );
 		dofSelect->blockSignals( false );
 	}
