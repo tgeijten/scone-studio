@@ -796,46 +796,47 @@ bool SconeStudio::tryExit()
 void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 {
 	optimizations.push_back( pdw );
-	if ( optimizations.size() < 4 )
+	addDockWidget( Qt::LeftDockWidgetArea, pdw );
+
+	int numOptimizations = static_cast<int>( optimizations.size() );
+	int maxRowsBelowResults = GetStudioSetting<int>( "progress.max_rows_below_results" );
+	int maxColumnsBelowResults = GetStudioSetting<int>( "progress.max_columns_below_results" );
+	int maxRowsLeftofResults = GetStudioSetting<int>( "progress.max_rows_left_of_results" );
+	bool moveBelowResults = numOptimizations <= maxColumnsBelowResults * maxRowsBelowResults;
+	int maxRows = moveBelowResults ? maxRowsBelowResults : maxRowsLeftofResults;
+
+	auto columns = std::max<int>( 1, ( numOptimizations + maxRows - 1 ) / maxRows );
+	auto rows = ( optimizations.size() + columns - 1 ) / columns;
+	log::debug( "Reorganizing windows, columns=", columns, " rows=", rows );
+
+	// keep this so we can restore later
+	auto tabDocks = tabifiedDockWidgets( ui.resultsDock );
+
+	// first widget determines position wrt results
+	if ( moveBelowResults )
+		splitDockWidget( ui.resultsDock, optimizations[ 0 ], Qt::Vertical );
+	else splitDockWidget( optimizations[ 0 ], ui.resultsDock, Qt::Horizontal );
+
+	// first column
+	for ( index_t r = 1; r < rows; ++r )
+		splitDockWidget( optimizations[ ( r - 1 ) * columns ], optimizations[ r * columns ], Qt::Vertical );
+
+	// remaining columns
+	for ( index_t c = 1; c < columns; ++c )
 	{
-		// stack below results
-		addDockWidget( Qt::LeftDockWidgetArea, pdw );
-		//for ( index_t r = 0; r < optimizations.size(); ++r )
-		//	splitDockWidget( r == 0 ? ui.resultsDock : optimizations[ r - 1 ], optimizations[ r ], Qt::Vertical );
-	}
-	else
-	{
-		// organize into columns
-		addDockWidget( Qt::LeftDockWidgetArea, pdw );
-
-		auto columns = std::max<int>( 1, ( optimizations.size() + 5 ) / 6 );
-		auto rows = ( optimizations.size() + columns - 1 ) / columns;
-		log::debug( "Reorganizing windows, columns=", columns, " rows=", rows );
-
-		// keep this so we can restore later
-		auto tabDocks = tabifiedDockWidgets( ui.resultsDock );
-
-		// first column
-		splitDockWidget( optimizations[ 0 ], ui.resultsDock, Qt::Horizontal );
-		for ( index_t r = 1; r < rows; ++r )
-			splitDockWidget( optimizations[ ( r - 1 ) * columns ], optimizations[ r * columns ], Qt::Vertical );
-
-		// remaining columns
-		for ( index_t c = 1; c < columns; ++c )
+		for ( index_t r = 0; r < rows; ++r )
 		{
-			for ( index_t r = 0; r < rows; ++r )
-			{
-				index_t i = r * columns + c;
-				if ( i < optimizations.size() )
-					splitDockWidget( optimizations[ i - 1 ], optimizations[ i ], Qt::Horizontal );
-			}
+			index_t idx = r * columns + c;
+			index_t idxPrev = idx - 1;
+			if ( idx < optimizations.size() )
+				splitDockWidget( optimizations[ idxPrev ], optimizations[ idx ], Qt::Horizontal );
 		}
-
-		// restore tabs
-		for ( auto* dw : tabDocks )
-			tabifyDockWidget( ui.resultsDock, dw );
-		ui.resultsDock->raise();
 	}
+
+	// restore tabs
+	for ( auto* dw : tabDocks )
+		tabifyDockWidget( ui.resultsDock, dw );
+	ui.resultsDock->raise();
 }
 
 void SconeStudio::clearScenario()

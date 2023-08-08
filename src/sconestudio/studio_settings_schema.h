@@ -80,6 +80,9 @@ progress {
 	line_width { type = float default = 1 label = "Line width of progress graphs (use 1 for best performance)" range = [ 1 10 ] }
 	show_prediction { type = bool default = 0 label = "Show predicted fitness" }
 	show_fitness_label { type = bool default = 0 label = "Show fitness label on progress graph" }
+	max_rows_below_results { type = int default = 3 label = "Maximum number of graph rows below results" }
+	max_columns_below_results { type = int default = 2 label = "Maximum number of graph columns below results" }
+	max_rows_left_of_results { type = int default = 6 label = "Maximum number of graph rows left of results" }
 }
 
 analysis {
