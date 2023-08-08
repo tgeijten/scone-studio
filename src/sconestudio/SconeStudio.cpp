@@ -74,10 +74,21 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	captureProcess( nullptr )
 {
 	scone::TimeSection( "CreateWindow" );
-
 	ui.setupUi( this );
-
 	scone::TimeSection( "SetupGui" );
+
+	//
+	// Top-level menu items (must be created first because of Window menu)
+	//
+
+	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
+	auto editMenu = menuBar()->addMenu( "&Edit" );
+	auto viewMenu = menuBar()->addMenu( "&View" );
+	auto scenarioMenu = menuBar()->addMenu( "&Scenario" );
+	auto toolsMenu = menuBar()->addMenu( "&Tools" );
+	auto* actionMenu = menuBar()->addMenu( "&Playback" );
+	auto windowMenu = createWindowMenu();
+	auto helpMenu = menuBar()->addMenu( ( "&Help" ) );
 
 	//
 	// Components
@@ -237,7 +248,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	//
 
 	// File menu
-	auto fileMenu = menuBar()->addMenu( ( "&File" ) );
 	fileMenu->addAction( "&Open...", this, &SconeStudio::fileOpenTriggered, QKeySequence( "Ctrl+O" ) );
 	recentFilesMenu = addMenuAction( fileMenu, "Open &Recent", this, &QCompositeMainWindow::fileOpenTriggered, QKeySequence() );
 	fileMenu->addAction( "Re&load", this, &SconeStudio::fileReloadTriggered, QKeySequence( "Ctrl+R" ) );
@@ -257,7 +267,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
 
 	// Edit menu
-	auto editMenu = menuBar()->addMenu( "&Edit" );
 	editMenu->addAction( "&Find...", this, &SconeStudio::findDialog, QKeySequence( "Ctrl+F" ) );
 	editMenu->addAction( "Find &Next", this, &SconeStudio::findNext, Qt::Key_F3 );
 	editMenu->addAction( "Find &Previous", this, &SconeStudio::findPrevious, QKeySequence( "Shift+F3" ) );
@@ -269,7 +278,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	editMenu->addAction( "&Duplicate Selection", this, [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
 
 	// View menu
-	auto viewMenu = menuBar()->addMenu( "&View" );
 	viewActions[ ViewOption::ExternalForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
 	viewActions[ ViewOption::Muscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
 	viewActions[ ViewOption::Tendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
@@ -308,7 +316,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	og->actions().first()->setChecked( true );
 
 	// Scenario menu
-	auto scenarioMenu = menuBar()->addMenu( "&Scenario" );
 	scenarioMenu->addAction( "&Evaluate Scenario", this, &SconeStudio::evaluateActiveScenario, QKeySequence( "Ctrl+E" ) );
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
@@ -320,7 +327,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	scenarioMenu->addAction( "Performance Test (Write Stats)", this, [&]() { performanceTest( true ); }, QKeySequence( "Ctrl+Shift+P" ) );
 
 	// Tools menu
-	auto toolsMenu = menuBar()->addMenu( "&Tools" );
 	toolsMenu->addAction( "Generate &Video...", this, &SconeStudio::createVideo );
 	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
 	toolsMenu->addSeparator();
@@ -338,7 +344,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );
 
 	// Action menu
-	auto* actionMenu = menuBar()->addMenu( "&Playback" );
 	actionMenu->addAction( "&Play or Evaluate", ui.playControl, &QPlayControl::togglePlay, Qt::Key_F5 );
 	actionMenu->addAction( "&Stop / Reset", ui.playControl, &QPlayControl::stopReset, Qt::Key_F8 );
 	actionMenu->addAction( "Toggle Play", ui.playControl, &QPlayControl::togglePlay, QKeySequence( "Ctrl+Space" ) );
@@ -353,11 +358,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	actionMenu->addAction( "Goto &Begin", ui.playControl, &QPlayControl::reset, QKeySequence( "Alt+Home" ) );
 	actionMenu->addAction( "Go to &End", ui.playControl, &QPlayControl::end, QKeySequence( "Alt+End" ) );
 
-	// Window menu
-	auto windowMenu = createWindowMenu();
-
 	// Help menu
-	auto helpMenu = menuBar()->addMenu( ( "&Help" ) );
 	helpMenu->addAction( "View &Help...", this, &SconeStudio::helpSearch, QKeySequence( "F1" ) );
 	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
 	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
