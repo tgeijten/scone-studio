@@ -28,7 +28,7 @@ namespace scone
 		void dofValueChanged( const QString&, double );
 
 	public slots:
-		void refresh() { dofChanged( dofName ); }
+		void refresh() { if ( !dofName.isEmpty() ) dofChanged( dofName ); }
 
 	private:
 		void StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const;
