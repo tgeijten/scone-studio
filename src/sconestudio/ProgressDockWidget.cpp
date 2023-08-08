@@ -28,7 +28,7 @@ ProgressDockWidget::ProgressDockWidget( SconeStudio* s, std::unique_ptr<scone::O
 	state( StartingState ),
 	showCloseWarning( true ),
 	closeWhenFinished( false ),
-	showPrediction( GetStudioSetting< float >( "progress.show_prediction" ) ),
+	showPrediction( GetStudioSetting<bool>( "progress.show_prediction" ) ),
 	min_view_gens( 20 ),
 	view_first_gen( 0 ),
 	view_last_gen( min_view_gens ),
@@ -36,25 +36,34 @@ ProgressDockWidget::ProgressDockWidget( SconeStudio* s, std::unique_ptr<scone::O
 {
 	ui.setupUi( this );
 
-	//ui.plot->xAxis->setLabel( "Generation" );
+	auto axisRectMargins = QMargins{ 0, 6, 3, 0 };
+	QFont tickLabelFont = ui.plot->font();
+	tickLabelFont.setPointSize( 7 );
+
 	ui.plot->setInteraction( QCP::iRangeZoom, true );
 	ui.plot->axisRect()->setRangeZoom( Qt::Horizontal );
 	ui.plot->setInteraction( QCP::iRangeDrag, true );
 	ui.plot->axisRect()->setRangeDrag( Qt::Horizontal );
-	ui.plot->xAxis->setLabelPadding( 0 );
-	ui.plot->xAxis->setTickLabelPadding( 2 );
-	ui.plot->yAxis->setLabel( "Fitness" );
-	ui.plot->yAxis->setLabelPadding( 1 );
-	ui.plot->yAxis->setTickLabelPadding( 2 );
-	ui.plot->setContentsMargins( 1, 1, 1, 1 );
-	QFont font = ui.plot->font();
-	font.setPointSize( 7 );
-	ui.plot->xAxis->setTickLabelFont( font );
-	ui.plot->yAxis->setTickLabelFont( font );
+	ui.plot->setContentsMargins( 0, 0, 0, 0 );
 
+	ui.plot->xAxis->setLabelPadding( 0 );
+	ui.plot->xAxis->setPadding( 0 );
+	ui.plot->xAxis->setTickLabelPadding( 1 );
+	ui.plot->xAxis->axisRect()->setMinimumMargins( axisRectMargins );
+	ui.plot->xAxis->setTickLabelFont( tickLabelFont );
 	ui.plot->xAxis->setRange( 0, min_view_gens );
 	ui.plot->xAxis->setAutoTickCount( 6 );
+
+	if ( GetStudioSetting<bool>( "progress.show_fitness_label" ) ) {
+		ui.plot->yAxis->setLabel( "Fitness" );
+		ui.plot->yAxis->setLabelPadding( 1 );
+	}
+	ui.plot->yAxis->setPadding( 2 );
+	ui.plot->yAxis->setTickLabelPadding( 1 );
+	ui.plot->yAxis->axisRect()->setMinimumMargins( axisRectMargins );
+	ui.plot->yAxis->setTickLabelFont( tickLabelFont );
 	ui.plot->yAxis->setAutoTickCount( 3 );
+
 	ui.plot->replot();
 	ui.plot->hide();
 
@@ -150,8 +159,8 @@ ProgressDockWidget::ProgressResult ProgressDockWidget::updateProgress()
 	// check if there was a request to close and the optimizer is finished
 	if ( closeWhenFinished && ( state == FinishedState || state == ErrorState ) )
 	{
- 		close();
- 		return IsClosedResult;
+		close();
+		return IsClosedResult;
 	}
 
 	for ( auto messages = task_->getMessages(); !messages.empty(); messages.pop_front() )
@@ -209,7 +218,7 @@ ProgressDockWidget::ProgressResult ProgressDockWidget::updateProgress()
 
 				if ( best_idx == -1 )
 					best_idx = it->idx;
-				else if ( ( it->is_minimizing && it->best < optimizations[ best_idx ].best ) || ( !it->is_minimizing && it->best > optimizations[ best_idx ].best ) )
+				else if ( ( it->is_minimizing && it->best < optimizations[best_idx].best ) || ( !it->is_minimizing && it->best > optimizations[best_idx].best ) )
 					best_idx = it->idx;
 
 				updateText();
@@ -241,7 +250,7 @@ ProgressDockWidget::ProgressResult ProgressDockWidget::updateProgress()
 	auto new_view_last_gen = view_last_gen;
 	for ( index_t idx = 0; idx < optimizations.size(); ++idx )
 	{
-		auto& o = optimizations[ idx ];
+		auto& o = optimizations[idx];
 		if ( o.has_update_flag )
 		{
 			o.has_update_flag = false;
@@ -254,7 +263,7 @@ ProgressDockWidget::ProgressResult ProgressDockWidget::updateProgress()
 #else
 			auto* g = ui.plot->graph( idx );
 			for ( int i = g->data()->size(); i < o.genvec.size(); ++i )
-				g->addData( o.genvec[ i ], o.bestvec[ i ] );
+				g->addData( o.genvec[i], o.bestvec[i] );
 			if ( o.genvec.size() >= view_last_gen )
 				new_view_last_gen = o.genvec.size() - 1;
 #endif
@@ -327,7 +336,7 @@ void ProgressDockWidget::updateText()
 {
 	string s;
 
-	auto* opt = ( best_idx != -1 ) ? &optimizations[ best_idx ] : nullptr;
+	auto* opt = ( best_idx != -1 ) ? &optimizations[best_idx] : nullptr;
 	std::string tstr = opt ? xo::to_str( xo::time_from_seconds( opt->duration ), 0 ) : "0";
 
 	switch ( state )
@@ -346,8 +355,10 @@ void ProgressDockWidget::updateText()
 		else s = "Waiting for first evaluation...";
 		break;
 	case ProgressDockWidget::FinishedState:
-		if ( opt )
-			s = xo::stringf( "Finished in %s  -  Gen=%d  Best=%.3f (Gen %d)", tstr.c_str(), opt->cur_gen, opt->best, opt->best_gen ) + "\n" + message;
+		if ( opt ) {
+			s = "Finished: " + message + "\n";
+			s += xo::stringf( "T=%s  Gen=%d  Best=%.3f (Gen %d)", tstr.c_str(), opt->cur_gen, opt->best, opt->best_gen );
+		}
 		else s = message;
 		break;
 	case ProgressDockWidget::ClosedState:
@@ -360,3 +371,4 @@ void ProgressDockWidget::updateText()
 	}
 	ui.text->setText( to_qt( s ) );
 }
+

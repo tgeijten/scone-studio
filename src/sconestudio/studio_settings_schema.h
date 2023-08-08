@@ -79,6 +79,7 @@ progress {
 	update_interval { type = int default = 250 label = "Interval [ms] to update progress graphs" range = [ 10 1000 ] }
 	line_width { type = float default = 1 label = "Line width of progress graphs (use 1 for best performance)" range = [ 1 10 ] }
 	show_prediction { type = bool default = 0 label = "Show predicted fitness" }
+	show_fitness_label { type = bool default = 0 label = "Show fitness label on progress graph" }
 }
 
 analysis {
