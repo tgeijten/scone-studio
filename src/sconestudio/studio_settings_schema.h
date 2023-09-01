@@ -91,6 +91,12 @@ analysis {
 	auto_fit_vertical_axis { type = bool default = 1 label = "Automatically scale vertical axis to fit data in range" }
 }
 
+muscle_analysis {
+	label = "Muscle Analysis settings"
+	step_size { type = float default = 1 label = "Increments to use in Muscle Analysis graph [deg]" range = [ 0.01 10 ] }
+	max_steps { type = int default = 360 label = "Maximum number of samples in Muscle Analysis graph" range = [ 1 10000 ] }
+}
+
 coordinates {
 	label = "Coordinates settings"
 	export_activations { type = bool label = "Export activations" default = 0 }

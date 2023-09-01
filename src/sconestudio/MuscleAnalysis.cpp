@@ -80,8 +80,9 @@ namespace scone
 
 		auto rr = activeDof->GetRange();
 		BoundsDeg r = BoundsRad( rr.min, rr.max );
-		Real max_steps = 180.0;
-		Degree step = std::max( Degree( 1 ), r.length() / max_steps );
+		Real step_size = GetStudioSetting<Real>( "muscle_analysis.step_size" );
+		Real max_steps = GetStudioSetting<Real>( "muscle_analysis.max_steps" );
+		Degree step = std::max( Degree( step_size ), r.length() / max_steps );
 		for ( auto v = r.lower; v <= r.upper; v += step ) {
 			activeDof->SetPos( v.rad_value() );
 			model.UpdateStateFromDofs();
