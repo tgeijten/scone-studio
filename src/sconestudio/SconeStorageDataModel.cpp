@@ -13,8 +13,8 @@
 
 SconeStorageDataModel::SconeStorageDataModel( const scone::Storage<>* s ) :
 	storage( s ),
-	index_cache{ -1, 0 },
-	equidistant_delta_time( false )
+	equidistant_delta_time( false ),
+	index_cache{ -1, 0 }
 {}
 
 void SconeStorageDataModel::setStorage( const scone::Storage<>* s )
