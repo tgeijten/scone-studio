@@ -473,8 +473,8 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		}
 		else if ( createScenario( info.absoluteFilePath() ) )
 		{
-			if ( scenario_->IsEvaluating() ) // .par or .sto
-				evaluate();
+			if ( scenario_->IsEvaluating() ) 
+				evaluate( false ); // .par file
 			ui.playControl->play(); // automatic playback after evaluation
 		}
 	}
