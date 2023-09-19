@@ -475,7 +475,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		else if ( createScenario( info.absoluteFilePath() ) )
 		{
 			if ( scenario_->IsEvaluating() ) 
-				evaluate( EvaluationMode::real_time ); // .par file
+				evaluate( EvaluationMode::offline ); // .par file
 			ui.playControl->play(); // automatic playback after evaluation
 		}
 	}
