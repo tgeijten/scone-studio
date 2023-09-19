@@ -51,6 +51,7 @@
 #include "MuscleAnalysis.h"
 
 using scone::TimeInSeconds;
+enum class EvaluationMode { offline, real_time };
 
 class SconeStudio : public QCompositeMainWindow
 {
@@ -85,7 +86,7 @@ public slots:
 
 	void helpSearch();
 	void helpForum();
-	void evaluateActiveScenario();
+	void evaluateActiveScenario( EvaluationMode m = EvaluationMode::offline );
 	void writeEvaluationResults();
 	void optimizeScenario();
 	void optimizeScenarioMultiple();
@@ -135,7 +136,9 @@ private:
 	void performanceTest( bool write_stats );
 	void saveUserInputs( bool show_dialog );
 
-	void evaluate();
+	void evaluate( EvaluationMode m );
+	void evaluateOffline();
+	void evaluateRealTime();
 	void setTime( TimeInSeconds t, bool update_vis );
 
 	std::vector< QCodeEditor* > changedDocuments();
@@ -153,6 +156,7 @@ private:
 	void clearScenario();
 	bool createScenario( const QString& any_file );
 	bool createAndVerifyActiveScenario( bool always_create, bool must_have_parameters = false );
+	void updateEvaluationReport();
 	void updateModelDataWidgets();
 
 	// simulation

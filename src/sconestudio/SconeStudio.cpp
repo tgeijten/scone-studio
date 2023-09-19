@@ -219,7 +219,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// model input editor
 	userInputEditor = new UserInputEditor( this );
 	connect( userInputEditor, &UserInputEditor::valueChanged, this, &SconeStudio::userInputValueChanged );
-	connect( userInputEditor, &UserInputEditor::savePressed, this, [this]() { saveUserInputs( true ); } );
+	connect( userInputEditor, &UserInputEditor::savePressed, [this]() { saveUserInputs( true ); } );
 	auto userInputDock = createDockWidget( "Model &Inputs", userInputEditor, Qt::LeftDockWidgetArea );
 	tabifyDockWidget( ui.resultsDock, userInputDock );
 	userInputDock->hide();
@@ -260,8 +260,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
-	fileMenu->addAction( "Save &Model Inputs", this, [this]() { saveUserInputs( false ); } );
-	fileMenu->addAction( "Save &Model Inputs As...", this, [this]() { saveUserInputs( true ); } );
+	fileMenu->addAction( "Save &Model Inputs", [this]() { saveUserInputs( false ); } );
+	fileMenu->addAction( "Save &Model Inputs As...", [this]() { saveUserInputs( true ); } );
 #endif
 	fileMenu->addSeparator();
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
@@ -271,11 +271,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	editMenu->addAction( "Find &Next", this, &SconeStudio::findNext, Qt::Key_F3 );
 	editMenu->addAction( "Find &Previous", this, &SconeStudio::findPrevious, QKeySequence( "Shift+F3" ) );
 	editMenu->addSeparator();
-	editMenu->addAction( "P&revious Tab", this, [this]() { cycleTabWidget( ui.tabWidget, -1 ); }, QKeySequence( "Ctrl+PgUp" ) );
-	editMenu->addAction( "Ne&xt Tab", this, [this]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
+	editMenu->addAction( "P&revious Tab", [this]() { cycleTabWidget( ui.tabWidget, -1 ); }, QKeySequence( "Ctrl+PgUp" ) );
+	editMenu->addAction( "Ne&xt Tab", [this]() { cycleTabWidget( ui.tabWidget, 1 ); }, QKeySequence( "Ctrl+PgDown" ) );
 	editMenu->addSeparator();
 	editMenu->addAction( "Toggle &Comments", this, &SconeStudio::toggleComments, QKeySequence( "Ctrl+/" ) );
-	editMenu->addAction( "&Duplicate Selection", this, [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
+	editMenu->addAction( "&Duplicate Selection", [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
 
 	// View menu
 	viewActions[ ViewOption::ExternalForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
@@ -307,31 +307,32 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// init orbit menu
 	auto og = new QActionGroup( this );
-	og->addAction( orbitMenu->addAction( "None", this, [&]() { ui.osgViewer->yawAnimationVelocity = vis::degree( 0 ); } ) );
-	og->addAction( orbitMenu->addAction( "Left", this, [&]() { ui.osgViewer->yawAnimationVelocity = -GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
-	og->addAction( orbitMenu->addAction( "Right", this, [&]() { ui.osgViewer->yawAnimationVelocity = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->addAction( orbitMenu->addAction( "None", [this]() { ui.osgViewer->yawAnimationVelocity = vis::degree( 0 ); } ) );
+	og->addAction( orbitMenu->addAction( "Left", [this]() { ui.osgViewer->yawAnimationVelocity = -GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->addAction( orbitMenu->addAction( "Right", [this]() { ui.osgViewer->yawAnimationVelocity = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
 	og->setExclusive( true );
 	for ( auto& a : og->actions() )
 		a->setCheckable( true );
 	og->actions().first()->setChecked( true );
 
 	// Scenario menu
-	scenarioMenu->addAction( "&Evaluate Scenario", this, &SconeStudio::evaluateActiveScenario, QKeySequence( "Ctrl+E" ) );
+	scenarioMenu->addAction( "&Evaluate Scenario", [this]() { evaluateActiveScenario( EvaluationMode::offline ); }, QKeySequence( "Ctrl+E" ) );
+	//scenarioMenu->addAction( "&Evaluate Scenario (Real-time)", [this]() { evaluateActiveScenario( EvaluationMode::real_time ); }, QKeySequence( "Ctrl+I" ) );
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
 	scenarioMenu->addAction( "Run &Multiple Optimizations", this, &SconeStudio::optimizeScenarioMultiple, QKeySequence( "Ctrl+Shift+F5" ) );
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Abort Optimizations", this, &SconeStudio::abortOptimizations, QKeySequence() );
 	scenarioMenu->addSeparator();
-	scenarioMenu->addAction( "&Performance Test", this, [&]() { performanceTest( false ); }, QKeySequence( "Ctrl+P" ) );
-	scenarioMenu->addAction( "Performance Test (Write Stats)", this, [&]() { performanceTest( true ); }, QKeySequence( "Ctrl+Shift+P" ) );
+	scenarioMenu->addAction( "&Performance Test", [this]() { performanceTest( false ); }, QKeySequence( "Ctrl+P" ) );
+	scenarioMenu->addAction( "Performance Test (Write Stats)", [this]() { performanceTest( true ); }, QKeySequence( "Ctrl+Shift+P" ) );
 
 	// Tools menu
 	toolsMenu->addAction( "Generate &Video...", this, &SconeStudio::createVideo );
-	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage, QKeySequence( "Ctrl+I" ) );
+	toolsMenu->addAction( "Save &Image...", this, &SconeStudio::captureImage );
 	toolsMenu->addSeparator();
 	toolsMenu->addAction( "&Gait Analysis", this, &SconeStudio::updateGaitAnalysis, QKeySequence( "Ctrl+G" ) );
-	toolsMenu->addAction( "Clear Analysis Fi&lter", this, [&]() { analysisView->setFilterText( "" ); analysisView->selectNone();
+	toolsMenu->addAction( "Clear Analysis Fi&lter", [this]() { analysisView->setFilterText( "" ); analysisView->selectNone();
 	analysisDock->raise(); analysisView->focusFilterEdit(); }, QKeySequence( "Ctrl+Shift+L" ) );
 	toolsMenu->addAction( "&Keep Current Analysis Graphs", analysisView, &QDataAnalysisView::holdSeries, QKeySequence( "Ctrl+Shift+K" ) );
 	toolsMenu->addAction( "Refresh Muscle Analysis", muscleAnalysis, &MuscleAnalysis::refresh, QKeySequence( "Ctrl+Shift+M" ) );
@@ -365,7 +366,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
 	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
 	helpMenu->addSeparator();
-	helpMenu->addAction( "&About...", this, [this]() { showAbout( this ); } );
+	helpMenu->addAction( "&About...", [this]() { showAbout( this ); } );
 	scone::TimeSection( "InitMenu" );
 
 	// finalize windows menu
@@ -474,7 +475,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		else if ( createScenario( info.absoluteFilePath() ) )
 		{
 			if ( scenario_->IsEvaluating() ) 
-				evaluate( false ); // .par file
+				evaluate( EvaluationMode::real_time ); // .par file
 			ui.playControl->play(); // automatic playback after evaluation
 		}
 	}
@@ -555,7 +556,7 @@ void SconeStudio::muscleAnalysisValueChanged( const QString& dof, double value )
 	}
 }
 
-void SconeStudio::evaluate()
+void SconeStudio::evaluate( EvaluationMode m )
 {
 	GUI_PROFILE_FUNCTION;
 	SCONE_ASSERT( scenario_ );
@@ -567,17 +568,37 @@ void SconeStudio::evaluate()
 	userInputEditor->setEnableEditing( false );
 #endif
 
-	QProgressDialog dlg( ( "Evaluating " + scenario_->GetFileName().str() ).c_str(), "Abort", 0, 1000, this );
-	dlg.setWindowModality( Qt::WindowModal );
-	dlg.show();
+	// setup progress bar
+	ui.progressBar->setValue( 0 );
+	ui.progressBar->setFormat( QString( "Evaluating " ) + scenario_->GetFileName().filename().c_str() + " (%p%)" );
+	ui.progressBar->setMaximum( 1000 );
+	ui.abortButton->setChecked( false );
+	ui.stackedWidget->setCurrentIndex( 1 );
 	QApplication::processEvents();
 
+	// actual simulation
+	if ( m == EvaluationMode::offline )
+		evaluateOffline();
+	else if ( m == EvaluationMode::real_time )
+		evaluateRealTime();
+
+	// cleanup
+	ui.progressBar->setValue( 1000 );
+	ui.stackedWidget->setCurrentIndex( 0 );
+
+	if ( scenario_->HasData() )
+		updateModelDataWidgets();
+	scenario_->UpdateVis( scenario_->GetTime() );
+	updateEvaluationReport();
+}
+
+void SconeStudio::evaluateOffline()
+{
 	xo::scoped_thread_priority prio_raiser( xo::thread_priority::highest );
 
 	double step_size = std::max( 0.001, scenario_->GetModel().GetSimulationStepSize() );
 	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
 
-	//double step_size = 0.01;
 	xo::interval_checker progress_update( 250_ms );
 	xo::interval_checker visualizer_update( 1000_ms );
 	xo::timer real_time;
@@ -588,8 +609,9 @@ void SconeStudio::evaluate()
 		{
 			// update 3D visuals and progress bar
 			setTime( t, visualizer_update.check( rt ) );
-			dlg.setValue( int( 1000 * t / max_time ) );
-			if ( dlg.wasCanceled() )
+			ui.progressBar->setValue( std::min( int( 1000 * t / max_time ), 1000 ) );
+			QApplication::processEvents();
+			if ( ui.abortButton->isChecked() )
 			{
 				// user pressed cancel: update data so that user can see results so far
 				scenario_->AbortEvaluation();
@@ -599,22 +621,33 @@ void SconeStudio::evaluate()
 		else setTime( t, false );
 	}
 
-	if ( scenario_->HasData() )
+	auto real_dur = real_time().secondsd();
+	auto sim_time = scenario_->GetTime();
+	log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
+
+}
+
+void SconeStudio::evaluateRealTime()
+{
+	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
+	auto max_interval = 0.05;
+
+	xo::timer timer;
+	while ( scenario_->IsEvaluating() )
 	{
-		// report duration and update storage
-		auto real_dur = real_time().secondsd();
-		auto sim_time = scenario_->GetTime();
-		log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
-		updateModelDataWidgets();
+		auto t = timer().secondsd();
+		if ( t - scenario_->GetTime() > max_interval ) {
+			t = scenario_->GetTime() + max_interval;
+			timer.set( xo::time_from_seconds( t ) );
+		}
+
+		setTime( t, true );
+		ui.progressBar->setValue( std::min( int( 1000 * t / max_time ), 1000 ) );
+		QApplication::processEvents();
+
+		if ( ui.abortButton->isChecked() )
+				scenario_->AbortEvaluation();
 	}
-
-	dlg.setValue( 1000 );
-	scenario_->UpdateVis( scenario_->GetTime() );
-
-	PropNode report_pn = scenario_->GetResult();
-	report_pn.append( scenario_->GetModel().GetSimulationReport() );
-	reportModel->setData( std::move( report_pn ) );
-	reportView->expandToDepth( 0 );
 }
 
 void SconeStudio::modelAnalysis()
@@ -1053,6 +1086,15 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_h
 	}
 }
 
+void SconeStudio::updateEvaluationReport()
+{
+	SCONE_ASSERT( scenario_ );
+	PropNode report_pn = scenario_->GetResult();
+	report_pn.append( scenario_->GetModel().GetSimulationReport() );
+	reportModel->setData( std::move( report_pn ) );
+	reportView->expandToDepth( 0 );
+}
+
 void SconeStudio::updateModelDataWidgets()
 {
 	GUI_PROFILE_FUNCTION;
@@ -1105,7 +1147,7 @@ void SconeStudio::optimizeScenarioMultiple()
 	}
 }
 
-void SconeStudio::evaluateActiveScenario()
+void SconeStudio::evaluateActiveScenario( EvaluationMode m )
 {
 	if ( scone::GetStudioSetting<bool>( "ui.enable_profiler" ) )
 		getGuiProfiler().start();
@@ -1113,8 +1155,9 @@ void SconeStudio::evaluateActiveScenario()
 	if ( createAndVerifyActiveScenario( false ) )
 	{
 		if ( scenario_->IsEvaluating() )
-			evaluate();
-		ui.playControl->play();
+			evaluate( m );
+		if ( m == EvaluationMode::offline )
+			ui.playControl->play();
 	}
 
 	if ( getGuiProfiler().enabled() )
@@ -1129,7 +1172,7 @@ void SconeStudio::writeEvaluationResults()
 			scenario_->WriteResults();
 		else if ( scenario_->IsEvaluating() ) {
 			scenario_->SetWriteResultsAfterEvaluation( true );
-			evaluate();
+			evaluate( EvaluationMode::offline );
 			ui.playControl->play();
 		}
 	}
@@ -1137,7 +1180,7 @@ void SconeStudio::writeEvaluationResults()
 	{
 		if ( scenario_->IsEvaluating() ) {
 			scenario_->SetWriteResultsAfterEvaluation( true );
-			evaluate();
+			evaluate( EvaluationMode::offline );
 		}
 		ui.playControl->play();
 	}
@@ -1430,7 +1473,7 @@ void SconeStudio::createVideo()
 	ui.osgViewer->stopTimer();
 	ui.abortButton->setChecked( false );
 	ui.progressBar->setValue( 0 );
-	ui.progressBar->setFormat( " Creating Video (%p%)" );
+	ui.progressBar->setFormat( "Creating Video (%p%)" );
 	ui.stackedWidget->setCurrentIndex( 1 );
 
 	const double frame_rate = GetStudioSettings().get<double>( "video.frame_rate" );
