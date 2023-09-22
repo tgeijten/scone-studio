@@ -131,7 +131,7 @@ namespace scone
 
 		blockSignals( true );
 		for ( int idx = 0; idx < model.GetDofs().size(); ++idx )
-			dofEditors.push_back( new DofWidgets( *model.GetDofs()[ idx ], this, idx + 1 ) );
+			dofEditors.push_back( new DofWidgets( *model.GetDofs()[idx], this, idx + 1 ) );
 		blockSignals( false );
 
 		exportButton->show();
@@ -145,7 +145,7 @@ namespace scone
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofEditors[ i ]->setWidgetValues( *dofs[ i ] );
+			dofEditors[i]->setWidgetValues( *dofs[i] );
 		blockSignals( false );
 	}
 
@@ -156,7 +156,7 @@ namespace scone
 		const auto& dofs = model.GetDofs();
 		SCONE_ASSERT( dofs.size() == dofEditors.size() );
 		for ( index_t i = 0; i < dofs.size(); ++i )
-			dofEditors[ i ]->updateDof( *dofs[ i ] );
+			dofEditors[i]->updateDof( *dofs[i] );
 	}
 
 	void DofEditorGroup::setEnableEditing( bool enable )

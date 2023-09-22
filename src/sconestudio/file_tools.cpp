@@ -22,7 +22,7 @@ namespace scone
 	{
 		auto s = parFile.completeBaseName().split( "_" );
 		if ( s.size() > 2 )
-			return { s[ 0 ].toInt(), s[ 2 ].toDouble() };
+			return { s[0].toInt(), s[2].toDouble() };
 		else return { -1, 0.0 };
 	}
 
@@ -156,7 +156,7 @@ namespace scone
 			QString msg = e.what();
 			msg += ( "\n\nSource=" + srcPath ).c_str();
 			msg += ( "\nTarget=" + trgPath ).c_str();
-			QMessageBox::critical( nullptr, "Error updating Tutorials and Examples" , msg );
+			QMessageBox::critical( nullptr, "Error updating Tutorials and Examples", msg );
 		}
 	}
 
@@ -175,7 +175,7 @@ namespace scone
 		FileOp.hwnd = NULL;
 		FileOp.wFunc = FO_DELETE;
 		FileOp.fFlags = FOF_ALLOWUNDO;
-		FileOp.pFrom = &buf[ 0 ];
+		FileOp.pFrom = &buf[0];
 		FileOp.pTo = NULL;
 
 		auto ret = SHFileOperation( &FileOp );

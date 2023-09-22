@@ -24,11 +24,11 @@ QVariant ParTableModel::data( const QModelIndex& index, int role ) const
 {
 	if ( info_ && role == Qt::DisplayRole )
 	{
-		auto& par_info = ( *info_ )[ index.row() ];
+		auto& par_info = ( *info_ )[index.row()];
 		switch ( index.column() )
 		{
 		case 0: return to_qt( par_info.name );
-		case 1: return QString::asprintf("%.6f", par_info.mean );
+		case 1: return QString::asprintf( "%.6f", par_info.mean );
 		case 2: return QString::asprintf( "%.6f", par_info.std );
 		default: return "???";
 		}
@@ -43,7 +43,7 @@ QVariant ParTableModel::headerData( int section, Qt::Orientation orientation, in
 	if ( role == Qt::DisplayRole )
 	{
 		if ( orientation == Qt::Horizontal )
-			return column_names[ section ];
+			return column_names[section];
 		else return QString::asprintf( "%d", section + 1 );
 	}
 	return QVariant();

@@ -1,7 +1,7 @@
 /*
 ** main.cpp
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -9,10 +9,10 @@
 #include "SconeStudio.h"
 #include <QtCore/QtGlobal>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    #include <QApplication>
-    #include <QMessageBox>
+#	include <QApplication>
+#	include <QMessageBox>
 #else
-    #include <QtGui/QApplication>
+#	include <QtGui/QApplication>
 #endif
 
 #include "scone/core/system_tools.h"
@@ -33,14 +33,14 @@
 #include "scone/core/profiler_config.h"
 #include <clocale>
 
-int main( int argc, char *argv[] )
+int main( int argc, char* argv[] )
 {
 	// Qt setup, required before creating QApplication
 	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
 	QApplication::setStyle( "fusion" );
 	QSafeApplication app( argc, argv );
 	scone::TimeSection( "InitApplication" );
-	
+
 	// QApplication changes C locale on Linux, set it back to "C"
 	std::setlocale( LC_ALL, "C" );
 
@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
 }
 
 #if defined( _WIN32 ) && !defined( DEBUG )
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )
 {
 	return main( __argc, __argv );
 }

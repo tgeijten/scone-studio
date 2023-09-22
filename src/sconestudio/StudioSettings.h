@@ -1,7 +1,7 @@
 /*
 ** StudioSettings.h
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -23,7 +23,7 @@ namespace scone
 
 	xo::settings& GetStudioSettings();
 	template< typename T > T GetStudioSetting( const String& key ) {
-		try	{ return GetStudioSettings().get< T >( key ); }
+		try { return GetStudioSettings().get< T >( key ); }
 		catch ( const std::exception& e ) { SCONE_ERROR( "Could not read setting \"" + key + "\" (" + e.what() + ")" ); }
 	}
 }

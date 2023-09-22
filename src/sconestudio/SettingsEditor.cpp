@@ -1,7 +1,7 @@
 /*
 ** SettingsEditor.cpp
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -57,7 +57,7 @@ namespace scone
 			auto* checkbox = new QListWidgetItem( item.second.get<string>( "label" ).c_str() );
 			checkbox->setCheckState( scone_settings.get< bool >( "data." + item.first ) ? Qt::Checked : Qt::Unchecked );
 			ui.dataList->addItem( checkbox );
-			data_checkboxes[ item.first ] = checkbox;
+			data_checkboxes[item.first] = checkbox;
 		}
 
 		// advanced settings
@@ -165,7 +165,7 @@ namespace scone
 
 			return result;
 		}
-		else 
+		else
 		{
 			GetSconeSettings().set( "hyfydy.enabled", false );
 			GetSconeSettings().set( "hyfydy.license_agreement_accepted_version", 0 );

@@ -112,7 +112,7 @@ namespace scone
 		for ( auto& cg : model.GetContactGeometries() )
 		{
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b; } );
-			auto& parent_node = idx != NoIndex ? bodies[ idx ] : root_node_;
+			auto& parent_node = idx != NoIndex ? bodies[idx] : root_node_;
 			bool is_static = idx == 0 || idx == NoIndex;
 			bool use_bone_mat = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
 			vis::mesh geom_mesh;
@@ -194,8 +194,8 @@ namespace scone
 		auto& model_bodies = model.GetBodies();
 		for ( index_t i = 0; i < model_bodies.size(); ++i )
 		{
-			auto& b = model_bodies[ i ];
-			bodies[ i ].pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
+			auto& b = model_bodies[i];
+			bodies[i].pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
 
 			// contact forces
 			if ( auto f = b->GetContactForce(); view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !f.is_null() )
@@ -213,18 +213,18 @@ namespace scone
 		// update muscle paths
 		auto& model_muscles = model.GetMuscles();
 		for ( index_t i = 0; i < model_muscles.size(); ++i )
-			UpdateMuscleVis( *model_muscles[ i ], muscles[ i ] );
+			UpdateMuscleVis( *model_muscles[i], muscles[i] );
 
 		// update joints
 		auto& model_joints = model.GetJoints();
 		for ( index_t i = 0; i < model_joints.size(); ++i )
 		{
-			auto pos = model_joints[ i ]->GetPos();
-			joints[ i ].pos( vis::vec3f( pos ) );
+			auto pos = model_joints[i]->GetPos();
+			joints[i].pos( vis::vec3f( pos ) );
 			if ( view_flags( ViewOption::Joints ) )
 			{
-				UpdateForceVis( force_count++, pos, -model_joints[ i ]->GetReactionForce() );
-				UpdateMomentVis( moment_count++, pos, -model_joints[ i ]->GetLimitTorque() );
+				UpdateForceVis( force_count++, pos, -model_joints[i]->GetReactionForce() );
+				UpdateMomentVis( moment_count++, pos, -model_joints[i]->GetLimitTorque() );
 			}
 		}
 
@@ -272,7 +272,7 @@ namespace scone
 			forces.back().show( view_flags( ViewOption::ExternalForces ) );
 			forces.back().set_cast_shadows( forces_cast_shadows_ );
 		}
-		forces[ force_idx ].pos_ofs( vis::vec3f( cop ), len_scale * vis::vec3f( force ), rad_scale );
+		forces[force_idx].pos_ofs( vis::vec3f( cop ), len_scale * vis::vec3f( force ), rad_scale );
 	}
 
 	void ModelVis::UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float len_scale, float rad_scale )
@@ -284,7 +284,7 @@ namespace scone
 			moments.back().show( view_flags( ViewOption::ExternalForces ) );
 			moments.back().set_cast_shadows( forces_cast_shadows_ );
 		}
-		moments[ moment_idx ].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
+		moments[moment_idx].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
 	}
 
 	void ModelVis::UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis )

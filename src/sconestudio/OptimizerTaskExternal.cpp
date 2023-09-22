@@ -39,7 +39,7 @@ namespace scone
 		if ( process_ )
 		{
 			if ( process_->isOpen() )
- 			{
+			{
 				scone::log::warning( "Deleting OptimizerTaskExternal with open process" );
 				interrupt();
 			}
@@ -70,7 +70,7 @@ namespace scone
 		while ( process_->canReadLine() )
 		{
 			xo::error_code ec;
-			char buf[ 4096 ];
+			char buf[4096];
 			string msg;
 			while ( msg.empty() || !xo::str_begins_with( msg, '*' ) )
 			{

@@ -1,7 +1,7 @@
 /*
 ** SconeStorageDataModel.cpp
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -59,17 +59,17 @@ int SconeStorageDataModel::frameCount() const
 
 QString SconeStorageDataModel::label( int idx ) const
 {
-	return storage ? QString( storage->GetLabels()[ idx ].c_str() ) : QString();
+	return storage ? QString( storage->GetLabels()[idx].c_str() ) : QString();
 }
 
 double SconeStorageDataModel::value( int idx, double time ) const
 {
-	return storage ? storage->GetFrame( timeIndex( time ) )[ idx ] : 0;
+	return storage ? storage->GetFrame( timeIndex( time ) )[idx] : 0;
 }
 
 double SconeStorageDataModel::value( int channel, int frame ) const
 {
-	return storage ? storage->GetFrame( frame )[ channel ] : 0;
+	return storage ? storage->GetFrame( frame )[channel] : 0;
 }
 
 std::vector< std::pair< float, float > > SconeStorageDataModel::getSeries( int idx, double min_interval ) const
@@ -84,7 +84,7 @@ std::vector< std::pair< float, float > > SconeStorageDataModel::getSeries( int i
 			auto& f = storage->GetFrame( i );
 			if ( f.GetTime() - last_time >= min_interval )
 			{
-				series.emplace_back( static_cast<float>( f.GetTime() ), static_cast<float>( f[ idx ] ) );
+				series.emplace_back( static_cast<float>( f.GetTime() ), static_cast<float>( f[idx] ) );
 				last_time = f.GetTime();
 			}
 		}
@@ -117,7 +117,7 @@ int SconeStorageDataModel::timeIndex( double time ) const
 		double reltime = ( time - front_time ) / ( back_time - front_time );
 		idx = xo::clamped( int( reltime * ( storage->GetFrameCount() - 1 ) + 0.5 ), 0, int( storage->GetFrameCount() - 1 ) );
 	}
-	else 
+	else
 	{
 		// real binary search to find closest index
 		idx = static_cast<int>( storage->GetClosestFrameIndex( time ) );

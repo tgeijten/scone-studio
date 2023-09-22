@@ -1,7 +1,7 @@
 /*
 ** ResultsFileSystemModel.cpp
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -33,9 +33,9 @@ namespace xo {
 	}
 	prop_node to_prop_node( const ResultsFileSystemModel::Status& stat ) {
 		prop_node pn;
-		pn[ "gen" ] = stat.gen;
-		pn[ "best" ] = stat.best;
-		pn[ "modified" ] = stat.modified.toString( Qt::ISODate ).toStdString();
+		pn["gen"] = stat.gen;
+		pn["best"] = stat.best;
+		pn["modified"] = stat.modified.toString( Qt::ISODate ).toStdString();
 		return pn;
 	}
 }
@@ -63,7 +63,7 @@ ResultsFileSystemModel::~ResultsFileSystemModel()
 #endif
 }
 
-ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo &fi ) const
+ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi ) const
 {
 	Status stat{ -1, 0 };
 	if ( fi.isFile() && fi.suffix() == "par" )
@@ -72,9 +72,9 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo &fi 
 		if ( split.size() > 2 )
 		{
 			bool ok = false;
-			if ( auto gen = split[ 0 ].toInt( &ok ); ok )
+			if ( auto gen = split[0].toInt( &ok ); ok )
 				stat.gen = gen;
-			if ( auto best = split[ 2 ].toDouble( &ok ); ok )
+			if ( auto best = split[2].toDouble( &ok ); ok )
 				stat.best = best;
 		}
 	}
@@ -90,17 +90,17 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo &fi 
 		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par" }, QDir::Files ); dir_it.hasNext(); )
 		{
 			QFileInfo fileinf = QFileInfo( dir_it.next() );
-			if ( fileinf.isFile() )	{
+			if ( fileinf.isFile() ) {
 				auto fs = getStatus( fileinf );
 				if ( fs.gen > stat.gen )
 					stat = fs;
 			}
-			else if ( fileinf.fileName() != ".." && fileinf.fileName() != "." )	{
+			else if ( fileinf.fileName() != ".." && fileinf.fileName() != "." ) {
 				// do something?
 			}
 		}
 		stat.modified = fi.lastModified();
-		m_StatusCache[ filename ] = stat;
+		m_StatusCache[filename] = stat;
 	}
 	return stat;
 }
@@ -112,19 +112,19 @@ QVariant ResultsFileSystemModel::headerData( int section, Qt::Orientation orient
 
 	switch ( section - QFileSystemModel::columnCount() )
 	{
-//	case StateCol: return QVariant( "State" );
+		//	case StateCol: return QVariant( "State" );
 	case GenCol: return QVariant( "Gen" );
 	case ScoreCol: return QVariant( "Score" );
 	default: return QVariant();
 	}
 }
 
-int ResultsFileSystemModel::columnCount( const QModelIndex &parent ) const
+int ResultsFileSystemModel::columnCount( const QModelIndex& parent ) const
 {
 	return QFileSystemModel::columnCount() + ColCount;
 }
 
-QVariant ResultsFileSystemModel::data( const QModelIndex &idx, int role ) const
+QVariant ResultsFileSystemModel::data( const QModelIndex& idx, int role ) const
 {
 	if ( idx.column() < QFileSystemModel::columnCount() )
 		return QFileSystemModel::data( idx, role );
@@ -138,7 +138,7 @@ QVariant ResultsFileSystemModel::data( const QModelIndex &idx, int role ) const
 
 		switch ( idx.column() - QFileSystemModel::columnCount() )
 		{
-//		case StateCol: return QVariant( QString( stat.state_str().c_str() ) );
+			//		case StateCol: return QVariant( QString( stat.state_str().c_str() ) );
 		case GenCol: return QVariant( stat.gen );
 		case ScoreCol: return QVariant( QString::asprintf( "%7.3f", stat.best ) );
 		default: return QVariant();
@@ -151,7 +151,7 @@ QVariant ResultsFileSystemModel::data( const QModelIndex &idx, int role ) const
 	else return QVariant();
 }
 
-Qt::ItemFlags ResultsFileSystemModel::flags( const QModelIndex &index ) const
+Qt::ItemFlags ResultsFileSystemModel::flags( const QModelIndex& index ) const
 {
 	if ( index.column() < QFileSystemModel::columnCount() )
 		return Qt::ItemIsEditable | QFileSystemModel::flags( index );

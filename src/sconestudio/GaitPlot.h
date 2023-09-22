@@ -41,7 +41,7 @@ namespace scone
 		bool mirror_left_;
 
 		xo::flat_map<double, xo::bounds<double>> norm_data_;
-		
+
 	private:
 		QCustomPlot* plot_;
 		QCPPlotTitle* plot_title_;

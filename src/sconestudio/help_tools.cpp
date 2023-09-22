@@ -21,7 +21,7 @@ namespace scone
 			{
 				QString doku = QString( k.c_str() ).remove( ".txt" );
 				QString keyword = QString( doku ).remove( '_' );
-				data[ keyword ] = doku;
+				data[keyword] = doku;
 			}
 		}
 

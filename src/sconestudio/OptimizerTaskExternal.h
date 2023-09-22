@@ -12,7 +12,7 @@ namespace scone
 	public:
 		OptimizerTaskExternal( const QString& scenario, const QStringList& options = QStringList() );
 		virtual ~OptimizerTaskExternal();
-		
+
 		bool interrupt() override;
 		void finish() override;
 		std::deque<PropNode> getMessages() override;

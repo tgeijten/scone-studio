@@ -1,7 +1,7 @@
 /*
 ** ProgressDockWidget.h
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -91,11 +91,11 @@ public:
 	std::vector< Optimization > optimizations;
 
 public slots:
-	void rangeChanged( const QCPRange &newRange, const QCPRange &oldRange );
+	void rangeChanged( const QCPRange& newRange, const QCPRange& oldRange );
 	void fixRangeY();
 
 protected:
-	virtual void closeEvent( QCloseEvent * ) override;
+	virtual void closeEvent( QCloseEvent* ) override;
 
 private:
 	void updateText();

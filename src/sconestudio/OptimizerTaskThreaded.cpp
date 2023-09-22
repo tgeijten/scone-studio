@@ -51,7 +51,7 @@ namespace scone
 		catch ( const std::exception& e )
 		{
 			log::critical( "Error optimizing ", scenario_file_.toStdString(), ": ", e.what() );
-			message_[ "error" ] = e.what();
+			message_["error"] = e.what();
 			has_message_ = true;
 		}
 		active_ = false;

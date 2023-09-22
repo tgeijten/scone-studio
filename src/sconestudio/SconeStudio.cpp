@@ -1,7 +1,7 @@
 /*
 ** SconeStudio.cpp
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -278,25 +278,25 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	editMenu->addAction( "&Duplicate Selection", [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
 
 	// View menu
-	viewActions[ ViewOption::ExternalForces ] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::Muscles ] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::Tendons ] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::BodyGeom ] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::BodyAxes ] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::BodyCom ] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::Joints ] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ContactGeom ] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::GroundPlane ] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
-	viewActions[ ViewOption::ModelComHeading ] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::ExternalForces] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::Muscles] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::Tendons] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::BodyGeom] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::Joints] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
 	viewMenu->addSeparator();
 	auto musGroup = new QActionGroup( this );
-	musGroup->addAction( viewActions[ ViewOption::MuscleActivation ] = viewMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
-	musGroup->addAction( viewActions[ ViewOption::MuscleForce ] = viewMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
-	musGroup->addAction( viewActions[ ViewOption::MuscleFiberLength ] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ViewOption::MuscleActivation] = viewMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ViewOption::MuscleForce] = viewMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
+	musGroup->addAction( viewActions[ViewOption::MuscleFiberLength] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
 	musGroup->setExclusive( true );
 	viewMenu->addSeparator();
 	auto orbitMenu = viewMenu->addMenu( "Automatic Camera Orbit" );
-	viewActions[ ViewOption::StaticCamera ] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::StaticCamera] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
 
 	// init view options
 	auto defaultOptions = MakeDefaultViewOptions();
@@ -474,7 +474,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		}
 		else if ( createScenario( info.absoluteFilePath() ) )
 		{
-			if ( scenario_->IsEvaluating() ) 
+			if ( scenario_->IsEvaluating() )
 				evaluate( EvaluationMode::offline ); // .par file
 			ui.playControl->play(); // automatic playback after evaluation
 		}
@@ -646,7 +646,7 @@ void SconeStudio::evaluateRealTime()
 		QApplication::processEvents();
 
 		if ( ui.abortButton->isChecked() )
-				scenario_->AbortEvaluation();
+			scenario_->AbortEvaluation();
 	}
 }
 
@@ -847,12 +847,12 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 
 	// first widget determines position wrt results
 	if ( moveBelowResults )
-		splitDockWidget( ui.resultsDock, optimizations[ 0 ], Qt::Vertical );
-	else splitDockWidget( optimizations[ 0 ], ui.resultsDock, Qt::Horizontal );
+		splitDockWidget( ui.resultsDock, optimizations[0], Qt::Vertical );
+	else splitDockWidget( optimizations[0], ui.resultsDock, Qt::Horizontal );
 
 	// first column
 	for ( index_t r = 1; r < rows; ++r )
-		splitDockWidget( optimizations[ ( r - 1 ) * columns ], optimizations[ r * columns ], Qt::Vertical );
+		splitDockWidget( optimizations[( r - 1 ) * columns], optimizations[r * columns], Qt::Vertical );
 
 	// remaining columns
 	for ( index_t c = 1; c < columns; ++c )
@@ -862,7 +862,7 @@ void SconeStudio::addProgressDock( ProgressDockWidget* pdw )
 			index_t idx = r * columns + c;
 			index_t idxPrev = idx - 1;
 			if ( idx < optimizations.size() )
-				splitDockWidget( optimizations[ idxPrev ], optimizations[ idx ], Qt::Horizontal );
+				splitDockWidget( optimizations[idxPrev], optimizations[idx], Qt::Horizontal );
 		}
 	}
 
@@ -1400,12 +1400,12 @@ void SconeStudio::exportCoordinates()
 			PropNode pn;
 			for ( const auto& dof : scenario_->GetModel().GetDofs() )
 			{
-				pn[ "values" ].set( dof->GetName(), dof->GetPos() );
-				pn[ "velocities" ].set( dof->GetName(), dof->GetVel() );
+				pn["values"].set( dof->GetName(), dof->GetPos() );
+				pn["velocities"].set( dof->GetName(), dof->GetVel() );
 			}
 			if ( scone::GetStudioSetting<bool>( "coordinates.export_activations" ) )
 				for ( const auto& mus : scenario_->GetModel().GetMuscles() )
-					pn[ "activations" ].set( mus->GetName(), mus->GetActivation() );
+					pn["activations"].set( mus->GetName(), mus->GetActivation() );
 			xo::save_file( pn, path_from_qt( filename ) );
 		}
 	}

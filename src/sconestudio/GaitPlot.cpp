@@ -64,7 +64,7 @@ namespace scone
 					double x = 100.0 * i / ( norm_min->size() - 1 );
 					top->addData( x, yt );
 					bot->addData( x, yb );
-					norm_data_[ x ] = { yb, yt };
+					norm_data_[x] = { yb, yt };
 				}
 				top->setPen( Qt::NoPen );
 				bot->setPen( Qt::NoPen );
@@ -138,7 +138,7 @@ namespace scone
 					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 );
 					auto value = channel_offset_ + factor * f.value( channel_idx );
 					if ( graph ) graph->addData( perc, value );
-					avg_data[ perc ] += s * value;
+					avg_data[perc] += s * value;
 					range.extend( value );
 				}
 			}

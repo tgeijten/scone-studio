@@ -169,7 +169,7 @@ namespace scone
 	void UserInputEditor::createLabel( const String& str, int row, Qt::Alignment align )
 	{
 		auto label = new QLabel( ( "<b>" + str + "</b>" ).c_str() );
-		label->setStyleSheet("QLabel { background-color : white; color : black; }");
+		label->setStyleSheet( "QLabel { background-color : white; color : black; }" );
 		label->setAlignment( align );
 		label->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Fixed );
 		gridLayout->addWidget( label, row, 0, 1, 5 );

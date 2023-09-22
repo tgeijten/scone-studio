@@ -1,7 +1,7 @@
 /*
 ** StudioModel.cpp
 **
-** Copyright (C) 2013-2019 Thomas Geijtenbeek and contributors. All rights reserved.
+** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
 **
 ** This file is part of SCONE. For more information, see http://scone.software.
 */
@@ -132,7 +132,7 @@ namespace scone
 		{
 			auto data_idx = ( storage_.TryGetChannelIndex( model_state.GetName( state_idx ) ) );
 			SCONE_ASSERT_MSG( data_idx != NoIndex, "Could not find state channel " + model_state.GetName( state_idx ) );
-			state_data_index[ state_idx ] = data_idx;
+			state_data_index[state_idx] = data_idx;
 		}
 	}
 
@@ -147,7 +147,7 @@ namespace scone
 				{
 					// update model state from data
 					for ( index_t i = 0; i < model_state.GetSize(); ++i )
-						model_state[ i ] = storage_.GetInterpolatedValue( time, state_data_index[ i ] );
+						model_state[i] = storage_.GetInterpolatedValue( time, state_data_index[i] );
 					model_->SetState( model_state, time );
 				}
 
