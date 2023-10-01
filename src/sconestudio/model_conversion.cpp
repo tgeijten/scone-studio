@@ -127,6 +127,8 @@ namespace scone
 			mc.joint_limit_stiffness_ = ui.limitStiffness->value();
 			mc.use_stiffness_from_limit_force_ = ui.useLimitForceStiffness->isChecked();
 			mc.use_limits_from_dof_range_ = ui.useCoordinateRange->isChecked();
+			mc.compound_welded_bodies = ui.compoundBodies->isChecked();
+			mc.compound_mass_threshold = ui.compoundMassThreshold->value();
 
 			auto& model = scenario.GetModel();
 			auto hfd_model_pn = mc.ConvertModel( model );
