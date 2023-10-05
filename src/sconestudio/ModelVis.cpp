@@ -72,10 +72,11 @@ namespace scone
 			}
 
 			auto geoms = body->GetDisplayGeometries();
-			for ( const auto& geom : geoms )
+			for ( auto& geom : geoms )
 			{
 				if ( !geom.filename_.empty() )
 				{
+					geom.filename_.make_preferred();
 					try {
 						auto model_folder = model.GetModelFile().parent_path();
 						auto file_options = {
