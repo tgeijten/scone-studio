@@ -63,6 +63,7 @@ namespace scone
 		vis::material com_mat;
 		vis::material muscle_mat;
 		vis::material tendon_mat;
+		vis::material ligament_mat;
 		vis::material arrow_mat;
 		vis::material moment_mat;
 		vis::material contact_mat;
@@ -72,6 +73,7 @@ namespace scone
 		std::vector< vis::mesh > body_meshes;
 		std::vector< vis::mesh > joints;
 		std::vector< MuscleVis > muscles;
+		std::vector< vis::trail > ligaments;
 		std::vector< vis::arrow > forces;
 		std::vector< vis::arrow > moments;
 		std::vector< vis::axes > body_axes;

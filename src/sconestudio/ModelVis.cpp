@@ -5,6 +5,7 @@
 #include "xo/filesystem/filesystem.h"
 #include "scone/core/Log.h"
 #include "scone/model/Muscle.h"
+#include "scone/model/Ligament.h"
 #include "scone/model/Joint.h"
 #include "xo/geometry/path_alg.h"
 #include "scone/core/math.h"
@@ -29,6 +30,7 @@ namespace scone
 		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
 		muscle_mat( { GetStudioSetting<xo::color>( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
 		tendon_mat( { GetStudioSetting<xo::color>( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
+		ligament_mat( { GetStudioSetting<xo::color>( "viewer.ligament" ), specular_, shininess_, ambient_ } ),
 		arrow_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.force_alpha" ) } ),
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
@@ -169,6 +171,13 @@ namespace scone
 			muscles.push_back( std::move( mv ) );
 		}
 
+		for ( auto& ligament : model.GetLigaments() )
+		{
+			auto lv = vis::trail( root_node_, vis::trail_info{ muscle_width, xo::color::yellow(), 0.3f } );
+			lv.set_material( ligament_mat );
+			ligaments.push_back( std::move( lv ) );
+		}
+
 		const auto joint_radius = GetStudioSetting<float>( "viewer.joint_radius" );
 		for ( auto& j : model.GetJoints() )
 		{
@@ -215,6 +224,13 @@ namespace scone
 		auto& model_muscles = model.GetMuscles();
 		for ( index_t i = 0; i < model_muscles.size(); ++i )
 			UpdateMuscleVis( *model_muscles[i], muscles[i] );
+
+		// update ligament paths
+		auto& model_ligaments = model.GetLigaments();
+		for ( index_t i = 0; i < model_ligaments.size(); ++i ) {
+			auto p = model_ligaments[i]->GetLigamentPath();
+			ligaments[i].set_points( p.begin(), p.end() );
+		}
 
 		// update joints
 		auto& model_joints = model.GetJoints();
@@ -364,6 +380,9 @@ namespace scone
 			m.ten1.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
 			m.ten2.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
 		}
+
+		for ( auto& l : ligaments )
+			l.show( view_flags( ViewOption::BodyGeom ) );
 
 		for ( auto& e : joints )
 			e.show( view_flags( ViewOption::Joints ) );

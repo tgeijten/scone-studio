@@ -38,6 +38,7 @@ viewer {
 	tiles_follow_body { type = bool label = "Automatically adjust ground tiles to always remain visible" default = 1 }
 	bone { type = color label = "Bone color" default { h = 40 s = 0.2 v = 0.8 } }
 	tendon { type = color label = "Tendon color" default { h = 40 s = 0.02 v = 0.8 } }
+	ligament { type = color label = "Tendon color" default { h = 40 s = 0.4 v = 0.8 } }
 	force { type = color label = "Force arrow color" default { h = 60 s = 0.8 v = 0.8 } }
 	force_alpha { type = float label = "Force arrow transparency" default = 1 }
 	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
