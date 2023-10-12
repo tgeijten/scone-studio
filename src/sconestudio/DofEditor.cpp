@@ -104,10 +104,18 @@ namespace scone
 		dofGrid->setLayout( gridLayout );
 		vl->addWidget( dofGrid );
 
+		auto* hl = new QHBoxLayout( group );
+		vl->addLayout( hl );
+		resetButton = new QPushButton( "Reset Coordinates", this );
+		resetButton->setIcon( style()->standardIcon( QStyle::SP_DialogResetButton ) );
+		connect( resetButton, &QPushButton::pressed, this, &DofEditorGroup::resetCoordinates );
+		hl->addWidget( resetButton );
+		resetButton->hide();
+
 		exportButton = new QPushButton( "Export Coordinates...", this );
 		exportButton->setIcon( style()->standardIcon( QStyle::SP_DirOpenIcon ) );
 		connect( exportButton, &QPushButton::pressed, this, &DofEditorGroup::exportCoordinates );
-		vl->addWidget( exportButton );
+		hl->addWidget( exportButton );
 		exportButton->hide();
 
 		vl->insertStretch( -1 );
@@ -134,6 +142,7 @@ namespace scone
 			dofEditors.push_back( new DofWidgets( *model.GetDofs()[idx], this, idx + 1 ) );
 		blockSignals( false );
 
+		resetButton->show();
 		exportButton->show();
 	}
 
@@ -162,6 +171,7 @@ namespace scone
 	void DofEditorGroup::setEnableEditing( bool enable )
 	{
 		dofGrid->setDisabled( !enable );
+		resetButton->setDisabled( !enable );
 	}
 
 	void DofEditorGroup::createLabel( const char* str, int row, int col, Qt::Alignment align )

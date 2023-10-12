@@ -49,10 +49,12 @@ namespace scone
 	signals:
 		void valueChanged();
 		void exportCoordinates();
+		void resetCoordinates();
 
 	private:
 		void createLabel( const char* str, int row, int col, Qt::Alignment align = Qt::AlignCenter );
 		QWidget* dofGrid;
+		QPushButton* resetButton;
 		QPushButton* exportButton;
 		QGridLayout* gridLayout;
 		std::vector<DofWidgets*> dofEditors;

@@ -112,6 +112,7 @@ public slots:
 	void viewerTooltip();
 	void viewerSelect();
 	void exportCoordinates();
+	void resetCoordinates();
 	void convertScenario();
 
 	void deleteSelectedFileOrFolder();

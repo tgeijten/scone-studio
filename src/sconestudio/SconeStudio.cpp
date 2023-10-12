@@ -185,6 +185,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	dofEditor = new DofEditorGroup( this );
 	connect( dofEditor, &DofEditorGroup::valueChanged, this, &SconeStudio::dofEditorValueChanged );
 	connect( dofEditor, &DofEditorGroup::exportCoordinates, this, &SconeStudio::exportCoordinates );
+	connect( dofEditor, &DofEditorGroup::resetCoordinates, this, &SconeStudio::resetCoordinates );
 	dofDock = createDockWidget( "&Coordinates", dofEditor, Qt::RightDockWidgetArea );
 	tabifyDockWidget( parViewDock, dofDock );
 	scone::TimeSection( "InitDofEditor" );
@@ -1406,6 +1407,16 @@ void SconeStudio::exportCoordinates()
 					pn["activations"].set( mus->GetName(), mus->GetActivation() );
 			xo::save_file( pn, path_from_qt( filename ) );
 		}
+	}
+}
+
+void SconeStudio::resetCoordinates()
+{
+	if ( scenario_ && scenario_->HasModel() ) {
+		scenario_->GetModel().SetNullState();
+		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
+		scenario_->UpdateVis( 0.0 );
+		ui.osgViewer->update();
 	}
 }
 
