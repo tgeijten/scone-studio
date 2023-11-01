@@ -107,7 +107,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	resultsModel = new ResultsFileSystemModel( nullptr );
 	ui.resultsBrowser->setModel( resultsModel );
 	ui.resultsBrowser->setNumColumns( 1 );
-	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.scone" );
+	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.scone;*.pt" );
 	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -464,20 +464,23 @@ void SconeStudio::windowShown()
 
 void SconeStudio::activateBrowserItem( QModelIndex idx )
 {
-	auto info = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
-	if ( info.isDir() )
-		info = scone::findBestPar( QDir( info.absoluteFilePath() ) );
-	if ( info.exists() )
+	auto fi = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
+	if ( fi.isDir() )
+		fi = scone::findBestPar( QDir( fi.absoluteFilePath() ) );
+	if ( fi.exists() )
 	{
-		if ( info.suffix() == "scone" )
-		{
-			openFile( info.absoluteFilePath() ); // open the .scone file in a text editor
+		if ( fi.suffix() == "scone" ) {
+			openFile( fi.absoluteFilePath() ); // open the .scone file in a text editor
 		}
-		else if ( createScenario( info.absoluteFilePath() ) )
-		{
-			if ( scenario_->IsEvaluating() )
-				evaluate( EvaluationMode::offline ); // .par file
-			ui.playControl->play(); // automatic playback after evaluation
+		else if ( fi.suffix() == "par" || fi.suffix() == "sto" ) {
+			if ( createScenario( fi.absoluteFilePath() ) ) {
+				if ( scenario_->IsEvaluating() )
+					evaluate( EvaluationMode::offline ); // .par file
+				ui.playControl->play(); // automatic playback after evaluation
+			}
+		}
+		else {
+			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
 		}
 	}
 }
@@ -1584,7 +1587,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 			success = ui.resultsBrowser->fileSystemModel()->remove( idx );
 		if ( !success )
 			warning( msgTitle, tr( "Could not remove " ) + item.filePath() );
-	}
+}
 #endif
 }
 
