@@ -527,7 +527,7 @@ void SconeStudio::dofEditorValueChanged()
 	if ( scenario_ && scenario_->HasModel() && scenario_->IsEvaluatingStart() )
 	{
 		dofEditor->setDofsFromSliders( scenario_->GetModel() );
-		scenario_->GetModel().UpdateStateFromDofs();
+		scenario_->GetModel().InitStateFromDofs();
 		scenario_->UpdateVis( 0.0 );
 		ui.osgViewer->update();
 	}
@@ -553,7 +553,7 @@ void SconeStudio::muscleAnalysisValueChanged( const QString& dof, double value )
 		if ( dofIt != model.GetDofs().end() ) {
 			( *dofIt )->SetPos( value );
 			dofEditor->setSlidersFromDofs( model );
-			model.UpdateStateFromDofs();
+			model.InitStateFromDofs();
 			scenario_->UpdateVis( 0.0 );
 			ui.osgViewer->update();
 		}

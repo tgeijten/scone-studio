@@ -83,7 +83,7 @@ namespace scone
 		Degree step = std::max( Degree( step_size ), r.length() / max_steps );
 		for ( auto v = r.lower; v <= r.upper; v += step ) {
 			activeDof->SetPos( v.rad_value() );
-			model.UpdateStateFromDofs();
+			model.InitStateFromDofs();
 			auto& f = storage.AddFrame( v.deg_value() );
 			for ( auto mus : model.GetMuscles() )
 				if ( mus->HasMomentArm( *activeDof ) )
@@ -96,7 +96,7 @@ namespace scone
 
 		// #todo: this doesn't exactly restore everything
 		model.SetState( original_state, 0.0 );
-		model.UpdateStateFromDofs();
+		model.InitStateFromDofs();
 		xo::log::debug( "Muscle Analysis for ", dofName.toStdString(), " completed in ", t(), "s" );
 	}
 
