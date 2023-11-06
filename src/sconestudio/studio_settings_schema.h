@@ -45,7 +45,7 @@ viewer {
 	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
 	moment { type = color label = "Moment color" default { h = 5 s = 0.8 v = 0.8 } }
 	contact { type = color label = "Contact color" default { h = 180 s = 0.5 v = 0.5 } }
-	contact_alpha { type = float label = "Contact color transparency" default = 0.5 }
+	contact_alpha { type = float label = "Contact color transparency" default = 0.25 }
 	contact_geometries_cast_shadows { type = bool label = "Contact geometries cast shadows" default = 0 }
 	static { type = color label = "Static geometry color" default { h = 180 s = 0.25 v = 0.4 } }
 	object { type = color label = "Object geometry color" default { h = 180 s = 0.02 v = 0.55 } }
