@@ -723,8 +723,7 @@ void SconeStudio::fileOpenTriggered()
 
 void SconeStudio::fileReloadTriggered()
 {
-	if ( auto* s = getActiveCodeEditor() )
-	{
+	if ( auto* s = getActiveCodeEditor() ) {
 		s->reload();
 		createAndVerifyActiveScenario( true );
 	}
@@ -915,6 +914,9 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// setup muscle plots
 			muscleAnalysis->init( scenario_->GetModel() );
 			muscleAnalysis->setEnableEditing( scenario_->IsEvaluatingStart() );
+			if ( muscleAnalysis->isVisible() && scenario_->GetFileType() == "scone" 
+				&& scone::GetStudioSetting<bool>( "muscle_analysis.analyze_on_load" ) )
+				muscleAnalysis->refresh(); // this may affect evaluation result, use with care
 
 			// set data, in case the file was an sto
 			if ( scenario_->HasData() )

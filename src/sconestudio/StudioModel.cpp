@@ -43,7 +43,7 @@ namespace scone
 		// create the objective from par file or config file
 		xo::timer load_time;
 		filename_ = file;
-		const auto file_type = file.extension_no_dot();
+		filetype_ = file.extension_no_dot().str();
 		scenario_filename_ = FindScenario( file );
 		scenario_pn_ = LoadScenario( file );
 
@@ -64,7 +64,7 @@ namespace scone
 			if ( model_objective_ )
 			{
 				// create model from par or with default parameters
-				if ( file_type == "par" )
+				if ( filetype_ == "par" )
 				{
 					model_objective_->info().import_mean_std( file, true );
 					model_ = model_objective_->CreateModelFromParFile( file );
@@ -80,7 +80,7 @@ namespace scone
 
 			if ( model_ )
 			{
-				if ( file_type == "sto" )
+				if ( filetype_ == "sto" )
 				{
 					// file is a .sto, load results
 					xo::timer t;

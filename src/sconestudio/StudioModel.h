@@ -58,6 +58,7 @@ namespace scone
 		void ResetModelVis( vis::scene& s, const ViewOptions& f );
 
 		const path& GetFileName() const { return filename_; }
+		const String& GetFileType() const { return filetype_; }
 		const path& GetScenarioPath() const { return scenario_filename_; }
 		QString GetScenarioFileName() const { return to_qt( scenario_filename_ ); }
 		const PropNode& GetScenarioPropNode() const { return scenario_pn_; }
@@ -87,6 +88,7 @@ namespace scone
 		ModelUP model_;
 		Body* follow_body_;
 		path filename_;
+		String filetype_;
 		path scenario_filename_;
 		PropNode scenario_pn_;
 		PropNode result_pn_;
