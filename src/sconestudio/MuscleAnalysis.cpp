@@ -54,6 +54,8 @@ namespace scone
 			if ( d->GetJoint() )
 				dofSelect->addItem( to_qt( d->GetName() ) );
 		dofSelect->setCurrentText( dofName );
+		if ( dofSelect->currentIndex() == -1 )
+			dofName = ""; // dofName not found
 		dofSelect->blockSignals( false );
 	}
 
