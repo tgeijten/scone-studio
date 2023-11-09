@@ -4,6 +4,8 @@
 #include "scone/core/Log.h"
 
 #include <QProcess>
+#include <QProgressDialog>
+#include <QApplication>
 
 namespace scone
 {
