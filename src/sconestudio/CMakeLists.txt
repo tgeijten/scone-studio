@@ -29,6 +29,8 @@ set(STUDIOFILES
 	SconeStorageDataModel.cpp
 	studio_tools.h
 	studio_tools.cpp
+	external_tools.h
+	external_tools.cpp
 	ResultsFileSystemModel.h
 	ResultsFileSystemModel.cpp
 	ParTableModel.h

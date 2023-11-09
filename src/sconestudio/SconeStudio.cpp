@@ -59,6 +59,7 @@
 #include "model_conversion.h"
 #include "studio_tools.h"
 #include "xo/time/interval_checker.h"
+#include "external_tools.h"
 
 using namespace scone;
 using namespace xo::time_literals;
@@ -478,6 +479,9 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 					evaluate( EvaluationMode::offline ); // .par file
 				ui.playControl->play(); // automatic playback after evaluation
 			}
+		}
+		else if ( fi.suffix() == "pt" ) {
+			evaluateDeprlCheckpoint( QDir::toNativeSeparators( fi.absoluteFilePath() ) );
 		}
 		else {
 			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
