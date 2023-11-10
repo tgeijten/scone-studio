@@ -9,32 +9,36 @@
 
 namespace scone
 {
-	void evaluateDeprlCheckpoint( const QString& file, QWidget* parent )
+	void runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent )
 	{
-		QProgressDialog dlg( "Evaluating " + file, "Abort", 0, 1000, parent );
+		QProgressDialog dlg( title, "Abort", 0, 1000, parent );
 		dlg.setWindowModality( Qt::WindowModal );
 		dlg.show();
 		QApplication::processEvents();
 
-		xo::log::info( "Evaluating ", file.toStdString() );
 		QProcess process( parent );
-		QString program{ "python" };
-		QStringList args{ "-m", "deprl.play", "--checkpoint_file", file };
-		process.setProcessChannelMode(QProcess::MergedChannels);
-		process.start( "python", args );
-		if ( !process.waitForStarted( 5000 ) ) {
-			SCONE_ERROR( "Could not start process:\n\n" + ( program + " " + args.join( ' ' ) ).toStdString() );
-		}
+		process.setProcessChannelMode( QProcess::MergedChannels );
+		process.start( file, args );
+		QString command = file + ' ' + args.join( ' ' );
+		if ( !process.waitForStarted() )
+			SCONE_ERROR( "Could not start process:\n\n" + command.toStdString() );
 
+		int progress = 0;
 		QByteArray data;
-		int i = 0;
-		while ( process.waitForReadyRead() ) {
+		while ( !dlg.wasCanceled() && process.waitForReadyRead() ) {
 			data = process.readLine();
 			xo::log::debug( data.toStdString() );
-			i = i + ( 1000 - i ) / 2;
-			dlg.setValue( i );
+			progress = progress + ( 1000 - progress ) / 2;
+			dlg.setValue( progress );
 		}
 		process.close();
+	}
+
+	void evaluateDeprlCheckpoint( const QString& file, QWidget* parent )
+	{
+		xo::log::info( "Evaluating ", file.toStdString() );
+		QStringList args{ "-m", "deprl.play", "--checkpoint_file", file };
+		runExternalProcess( "Evaluating " + file, "python", args );
 	}
 }
 
