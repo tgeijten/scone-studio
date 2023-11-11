@@ -26,7 +26,7 @@ namespace scone
 		int progress = 0;
 		QByteArray data;
 		while ( !dlg.wasCanceled() && process.waitForReadyRead() ) {
-			data = process.readLine();
+			data = process.readAll();
 			xo::log::debug( data.toStdString() );
 			progress = progress + ( 1000 - progress ) / 2;
 			dlg.setValue( progress );
