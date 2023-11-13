@@ -9,7 +9,7 @@
 
 namespace scone
 {
-	void runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent )
+	void runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent, log::level l )
 	{
 		QProgressDialog dlg( title, "Abort", 0, 1000, parent );
 		dlg.setWindowModality( Qt::WindowModal );
@@ -27,7 +27,7 @@ namespace scone
 		QByteArray data;
 		while ( !dlg.wasCanceled() && process.waitForReadyRead() ) {
 			data = process.readAll();
-			xo::log::debug( data.toStdString() );
+			xo::log::message( l, data.toStdString() );
 			progress = progress + ( 1000 - progress ) / 2;
 			dlg.setValue( progress );
 		}
@@ -38,7 +38,7 @@ namespace scone
 	{
 		xo::log::info( "Evaluating ", file.toStdString() );
 		QStringList args{ "-m", "deprl.play", "--checkpoint_file", file };
-		runExternalProcess( "Evaluating " + file, "python", args );
+		runExternalProcess( "Evaluating " + file, "python", args, parent, log::level::info );
 	}
 }
 
