@@ -279,7 +279,7 @@ namespace scone
 	{
 		if ( write_results_.valid() ) {
 			auto r = write_results_.get();
-			log::debug( "Results written to ", concatenate_str( r.first, ", " ), " in ", r.second.secondsd(), "s" );
+			log::debug( "Results written to ", concat_str( r.first, ", " ), " in ", r.second.secondsd(), "s" );
 		}
 	}
 
