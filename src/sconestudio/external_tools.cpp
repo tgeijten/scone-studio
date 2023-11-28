@@ -25,10 +25,12 @@ namespace scone
 
 		int progress = 0;
 		QByteArray data;
-		while ( !dlg.wasCanceled() && process.waitForReadyRead() ) {
-			data = process.readAll();
-			xo::log::message( l, data.toStdString() );
-			progress = progress + ( 1000 - progress ) / 2;
+		while ( !dlg.wasCanceled() && process.state() == QProcess::Running ) {
+			if ( process.waitForReadyRead( 3000 ) ) {
+				data = process.readAll();
+				xo::log::message( l, data.toStdString() );
+			}
+			progress = progress + 0.1 * ( 1000 - progress );
 			dlg.setValue( progress );
 		}
 		process.close();
@@ -36,8 +38,9 @@ namespace scone
 
 	void evaluateDeprlCheckpoint( const QString& file, QWidget* parent )
 	{
+		auto episodes = 5;
 		xo::log::info( "Evaluating ", file.toStdString() );
-		QStringList args{ "-m", "deprl.play", "--checkpoint_file", file };
+		QStringList args{ "-m", "deprl.play", "--checkpoint_file", file, "--num_episodes", QString::number( episodes ) };
 		runExternalProcess( "Evaluating " + file, "python", args, parent, log::level::info );
 	}
 }
