@@ -344,6 +344,15 @@ namespace scone
 		else vis.ce.set_points( p.begin(), p.end() );
 	}
 
+	void ModelVis::UpdateShadowCast()
+	{
+		auto squared_dist = xo::squared( GetStudioSetting<float>( "viewer.max_shadow_dist" ) );
+		for ( auto& b : bodies ) {
+			auto d = xo::squared_distance( b.pos(), focus_point_ );
+			b.set_cast_shadows( d < squared_dist );
+		}
+	}
+
 	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::shape& sh, const xo::color& col, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
 	{
 		auto msh = vis::mesh( parent, vis::shape_info{ sh, col, xo::vec3f::zero(), 0.75f } );
@@ -365,6 +374,12 @@ namespace scone
 		auto fixed_scale = fix_obj_ori ? vis::vec3f( scale.x, scale.z, scale.y ) : vis::vec3f( scale );
 		msh.scale_enable_normalize( fixed_scale );
 		return msh;
+	}
+
+	void ModelVis::SetFocusPoint( const Vec3& focus_point )
+	{
+		focus_point_ = vis::vec3f( focus_point );
+		UpdateShadowCast();
 	}
 
 	void ModelVis::ApplyViewOptions( const ViewOptions& f )

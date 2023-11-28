@@ -19,6 +19,7 @@ namespace scone
 		~ModelVis();
 
 		void Update( const Model& model );
+		void SetFocusPoint( const Vec3& focus_point );
 
 		void ApplyViewOptions( const ViewOptions& f );
 		const ViewOptions& GetViewOptions() const { return view_flags; }
@@ -36,6 +37,7 @@ namespace scone
 		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float len_scale = 0.001f, float rad_scale = 1.0f );
 		void UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float len_scale = 0.001f, float rad_scale = 1.0f );
 		void UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis );
+		void UpdateShadowCast();
 
 		vis::mesh MakeMesh( vis::node& parent,
 			const xo::shape& sh, const xo::color& col, const vis::material& mat,
@@ -57,6 +59,7 @@ namespace scone
 		float ambient_;
 		const bool combine_contact_forces_;
 		const bool forces_cast_shadows_;
+		vis::vec3f focus_point_;
 
 		vis::material bone_mat;
 		vis::material joint_mat;

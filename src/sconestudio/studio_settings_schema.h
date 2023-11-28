@@ -36,6 +36,7 @@ viewer {
 	tile_count_x { type = int label = "Viewer tile count in x direction" default = 128 }
 	tile_count_z { type = int label = "Viewer tile count in z direction" default = 128 }
 	tiles_follow_body { type = bool label = "Automatically adjust ground tiles to always remain visible" default = 1 }
+	max_shadow_dist { type = real label = "Maximum distance from the focus point at which shadows are renderd" default = 10 }
 	bone { type = color label = "Bone color" default { h = 40 s = 0.2 v = 0.8 } }
 	tendon { type = color label = "Tendon color" default { h = 40 s = 0.02 v = 0.8 } }
 	ligament { type = color label = "Tendon color" default { h = 40 s = 0.4 v = 0.8 } }

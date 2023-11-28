@@ -329,4 +329,10 @@ namespace scone
 		vis_ = std::make_unique<ModelVis>( *model_, s, f );
 		UpdateVis( 0 );
 	}
+
+	void StudioModel::SetVisFocusPoint( const Vec3& focus_point )
+	{
+		if ( vis_ )
+			vis_->SetFocusPoint( focus_point );
+	}
 }

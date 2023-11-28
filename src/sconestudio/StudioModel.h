@@ -56,6 +56,7 @@ namespace scone
 		const ViewOptions& GetViewOptions() const;
 		Vec3 GetFollowPoint() const;
 		void ResetModelVis( vis::scene& s, const ViewOptions& f );
+		void SetVisFocusPoint( const Vec3& focus_point );
 
 		const path& GetFileName() const { return filename_; }
 		const String& GetFileType() const { return filetype_; }

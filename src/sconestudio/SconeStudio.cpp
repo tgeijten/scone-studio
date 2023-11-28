@@ -702,6 +702,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 				//auto d = com_delta( scenario_->GetFollowPoint() );
 				//ui.osgViewer->moveCamera( osg::Vec3( d.x, d.y, d.z ) );
 			}
+			scenario_->SetVisFocusPoint( scone::Vec3( vis::from_osg( ui.osgViewer->getCameraMan().getFocusPoint() ) ) );
 
 			ui.osgViewer->setFrameTime( current_time );
 			if ( analysisView->isVisible() ) // #todo: isVisible() returns true if the tab is hidden
