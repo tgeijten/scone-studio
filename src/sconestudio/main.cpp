@@ -75,7 +75,6 @@ int main( int argc, char* argv[] )
 		scone::Initialize();
 		scone::TimeSection( "InitScone" );
 
-
 #if SCONE_HYFYDY_ENABLED
 		// check if license agreement has been updated
 		if ( scone::GetHfdStatus() == scone::SconeHfdStatus::LicenseNotAccepted )
@@ -84,6 +83,10 @@ int main( int argc, char* argv[] )
 
 		// close splash screen
 		splash.close(); // DO NOT USE QSplashScreen::finish() because it's slow
+		
+		// open file if argument was passed
+		if ( argc >= 2 )
+			w.openFile( argv[1] );
 
 		return app.exec();
 	}
