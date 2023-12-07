@@ -115,5 +115,6 @@ ui {
 	show_startup_time { type = bool default = 0 label = "Show startup time" }
 	check_tutorials_new_version { type = bool default = 1 label = "Check if Tutorials and Examples are up-to-date on new version" }
 	check_tutorials_on_launch { type = bool default = 1 label = "Check if Tutorials and Examples are up-to-date on launch" }
+	tutorials_version { type = int default = 3 label = "Version of the Tutorials and Examples to install" }
 }
 )str";

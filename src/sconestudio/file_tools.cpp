@@ -11,6 +11,7 @@
 #include "scone/core/Log.h"
 #include "xo/filesystem/filesystem.h"
 #include "qt_convert.h"
+#include "StudioSettings.h"
 
 namespace fs = std::filesystem;
 
@@ -96,17 +97,30 @@ namespace scone
 
 	void updateTutorialsExamples()
 	{
+		int version = GetStudioSetting<int>( "ui.tutorials_version" );
 		auto srcPath = scone::GetFolder( scone::SconeFolder::Root ) / "scenarios";
 		auto trgPath = scone::GetFolder( scone::SconeFolder::Scenarios );
-		auto tutsrc = srcPath / "Tutorials2";
+		auto tutsrc = srcPath / xo::stringf( "Tutorials%d", version );
+		auto exsrc = srcPath / xo::stringf( "Examples%d", version );
 		auto tuttrg = trgPath / "Tutorials";
-		auto exsrc = srcPath / "Examples2";
 		auto extrg = trgPath / "Examples";
 		auto pysrc = srcPath / "SconePy";
 		auto pytrg = trgPath / "SconePy";
-		// check if old versions are installed
-		bool hasOldTutorials = fs::exists( to_fs( tuttrg ) / "Tutorial 1 - Introduction.scone" );
-		bool hasOldExamples = fs::exists( to_fs( extrg ) / "data/InitStateGait10.sto" );
+
+		// check which version is installed
+		int tutver = 3;
+		if ( fs::exists( to_fs( tuttrg ) / "Tutorial 1 - Introduction.scone" ) )
+			tutver = 1;
+		else if ( fs::exists( to_fs( tuttrg ) / "data/H0914.hfd" ) )
+			tutver = 2;
+		int exver = 3;
+		if ( fs::exists( to_fs( extrg ) / "data/InitStateGait10.sto" ) )
+			exver = 1;
+		else if ( fs::exists( to_fs( extrg ) / "data/H0914.hfd" ) )
+			exver = 2;
+
+		bool hasOldTutorials = tutver != version;
+		bool hasOldExamples = exver != version;
 		bool keepOld = false;
 
 		try
