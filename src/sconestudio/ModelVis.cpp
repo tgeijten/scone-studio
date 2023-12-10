@@ -118,7 +118,7 @@ namespace scone
 			auto& parent_node = idx != NoIndex ? bodies[idx] : root_node_;
 			//bool is_static = idx == 0 || idx == NoIndex;
 			bool is_static = cg->GetBody().GetMass() == 0;
-			bool use_bone_mat = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
+			bool is_object_geom = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
 			vis::mesh geom_mesh;
 			if ( cg->HasFileName() )
 			{
@@ -128,7 +128,7 @@ namespace scone
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
-				auto& mat = is_static ? static_mat : ( use_bone_mat ? object_mat : contact_mat );
+				auto& mat = is_static ? static_mat : ( is_object_geom ? object_mat : contact_mat );
 				geom_mesh = MakeMesh( parent_node, cg->GetShape(), xo::color::cyan(), mat, cg->GetPos(), cg->GetOri() );
 			}
 
@@ -136,8 +136,8 @@ namespace scone
 			if ( geom_mesh ) {
 				geom_mesh.set_name( cg->GetName().c_str() );
 				geom_mesh.set_cast_shadows( GetStudioSetting<bool>( "viewer.contact_geometries_cast_shadows" ) );
-				auto& geom_container = is_static || use_bone_mat ? individual_contact_geoms : contact_geoms;
-				geom_container.push_back( std::move( geom_mesh ) );
+				auto& geom_cont = is_static ? static_contact_geoms : is_object_geom ? object_contact_geoms : contact_geoms;
+				geom_cont.push_back( std::move( geom_mesh ) );
 			}
 		}
 
@@ -347,10 +347,10 @@ namespace scone
 	void ModelVis::UpdateShadowCast()
 	{
 		auto squared_dist = xo::squared( GetStudioSetting<float>( "viewer.max_shadow_dist" ) );
-		for ( auto& b : bodies ) {
-			auto d = xo::squared_distance( b.pos(), focus_point_ );
-			b.set_cast_shadows( d < squared_dist );
-		}
+		for ( index_t i = 1; i < bodies.size(); ++i ) // skip ground body; #todo: skip all static bodies?
+			bodies[i].set_cast_shadows( xo::squared_distance( bodies[i].pos(), focus_point_ ) < squared_dist );
+		for ( auto& b : static_contact_geoms )
+			b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
 	}
 
 	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::shape& sh, const xo::color& col, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )

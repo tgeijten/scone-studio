@@ -82,8 +82,9 @@ namespace scone
 		std::vector< vis::axes > body_axes;
 		std::vector< vis::mesh > body_com;
 		std::vector< vis::node > bodies;
-		std::vector< vis::mesh > individual_contact_geoms;
 		std::vector< vis::mesh > contact_geoms;
+		std::vector< vis::mesh > object_contact_geoms;
+		std::vector< vis::mesh > static_contact_geoms;
 		xo::memoize< vis::material( xo::color ) > color_materials_;
 	};
 }
