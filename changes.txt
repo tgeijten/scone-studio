@@ -2,12 +2,12 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.3.0 ====
-//Released //
+//Released December 14, 2023//
 
 === New Features ===
   * Full integration and support for Reinforcement Learning research via the SconePy Python API, see https://scone.software/doku.php?id=sconepy for more details
   * New Model Analysis window, for plotting muscles properties against model coordinates
-  * New Examples and Tutorials based on improved models, including 3D examples
+  * New Examples and Tutorials based on improved models, including 3D gait examples
 
 === SCONE Studio Updates ===
   * 3D viewer updates
@@ -66,7 +66,7 @@
   * SequentialController now only writes data for the active controller, preventing controller data from being overwritten by inactive controllers
 
 ==== SCONE 2.2.0 ====
-//Released //
+//Released April 9, 2023//
 
 === New Features ===
   * gui_profiler
