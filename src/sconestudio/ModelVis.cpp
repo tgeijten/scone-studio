@@ -415,6 +415,9 @@ namespace scone
 		for ( auto& e : contact_geoms )
 			e.show( view_flags( ViewOption::ContactGeom ) );
 
+		for ( auto& e : object_contact_geoms )
+			e.show( view_flags( ViewOption::ContactGeom ) );
+
 		if ( ground_.node_id() )
 			ground_.show( view_flags( ViewOption::GroundPlane ) );
 
