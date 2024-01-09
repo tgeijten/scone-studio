@@ -1386,14 +1386,18 @@ void SconeStudio::viewerTooltip()
 
 void SconeStudio::viewerSelect()
 {
-	if ( auto* node = ui.osgViewer->getTopNamedIntersectionNode() )
-	{
-		auto name = to_qt( node->getName() );
-		auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, name, 1, Qt::MatchRecursive );
-		if ( !items.empty() )
-		{
-			inspectorView->setCurrentIndex( items.front() );
-			inspectorDock->raise();
+	if ( auto* intersection = ui.osgViewer->getTopNamedIntersection() ) {
+		for ( auto it = intersection->nodePath.rbegin(); it != intersection->nodePath.rend(); it++ ) {
+			const auto& name = ( *it )->getName();
+			if ( name.empty() )
+				continue;
+			auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, to_qt( name ), 1, Qt::MatchRecursive );
+			if ( !items.empty() ) {
+				inspectorView->setCurrentIndex( items.front() );
+				inspectorDock->raise();
+				log::debug( "Clicked ", name, " at ", vis::from_osg( intersection->localIntersectionPoint ) );
+				break;
+			}
 		}
 	}
 }
