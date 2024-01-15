@@ -44,6 +44,9 @@ int main( int argc, char* argv[] )
 	// QApplication changes C locale on Linux, set it back to "C"
 	std::setlocale( LC_ALL, "C" );
 
+	// Fix inactive selection color being nearly invisible
+	app.setStyleSheet("QTreeView::item:selected:!active { background-color: lightgray }");
+
 	try
 	{
 		// init console logging
