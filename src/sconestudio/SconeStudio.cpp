@@ -384,7 +384,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		ui.osgViewer->enableObjectCache( true );
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
-	if (  scone::GetStudioSetting<int>( "viewer.hud_type" ) != 67 )
+	if ( scone::GetStudioSetting<int>( "viewer.hud_type" ) != 67 )
 		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
@@ -920,7 +920,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// setup muscle plots
 			muscleAnalysis->init( scenario_->GetModel() );
 			muscleAnalysis->setEnableEditing( scenario_->IsEvaluatingStart() );
-			if ( muscleAnalysis->isVisible() && scenario_->GetFileType() == "scone" 
+			if ( muscleAnalysis->isVisible() && scenario_->GetFileType() == "scone"
 				&& scone::GetStudioSetting<bool>( "muscle_analysis.analyze_on_load" ) )
 				muscleAnalysis->refresh(); // this may affect evaluation result, use with care
 
@@ -1391,11 +1391,17 @@ void SconeStudio::viewerSelect()
 			const auto& name = ( *it )->getName();
 			if ( name.empty() )
 				continue;
+
+			if ( auto b = TryFindPtrByName( scenario_->GetModel().GetBodies(), name ) ) {
+				const auto pos = vis::from_osg( intersection->getWorldIntersectPoint() );
+				auto body_pos = b->GetLocalPosOfPoint( Vec3( pos ) );
+				log::info( "Clicked ", name, " at ", body_pos );
+			}
+
 			auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, to_qt( name ), 1, Qt::MatchRecursive );
 			if ( !items.empty() ) {
 				inspectorView->setCurrentIndex( items.front() );
 				inspectorDock->raise();
-				log::debug( "Clicked ", name, " at ", vis::from_osg( intersection->localIntersectionPoint ) );
 				break;
 			}
 		}
