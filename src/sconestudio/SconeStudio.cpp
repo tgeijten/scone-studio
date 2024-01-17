@@ -1043,17 +1043,22 @@ QCodeEditor* SconeStudio::getActiveCodeEditor()
 QCodeEditor* SconeStudio::getActiveScenario()
 {
 	QCodeEditor* best_guess = nullptr;
-	for ( auto s : codeEditors )
-	{
-		if ( s->filePath().extension_no_dot() == "scone" )
-		{
-			if ( !s->visibleRegion().isEmpty() && !s->document()->find( "Optimizer" ).isNull() )
-				return s; // active scone file
-			else if ( best_guess == nullptr || s == getActiveCodeEditor() )
-				best_guess = s; // could be single .scone file
+	QCodeEditor* optimizer = nullptr;
+	for ( auto s : codeEditors ) {
+		bool is_visible = !s->visibleRegion().isEmpty();
+		if ( s->filePath().extension_no_dot() == "scone" ) {
+			if ( !s->document()->find( "Optimizer" ).isNull() ) {
+				// document contains Optimizer; #todo: create a more robust check
+				if ( is_visible )
+					return s; // visible tab with optimizer
+				else if ( !optimizer )
+					optimizer = s; // keep for later if there are no other tabs with optimizer
+			}
+			else if ( best_guess == nullptr || is_visible )
+				best_guess = s; // first or visible .scone file
 		}
 	}
-	return best_guess; // either active or first .scone file, or none
+	return optimizer ? optimizer : best_guess; // either active or first .scone file, or none
 }
 
 bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_have_parameters )
