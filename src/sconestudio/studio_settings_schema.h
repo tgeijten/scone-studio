@@ -44,6 +44,7 @@ viewer {
 	force_alpha { type = float label = "Force arrow transparency" default = 1 }
 	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
 	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
+	joint_forces_are_for_parents { type = bool label = "Show joint forces and torques in the direction of parent bodies" default = 0 }
 	moment { type = color label = "Moment color" default { h = 5 s = 0.8 v = 0.8 } }
 	contact { type = color label = "Contact color" default { h = 40 s = 0.2 v = 0.8 } }
 	contact_alpha { type = float label = "Contact color transparency" default = 0.2 }

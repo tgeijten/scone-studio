@@ -25,6 +25,7 @@ namespace scone
 		ambient_( GetStudioSetting<float>( "viewer.ambient" ) ),
 		combine_contact_forces_( GetStudioSetting<bool>( "viewer.combine_contact_forces" ) ),
 		forces_cast_shadows_( GetStudioSetting<bool>( "viewer.forces_cast_shadows" ) ),
+		joint_forces_are_for_parents_( GetStudioSetting<bool>( "viewer.joint_forces_are_for_parents" ) ),
 		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
 		joint_mat( { GetStudioSetting<xo::color>( "viewer.joint" ), specular_, shininess_, ambient_ } ),
 		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
@@ -235,14 +236,15 @@ namespace scone
 
 		// update joints
 		auto& model_joints = model.GetJoints();
+		auto sign = joint_forces_are_for_parents_ ? -1.0 : 1.0;
 		for ( index_t i = 0; i < model_joints.size(); ++i )
 		{
 			auto pos = model_joints[i]->GetPos();
 			joints[i].pos( vis::vec3f( pos ) );
 			if ( view_flags( ViewOption::Joints ) )
 			{
-				UpdateForceVis( force_count++, pos, -model_joints[i]->GetReactionForce() );
-				UpdateMomentVis( moment_count++, pos, -model_joints[i]->GetLimitTorque() );
+				UpdateForceVis( force_count++, pos, sign * model_joints[i]->GetReactionForce() );
+				UpdateMomentVis( moment_count++, pos, sign * model_joints[i]->GetLimitTorque() );
 			}
 		}
 

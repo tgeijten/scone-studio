@@ -59,6 +59,7 @@ namespace scone
 		float ambient_;
 		const bool combine_contact_forces_;
 		const bool forces_cast_shadows_;
+		const bool joint_forces_are_for_parents_;
 		vis::vec3f focus_point_;
 
 		vis::material bone_mat;
