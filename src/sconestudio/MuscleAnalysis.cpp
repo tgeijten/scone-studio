@@ -116,7 +116,7 @@ namespace scone
 		if ( !normalized_only ) {
 			frame[name + ".fiber_length"] = mus.GetFiberLength();
 			frame[name + ".tendon_length"] = mus.GetTendonLength();
-			//frame[name + ".mtu_length"] = mus.GetLength();
+			frame[name + ".mtu_length"] = mus.GetLength();
 			frame[name + ".mtu_force"] = mus.GetForce();
 		}
 
@@ -124,7 +124,7 @@ namespace scone
 		frame[name + ".moment_arm"] = mus.GetMomentArm( dof );
 		frame[name + ".fiber_length_norm"] = mus.GetNormalizedFiberLength();
 		frame[name + ".tendon_length_norm"] = mus.GetNormalizedTendonLength() - 1;
-		//frame[name + ".mtu_length_norm"] = mus.GetLength() / ( mus.GetNormalizedFiberLength() + mus.GetTendonSlackLength() );
+		frame[name + ".mtu_length_norm"] = mus.GetLength() / ( mus.GetOptimalFiberLength() + mus.GetTendonSlackLength() );
 		frame[name + ".mtu_force_norm"] = mus.GetNormalizedForce();
 
 		// fiber properties
