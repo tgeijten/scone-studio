@@ -1398,9 +1398,13 @@ void SconeStudio::viewerSelect()
 				continue;
 
 			if ( auto b = TryFindPtrByName( scenario_->GetModel().GetBodies(), name ) ) {
-				const auto pos = vis::from_osg( intersection->getWorldIntersectPoint() );
-				auto body_pos = b->GetLocalPosOfPoint( Vec3( pos ) );
-				log::info( "Clicked ", name, " at ", body_pos );
+				const auto world_pos = vis::from_osg( intersection->getWorldIntersectPoint() );
+				auto body_pos = b->GetLocalPosOfPoint( Vec3( world_pos ) );
+				auto pos_str = "; pos = [ " + vec3_str( body_pos ) + " ]";
+				if ( prev_click.first == name )
+					pos_str += " dir = [ " + vec3_str( prev_click.second - body_pos ) + " ]";
+				log::info( "Clicked ", name, pos_str );
+				prev_click = { name, body_pos };
 			}
 
 			auto items = inspectorModel->match( inspectorModel->index( 0, 0 ), Qt::DisplayRole, to_qt( name ), 1, Qt::MatchRecursive );
