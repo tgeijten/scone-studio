@@ -204,8 +204,7 @@ namespace scone
 
 		// update bodies
 		auto& model_bodies = model.GetBodies();
-		for ( index_t i = 0; i < model_bodies.size(); ++i )
-		{
+		for ( index_t i = 0; i < model_bodies.size(); ++i ) {
 			auto& b = model_bodies[i];
 			bodies[i].pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
 
@@ -237,30 +236,25 @@ namespace scone
 		// update joints
 		auto& model_joints = model.GetJoints();
 		auto sign = joint_forces_are_for_parents_ ? -1.0 : 1.0;
-		for ( index_t i = 0; i < model_joints.size(); ++i )
-		{
+		for ( index_t i = 0; i < model_joints.size(); ++i ) {
 			auto pos = model_joints[i]->GetPos();
 			joints[i].pos( vis::vec3f( pos ) );
-			if ( view_flags( ViewOption::Joints ) )
-			{
+			if ( view_flags( ViewOption::Joints ) ) {
 				UpdateForceVis( force_count++, pos, sign * model_joints[i]->GetReactionForce() );
 				UpdateMomentVis( moment_count++, pos, sign * model_joints[i]->GetLimitTorque() );
 			}
 		}
 
 		// update contact forces
-		if ( view_flags( ViewOption::ExternalForces ) && !combine_contact_forces_ )
-		{
+		if ( view_flags( ViewOption::ExternalForces ) && !combine_contact_forces_ ) {
 			auto fvec = model.GetContactForceValues();
 			for ( auto& cf : fvec )
 				UpdateForceVis( force_count++, cf.point, cf.force );
 		}
 
 		// update com / heading
-		if ( view_flags( ViewOption::ModelComHeading ) )
-		{
-			if ( model.HasRootBody() )
-			{
+		if ( view_flags( ViewOption::ModelComHeading ) ) {
+			if ( model.HasRootBody() ) {
 				auto pos = xo::vec3f( model.GetComPos() );
 				auto dir = xo::quatf( model.GetRootBody().GetOrientation() ) * xo::vec3f( 0.5f, 0, 0 );
 				heading_.pos_ofs( pos, dir );
