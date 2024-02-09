@@ -633,7 +633,6 @@ void SconeStudio::evaluateOffline()
 	auto real_dur = real_time().secondsd();
 	auto sim_time = scenario_->GetTime();
 	log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
-
 }
 
 void SconeStudio::evaluateRealTime()
@@ -687,28 +686,26 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 	if ( scenario_ )
 	{
+		// advance simulation
 		current_time = t;
-
-		// update ui and visualization
 		if ( scenario_->IsEvaluating() )
 			scenario_->EvaluateTo( t );
 
+		// update UI and visualization
 		if ( update_vis && scenario_->HasModel() )
 		{
+			// update 3D viewer
 			scenario_->UpdateVis( t );
-			if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() )
-			{
+			if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() ) {
 				auto p = scenario_->GetFollowPoint();
 				ui.osgViewer->setFocusPoint( osg::Vec3( p.x, p.y, p.z ) );
-				//auto d = com_delta( scenario_->GetFollowPoint() );
-				//ui.osgViewer->moveCamera( osg::Vec3( d.x, d.y, d.z ) );
 			}
 			scenario_->SetVisFocusPoint( scone::Vec3( vis::from_osg( ui.osgViewer->getCameraMan().getFocusPoint() ) ) );
-
 			ui.osgViewer->setFrameTime( current_time );
+
+			// update UI elements
 			if ( analysisView->isVisible() ) // #todo: isVisible() returns true if the tab is hidden
 				analysisView->setTime( current_time, !ui.playControl->isPlaying() );
-
 			if ( dofEditor->isVisible() )
 				dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 		}
@@ -1185,7 +1182,7 @@ void SconeStudio::writeEvaluationResults()
 {
 	if ( scenario_ )
 	{
-		if ( scenario_->IsReady() )
+		if ( scenario_->IsFinished() )
 			scenario_->WriteResults();
 		else if ( scenario_->IsEvaluating() ) {
 			scenario_->SetWriteResultsAfterEvaluation( true );

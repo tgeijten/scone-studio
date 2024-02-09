@@ -88,7 +88,7 @@ namespace scone
 					ReadStorageSto( storage_, file );
 					InitStateDataIndices();
 					log::trace( "Read ", file, " in ", t(), " seconds" );
-					status_ = Status::Ready;
+					status_ = Status::Finished;
 				}
 				else
 				{
@@ -246,7 +246,7 @@ namespace scone
 				}
 
 				// we're done!
-				status_ = Status::Ready;
+				status_ = Status::Finished;
 			}
 			catch ( std::exception& e )
 			{

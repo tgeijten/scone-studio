@@ -46,7 +46,7 @@ namespace scone
 
 		bool IsEvaluating() const { return status_ == Status::Evaluating; }
 		bool IsEvaluatingStart() const { return status_ == Status::Evaluating && GetTime() == 0.0; }
-		bool IsReady() const { return status_ == Status::Ready; }
+		bool IsFinished() const { return status_ == Status::Finished; }
 		bool IsValid() const { return status_ != Status::Error; }
 
 		TimeInSeconds GetTime() const { return model_ ? model_->GetTime() : 0.0; }
@@ -64,7 +64,7 @@ namespace scone
 		QString GetScenarioFileName() const { return to_qt( scenario_filename_ ); }
 		const PropNode& GetScenarioPropNode() const { return scenario_pn_; }
 
-		enum class Status { Initializing, Evaluating, Ready, Aborted, Error };
+		enum class Status { Initializing, Evaluating, Overtime, Finished, Aborted, Error };
 		Status GetStatus() const { return status_; }
 
 		const PropNode& GetResult();
