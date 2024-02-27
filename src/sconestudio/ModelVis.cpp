@@ -10,6 +10,7 @@
 #include "xo/geometry/path_alg.h"
 #include "scone/core/math.h"
 #include "xo/geometry/quat.h"
+#include "scone/core/Settings.h"
 
 namespace scone
 {
@@ -60,6 +61,14 @@ namespace scone
 			ground_.pos_ori( ground_tf_.p, ground_tf_.q );
 		}
 
+		auto model_folder = model.GetModelFile().parent_path();
+		auto geom_model_dirs = { model_folder, model_folder / "geometry", model_folder / "Geometry" };
+		auto geometry_extra = GetSconeSetting<string>( "folders.geometry_extra" );
+		std::vector<path> geom_search_dirs;
+		geom_search_dirs.emplace_back( GetFolder( SconeFolder::Geometry ) );
+		auto geometry_extra_vec = xo::split_str( geometry_extra, ";," );
+		std::copy( geometry_extra_vec.begin(), geometry_extra_vec.end(), std::back_inserter( geom_search_dirs ) );
+		string new_geom_dir;
 		for ( auto& body : model.GetBodies() )
 		{
 			bodies.push_back( vis::node( &root_node_ ) );
@@ -81,17 +90,15 @@ namespace scone
 				{
 					geom.filename_.make_preferred();
 					try {
-						auto model_folder = model.GetModelFile().parent_path();
-						auto file_options = {
-							geom.filename_,
-							path( "geometry" ) / geom.filename_,
-							model_folder / geom.filename_,
-							model_folder / "geometry" / geom.filename_,
-							GetFolder( SconeFolder::Geometry ) / geom.filename_
-						};
-						auto geom_file = xo::try_find_file( file_options );
-						if ( geom_file )
-						{
+						auto geom_file = xo::try_find_file( geom.filename_, geom_model_dirs );
+						if ( geom_file ) {
+							// remember for future geometry_extra (used for future results playback)
+							if ( new_geom_dir.empty() && !xo::try_find_file( geom.filename_, geom_search_dirs ) )
+								new_geom_dir = xo::left_str( geom_file->str(), -(int)geom.filename_.str().size() );
+						}
+						else geom_file = xo::try_find_file( geom.filename_, geom_search_dirs );
+
+						if ( geom_file ) {
 							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
 							body_meshes.push_back( MakeMesh( bodies.back(), *geom_file, bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
 							body_meshes.back().set_name( body->GetName().c_str() );
@@ -111,6 +118,14 @@ namespace scone
 					body_meshes.back().set_name( clickable ? body->GetName().c_str() : "!" );
 				}
 			}
+		}
+
+		// update search dirs in settings
+		if ( !new_geom_dir.empty() && !xo::contains( geometry_extra_vec, new_geom_dir ) ) {
+			log::debug( "Adding ", new_geom_dir, " to geometry search paths" );
+			xo::append_str( geometry_extra, new_geom_dir, ";" );
+			GetSconeSettings().set( "folders.geometry_extra", geometry_extra );
+			GetSconeSettings().save();
 		}
 
 		for ( auto& cg : model.GetContactGeometries() )
