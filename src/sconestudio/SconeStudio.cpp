@@ -961,6 +961,11 @@ bool SconeStudio::createScenario( const QString& any_file )
 			error( "Error creating scenario",
 				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
 				"Please check Tools -> Preferences -> Hyfydy, or visit <a href = 'https://hyfydy.com'>hyfydy.com</a> for more information." );
+#if !defined( _MSC_VER )
+		else if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelOpenSim4" } ) )
+			error( "Error creating scenario",
+				"This scenario uses an <b>OpenSim 4 model</b>, which is currently not supported on Linux and macOS." );
+#endif
 		else error( "Error creating scenario", e.what() );
 		clearScenario();
 		return false;
