@@ -27,6 +27,7 @@ namespace scone
 		combine_contact_forces_( GetStudioSetting<bool>( "viewer.combine_contact_forces" ) ),
 		forces_cast_shadows_( GetStudioSetting<bool>( "viewer.forces_cast_shadows" ) ),
 		joint_forces_are_for_parents_( GetStudioSetting<bool>( "viewer.joint_forces_are_for_parents" ) ),
+		fixed_muscle_width_( GetStudioSetting<float>( "viewer.muscle_width" ) ),
 		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
 		joint_mat( { GetStudioSetting<xo::color>( "viewer.joint" ), specular_, shininess_, ambient_ } ),
 		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
@@ -159,27 +160,23 @@ namespace scone
 
 		const auto auto_muscle_width = GetStudioSetting<bool>( "viewer.auto_muscle_width" );
 		const auto auto_muscle_width_factor = GetStudioSetting<float>( "viewer.auto_muscle_width_factor" );
-		const auto muscle_width = GetStudioSetting<float>( "viewer.muscle_width" );
 		const auto relative_tendon_width = GetStudioSetting<float>( "viewer.relative_tendon_width" );
 		const auto muscle_position = GetStudioSetting<float>( "viewer.muscle_position" );
 
 		for ( auto& muscle : model.GetMuscles() )
 		{
-			float muscle_radius = auto_muscle_width ?
-				auto_muscle_width_factor * float( sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) ) :
-				muscle_width;
-
-			float tendon_radius = relative_tendon_width * muscle_radius;
+			MuscleVis mv;
+			mv.muscle_radius = auto_muscle_width_factor * float( sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) );
+			mv.tendon_radius = relative_tendon_width * mv.muscle_radius;
 
 			// add path
-			MuscleVis mv;
-			mv.ten1 = vis::trail( root_node_, vis::trail_info{ tendon_radius, xo::color::yellow(), 0.3f } );
-			mv.ten2 = vis::trail( root_node_, vis::trail_info{ tendon_radius, xo::color::yellow(), 0.3f } );
+			mv.ten1 = vis::trail( root_node_, vis::trail_info{ mv.tendon_radius, xo::color::yellow(), 0.3f } );
+			mv.ten2 = vis::trail( root_node_, vis::trail_info{ mv.tendon_radius, xo::color::yellow(), 0.3f } );
 			mv.ten1.set_material( tendon_mat );
 			mv.ten2.set_material( tendon_mat );
 			mv.ten1.set_name( muscle->GetName().c_str() );
 			mv.ten2.set_name( muscle->GetName().c_str() );
-			mv.ce = vis::trail( root_node_, vis::trail_info{ muscle_radius, xo::color::red(), 0.5f } );
+			mv.ce = vis::trail( root_node_, vis::trail_info{ mv.muscle_radius, xo::color::red(), 0.5f } );
 			mv.mat = muscle_mat.clone();
 			mv.mat.emissive( vis::color() );
 			mv.ce.set_material( mv.mat );
@@ -190,7 +187,7 @@ namespace scone
 
 		for ( auto& ligament : model.GetLigaments() )
 		{
-			auto lv = vis::trail( root_node_, vis::trail_info{ muscle_width, xo::color::yellow(), 0.3f } );
+			auto lv = vis::trail( root_node_, vis::trail_info{ fixed_muscle_width_, xo::color::yellow(), 0.3f } );
 			lv.set_material( ligament_mat );
 			ligaments.push_back( std::move( lv ) );
 		}
@@ -338,6 +335,14 @@ namespace scone
 			a = 1.5 * ( mus.GetNormalizedFiberLength() - 1 );
 		else a = 0.0;
 
+		float mw = 1.0f, tw = 1.0f;
+		if ( view_flags( ViewOption::MuscleRadiusFixed ) )
+			mw = tw = fixed_muscle_width_ / vis.muscle_radius;
+		else if ( view_flags( ViewOption::MuscleRadiusPcsa ) )
+			mw = tw = 1.0f;
+		else if ( view_flags( ViewOption::MuscleRadiusPcsaDynamic ) )
+			mw = float( std::sqrt( 1.0 / mus.GetNormalizedFiberLength() ) );
+
 		xo::color c = muscle_gradient( float( a ) );
 		vis.mat.diffuse( c );
 		vis.mat.ambient( c );
@@ -348,11 +353,11 @@ namespace scone
 			auto i1 = insert_path_point( p, tlen );
 			auto i2 = insert_path_point( p, tlen + mlen );
 			SCONE_ASSERT( i1 <= i2 );
-			vis.ten1.set_points( p.begin(), p.begin() + i1 + 1 );
-			vis.ce.set_points( p.begin() + i1, p.begin() + i2 + 1 );
-			vis.ten2.set_points( p.begin() + i2, p.end() );
+			vis.ten1.set_points( p.begin(), p.begin() + i1 + 1, tw );
+			vis.ce.set_points( p.begin() + i1, p.begin() + i2 + 1, mw );
+			vis.ten2.set_points( p.begin() + i2, p.end(), tw );
 		}
-		else vis.ce.set_points( p.begin(), p.end() );
+		else vis.ce.set_points( p.begin(), p.end(), mw );
 	}
 
 	void ModelVis::UpdateShadowCast()

@@ -291,13 +291,20 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
 	viewMenu->addSeparator();
-	auto musGroup = new QActionGroup( this );
-	musGroup->addAction( viewActions[ViewOption::MuscleActivation] = viewMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
-	musGroup->addAction( viewActions[ViewOption::MuscleForce] = viewMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
-	musGroup->addAction( viewActions[ViewOption::MuscleFiberLength] = viewMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
-	musGroup->setExclusive( true );
+	auto musColMenu = viewMenu->addMenu( "Muscle Co&lor" );
+	auto musColGroup = new QActionGroup( this );
+	musColGroup->addAction( viewActions[ViewOption::MuscleActivation] = musColMenu->addAction( "Muscle Color &Activation", this, &SconeStudio::applyViewOptions ) );
+	musColGroup->addAction( viewActions[ViewOption::MuscleForce] = musColMenu->addAction( "Muscle Color F&orce", this, &SconeStudio::applyViewOptions ) );
+	musColGroup->addAction( viewActions[ViewOption::MuscleFiberLength] = musColMenu->addAction( "Muscle Color Fiber &Length", this, &SconeStudio::applyViewOptions ) );
+	musColGroup->setExclusive( true );
+	auto musLineMenu = viewMenu->addMenu( "Muscle &Width" );
+	auto musLineGroup = new QActionGroup( this );
+	musLineGroup->addAction( viewActions[ViewOption::MuscleRadiusFixed] = musLineMenu->addAction( "&Fixed", this, &SconeStudio::applyViewOptions ) );
+	musLineGroup->addAction( viewActions[ViewOption::MuscleRadiusPcsa] = musLineMenu->addAction( "&PCSA", this, &SconeStudio::applyViewOptions ) );
+	musLineGroup->addAction( viewActions[ViewOption::MuscleRadiusPcsaDynamic] = musLineMenu->addAction( "&Dynamic PCSA", this, &SconeStudio::applyViewOptions ) );
+	musLineGroup->setExclusive( true );
 	viewMenu->addSeparator();
-	auto orbitMenu = viewMenu->addMenu( "Automatic Camera Orbit" );
+	auto orbitMenu = viewMenu->addMenu( "Camera &Orbit" );
 	viewActions[ViewOption::StaticCamera] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
 
 	// init view options

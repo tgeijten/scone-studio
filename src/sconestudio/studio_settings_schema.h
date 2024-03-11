@@ -63,7 +63,7 @@ viewer {
 	ambient_intensity { type = color label = "Ambient intensity in scene" default = 0.7 }
 	auto_muscle_width { type = bool label = "Muscle diameter represents PCSA" default = true }
 	auto_muscle_width_factor { type = float label = "Muscle diameter scaling factor" default = 0.25 }
-	muscle_width { type = float label = "Muscle line radius (if not derived from PCSA)" default = 0.01 }
+	muscle_width { type = float label = "Muscle line radius (if not derived from PCSA)" default = 0.005 }
 	muscle_position { type = float label = "Relative muscle belly position (0-1)" range = [ 0 1 ] default = 0.333 }
 	relative_tendon_width { type = float label = "Tendon diameter relative to muscle" range = [ 0.1 1 ] default = 0.618 }
 	joint_radius { type = float label = "Joint sphere radius" range = [ 0.001 1 ] default = 0.015 }

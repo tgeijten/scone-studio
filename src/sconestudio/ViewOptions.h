@@ -20,7 +20,10 @@ namespace scone
 		StaticCamera,
 		MuscleActivation,
 		MuscleForce,
-		MuscleFiberLength
+		MuscleFiberLength,
+		MuscleRadiusFixed,
+		MuscleRadiusPcsa,
+		MuscleRadiusPcsaDynamic
 	};
 
 	using ViewOptions = xo::flag_set<ViewOption>;
@@ -34,13 +37,13 @@ namespace scone
 			ViewOption::ContactGeom,
 			ViewOption::GroundPlane,
 			ViewOption::Shadows,
-			ViewOption::MuscleActivation
+			ViewOption::MuscleActivation,
+			ViewOption::MuscleRadiusPcsaDynamic
 			} );
 	}
 
-	inline void FixViewOptions( ViewOptions& vo ) {
+	inline void FixViewOptions( ViewOptions& vo, std::initializer_list<ViewOption> ex_opt ) {
 		// make sure only one muscle visualization option is set
-		auto ex_opt = { ViewOption::MuscleActivation, ViewOption::MuscleForce, ViewOption::MuscleFiberLength };
 		if ( vo.count( ex_opt ) != 1 ) {
 			for ( auto opt : ex_opt )
 				vo.set( opt, opt == *ex_opt.begin() );
@@ -49,7 +52,8 @@ namespace scone
 
 	inline ViewOptions MakeViewOptions( xo::uint64 value ) {
 		ViewOptions vo( value );
-		FixViewOptions( vo );
+		FixViewOptions( vo, { ViewOption::MuscleActivation, ViewOption::MuscleForce, ViewOption::MuscleFiberLength } );
+		FixViewOptions( vo, { ViewOption::MuscleRadiusPcsaDynamic, ViewOption::MuscleRadiusFixed, ViewOption::MuscleRadiusPcsa } );
 		return vo;
 	}
 }

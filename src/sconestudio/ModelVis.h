@@ -32,6 +32,8 @@ namespace scone
 			vis::trail ce;
 			vis::material mat;
 			float ce_pos = 0.5f;
+			float muscle_radius = 0.0f;
+			float tendon_radius = 0.0f;
 		};
 
 		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float len_scale = 0.001f, float rad_scale = 1.0f );
@@ -61,6 +63,7 @@ namespace scone
 		const bool forces_cast_shadows_;
 		const bool joint_forces_are_for_parents_;
 		vis::vec3f focus_point_;
+		float fixed_muscle_width_;
 
 		vis::material bone_mat;
 		vis::material joint_mat;
