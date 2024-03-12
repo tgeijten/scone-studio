@@ -129,6 +129,7 @@ namespace scone
 			mc.use_limits_from_dof_range_ = ui.useCoordinateRange->isChecked();
 			mc.compound_welded_bodies = ui.compoundBodies->isChecked();
 			mc.compound_mass_threshold = ui.compoundMassThreshold->value();
+			mc.use_pint_joints_ = ui.usePinJoints->isChecked();
 
 			auto& model = scenario.GetModel();
 			auto hfd_model_pn = mc.ConvertModel( model );
