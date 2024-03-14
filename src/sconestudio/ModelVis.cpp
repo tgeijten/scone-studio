@@ -72,51 +72,58 @@ namespace scone
 		string new_geom_dir;
 		for ( auto& body : model.GetBodies() )
 		{
-			bodies.push_back( vis::node( &root_node_ ) );
-			bodies.back().set_name( body->GetName().c_str() );
-			body_axes.push_back( vis::axes( bodies.back(), vis::axes_info{ vis::vec3f::diagonal( 0.1 ) } ) );
+			auto& body_node = bodies.emplace_back( vis::node( &root_node_ ) );
+			body_node.set_name( body->GetName().c_str() );
+			body_axes.push_back( vis::axes( body_node, vis::axes_info{ vis::vec3f::diagonal( 0.1 ) } ) );
 			body_axes.back().set_cast_shadows( body->GetMass() > 0 );
 
 			if ( body->GetMass() > 0 )
 			{
-				body_com.push_back( vis::mesh( bodies.back(), vis::shape_info{ xo::sphere( 0.02f ), xo::color::green(), xo::vec3f::zero(), 0.75f } ) );
+				body_com.push_back( vis::mesh( body_node, vis::shape_info{ xo::sphere( 0.02f ), xo::color::green(), xo::vec3f::zero(), 0.75f } ) );
 				body_com.back().set_material( com_mat );
 				body_com.back().pos( xo::vec3f( body->GetLocalComPos() ) );
 			}
 
-			auto geoms = body->GetDisplayGeometries();
-			for ( auto& geom : geoms )
+			for ( auto& dg : body->GetDisplayGeometries() )
 			{
-				if ( !geom.filename_.empty() )
+				if ( !dg.filename_.empty() )
 				{
-					geom.filename_.make_preferred();
+					dg.filename_.make_preferred();
 					try {
-						auto geom_file = xo::try_find_file( geom.filename_, geom_model_dirs );
+						auto geom_file = xo::try_find_file( dg.filename_, geom_model_dirs );
 						if ( geom_file ) {
 							// remember for future geometry_extra (used for future results playback)
-							if ( new_geom_dir.empty() && !xo::try_find_file( geom.filename_, geom_search_dirs ) )
-								new_geom_dir = xo::left_str( geom_file->str(), -(int)geom.filename_.str().size() );
+							if ( new_geom_dir.empty() && !xo::try_find_file( dg.filename_, geom_search_dirs ) )
+								new_geom_dir = xo::left_str( geom_file->str(), -(int)dg.filename_.str().size() );
 						}
-						else geom_file = xo::try_find_file( geom.filename_, geom_search_dirs );
+						else geom_file = xo::try_find_file( dg.filename_, geom_search_dirs );
 
 						if ( geom_file ) {
 							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
-							body_meshes.push_back( MakeMesh( bodies.back(), *geom_file, bone_mat, geom.pos_, geom.ori_, geom.scale_ ) );
+							body_meshes.push_back( MakeMesh( body_node, *geom_file, bone_mat, dg.pos_, dg.ori_, dg.scale_ ) );
 							body_meshes.back().set_name( body->GetName().c_str() );
 						}
-						else log::warning( "Could not find ", geom.filename_ );
+						else log::warning( "Could not find ", dg.filename_ );
 					}
 					catch ( std::exception& e ) {
-						log::warning( "Could not load ", geom.filename_, ": ", e.what() );
+						log::warning( "Could not load ", dg.filename_, ": ", e.what() );
 					}
 				}
 				else {
 					// shape
-					const vis::material& mat = geom.color_.is_null() ? object_mat : color_materials_( geom.color_ );
-					body_meshes.push_back( MakeMesh(
-						bodies.back(), geom.shape_, xo::color::cyan(), mat, geom.pos_, geom.ori_, geom.scale_ ) );
-					bool clickable = geom.color_.is_null() || geom.color_.a == 1;
-					body_meshes.back().set_name( clickable ? body->GetName().c_str() : "!" );
+					if ( dg.type_ == DisplayGeometryType::shape ) {
+						const vis::material& mat = dg.color_.is_null() ? object_mat : color_materials_( dg.color_ );
+						body_meshes.emplace_back(
+							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
+						bool clickable = dg.color_.is_null() || dg.color_.a == 1;
+						body_meshes.back().set_name( clickable ? body->GetName().c_str() : "!" );
+					}
+					else if ( dg.type_ == DisplayGeometryType::aux_shape ) {
+						const vis::material& mat = contact_mat;
+						contact_geoms.emplace_back(
+							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
+						contact_geoms.back().set_name( "!" );
+					}
 				}
 			}
 		}
