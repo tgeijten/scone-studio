@@ -1041,6 +1041,14 @@ int SconeStudio::getTabIndex( QCodeEditor* s )
 	return -1;
 }
 
+QStringList SconeStudio::getSelectedFiles()
+{
+	QStringList fileList;
+	for ( const auto& idx : ui.resultsBrowser->selectionModel()->selectedRows() )
+		fileList.push_back( ui.resultsBrowser->fileSystemModel()->fileInfo( idx ).filePath() );
+	return fileList;
+}
+
 QCodeEditor* SconeStudio::getActiveCodeEditor()
 {
 	for ( auto s : codeEditors )
@@ -1589,13 +1597,9 @@ void SconeStudio::finalizeCapture()
 void SconeStudio::deleteSelectedFileOrFolder()
 {
 	auto msgTitle = tr( "Remove files or folders" );
-	auto selection = ui.resultsBrowser->selectionModel()->selectedRows();
-	if ( selection.empty() )
+	QStringList fileList = getSelectedFiles();
+	if ( fileList.empty() )
 		return information( msgTitle, tr( "No files or folders selected" ) );
-
-	QStringList fileList;
-	for ( const auto& idx : selection )
-		fileList.push_back( ui.resultsBrowser->fileSystemModel()->fileInfo( idx ).filePath() );
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	// Qt >= 15.5? Move items to thrash, display warning with default Ok
@@ -1623,8 +1627,25 @@ void SconeStudio::deleteSelectedFileOrFolder()
 			success = ui.resultsBrowser->fileSystemModel()->remove( idx );
 		if ( !success )
 			warning( msgTitle, tr( "Could not remove " ) + item.filePath() );
-}
+	}
 #endif
+}
+
+void SconeStudio::copyToScenarioFolder()
+{
+	auto fileList = getSelectedFiles();
+	auto scenario = getActiveScenario();
+	if ( fileList.size() >= 1 && scenario ) {
+		auto src_path = path_from_qt( fileList.front() );
+		auto trg_file = "par" / src_path.parent_path().stem() + "_" + src_path.filename();
+		auto trg_path = scenario->filePath().parent_path() / trg_file;
+		xo::create_directories( trg_path.parent_path() );
+		xo::copy_file( src_path, trg_path, true );
+		xo::log::info( "Copied file to ", trg_path );
+		QApplication::clipboard()->setText( to_qt( trg_file ) );
+		QString msgBody = "The following file has been created (filename copied to clipboard):\n\n" + to_qt( trg_file.str() );
+		QMessageBox::information( nullptr, "Copy to Scenario Folder", msgBody );
+	}
 }
 
 void SconeStudio::sortResultsByDate()
@@ -1643,6 +1664,14 @@ void SconeStudio::onResultBrowserCustomContextMenu( const QPoint& pos )
 	menu.addAction( "Sort by &Name", this, &SconeStudio::sortResultsByName );
 	menu.addAction( "Sort by &Date", this, &SconeStudio::sortResultsByDate );
 	menu.addSeparator();
-	menu.addAction( "&Remove", this, &SconeStudio::deleteSelectedFileOrFolder );
+
+	auto sel = ui.resultsBrowser->selectionModel()->selectedRows();
+	if ( sel.size() == 1 && getActiveScenario() && ui.resultsBrowser->fileSystemModel()->fileInfo( sel.front() ).suffix() == "par" ) {
+		menu.addAction( "&Copy to Scenario Folder", this, &SconeStudio::copyToScenarioFolder );
+		menu.addSeparator();
+	}
+	if ( sel.size() >= 1 )
+		menu.addAction( "&Remove", this, &SconeStudio::deleteSelectedFileOrFolder );
+
 	menu.exec( ui.resultsBrowser->mapToGlobal( pos ) );
 }

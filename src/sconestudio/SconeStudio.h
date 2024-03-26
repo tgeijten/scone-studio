@@ -116,6 +116,7 @@ public slots:
 	void convertScenario();
 
 	void deleteSelectedFileOrFolder();
+	void copyToScenarioFolder();
 	void sortResultsByDate();
 	void sortResultsByName();
 	void onResultBrowserCustomContextMenu( const QPoint& );
@@ -127,6 +128,7 @@ public:
 	bool hasModel() const { return scenario_ && scenario_->HasModel(); }
 
 private:
+	QStringList getSelectedFiles();
 	QCodeEditor* getActiveCodeEditor();
 	QCodeEditor* getActiveScenario();
 
