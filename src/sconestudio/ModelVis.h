@@ -46,7 +46,7 @@ namespace scone
 			const Vec3& pos, const Quat& ori, const Vec3& scale = Vec3::one() );
 		vis::mesh MakeMesh( vis::node& parent,
 			const xo::path& file, const vis::material& mat,
-			const Vec3& pos, const Quat& ori, const Vec3& scale = Vec3::one() );
+			const Vec3& pos, const Quat& ori, const Vec3& scale = Vec3::one(), const vis::mesh_options& mo = {} );
 
 		// view settings
 		ViewOptions view_flags;

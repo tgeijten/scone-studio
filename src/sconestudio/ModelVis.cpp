@@ -100,7 +100,9 @@ namespace scone
 
 						if ( geom_file ) {
 							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
-							body_meshes.push_back( MakeMesh( body_node, *geom_file, bone_mat, dg.pos_, dg.ori_, dg.scale_ ) );
+							vis::mesh_options mo;
+							mo.mirror_on_load = dg.options_.get<DisplayGeometryOptions::mirror>();
+							body_meshes.push_back( MakeMesh( body_node, *geom_file, bone_mat, dg.pos_, dg.ori_, dg.scale_, mo ) );
 							body_meshes.back().set_name( body->GetName().c_str() );
 						}
 						else log::warning( "Could not find ", dg.filename_ );
@@ -111,18 +113,18 @@ namespace scone
 				}
 				else {
 					// shape
-					if ( dg.type_ == DisplayGeometryType::shape ) {
+					if ( dg.options_.get<DisplayGeometryOptions::auxiliary>() ) {
+						const vis::material& mat = contact_mat;
+						contact_geoms.emplace_back(
+							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
+						contact_geoms.back().set_name( "!" );
+					}
+					else {
 						const vis::material& mat = dg.color_.is_null() ? object_mat : color_materials_( dg.color_ );
 						body_meshes.emplace_back(
 							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
 						bool clickable = dg.color_.is_null() || dg.color_.a == 1;
 						body_meshes.back().set_name( clickable ? body->GetName().c_str() : "!" );
-					}
-					else if ( dg.type_ == DisplayGeometryType::aux_shape ) {
-						const vis::material& mat = contact_mat;
-						contact_geoms.emplace_back(
-							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
-						contact_geoms.back().set_name( "!" );
 					}
 				}
 			}
@@ -376,7 +378,9 @@ namespace scone
 			b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
 	}
 
-	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::shape& sh, const xo::color& col, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
+	vis::mesh ModelVis::MakeMesh(
+		vis::node& parent, const xo::shape& sh, const xo::color& col, const vis::material& mat,
+		const Vec3& pos, const Quat& ori, const Vec3& scale )
 	{
 		auto msh = vis::mesh( parent, vis::shape_info{ sh, col, xo::vec3f::zero(), 0.75f } );
 		msh.set_material( mat );
@@ -387,9 +391,11 @@ namespace scone
 		return msh;
 	}
 
-	vis::mesh ModelVis::MakeMesh( vis::node& parent, const xo::path& file, const vis::material& mat, const Vec3& pos, const Quat& ori, const Vec3& scale )
+	vis::mesh ModelVis::MakeMesh(
+		vis::node& parent, const xo::path& file, const vis::material& mat,
+		const Vec3& pos, const Quat& ori, const Vec3& scale, const vis::mesh_options& mo )
 	{
-		auto msh = vis::mesh( parent, file );
+		auto msh = vis::mesh( parent, file, mo );
 		msh.set_material( mat );
 		auto fix_obj_ori = file.extension_no_dot() == "obj";
 		auto fixed_ori = fix_obj_ori ? vis::quatf( ori ) * xo::quat_from_x_angle( -90_degf ) : vis::quatf( ori );
