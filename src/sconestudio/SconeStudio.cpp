@@ -1617,6 +1617,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 	if ( QMessageBox::Cancel == QMessageBox::warning( this, msgTitle, msgBody, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel ) )
 		return;
 
+	auto selection = ui.resultsBrowser->selectionModel()->selectedRows();
 	for ( const auto& idx : selection )
 	{
 		bool success = false;
