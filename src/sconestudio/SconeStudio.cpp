@@ -1638,7 +1638,8 @@ void SconeStudio::copyToScenarioFolder()
 	auto scenario = getActiveScenario();
 	if ( fileList.size() >= 1 && scenario ) {
 		auto src_path = path_from_qt( fileList.front() );
-		auto trg_file = "par" / src_path.parent_path().stem() + "_" + src_path.filename();
+		auto src_dir = src_path.parent_path().stem().str();
+		auto trg_file = path( "par" ) / src_dir.substr( 0, xo::find_nth_str( src_dir, ".", 3 ) ) + "." + src_path.filename();
 		auto trg_path = scenario->filePath().parent_path() / trg_file;
 		xo::create_directories( trg_path.parent_path() );
 		xo::copy_file( src_path, trg_path, true );
