@@ -1,6 +1,44 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.3.1 ====
+//Released //
+
+=== New Features and Updates ===
+  * Generic SCONE features
+    * New examples: Model Scaling, 3D Treadmill Gait, Joint Motor Jump
+    * Added Hyfydy per-body model scaling (see scaling example)
+    * Users can now right click on a .par file to directly copy it from the results browser to the current scenario folder, making it easier to initialize optimizations from previous results
+    * CompositeMeasure now has a setting 'use_first_non_zero_result', which makes it behave like a tiered objective function, in which subsequent child measures are only used when previous measures have become zero.
+    * Added Constant function for FeedForwardController
+  * Scripting Features
+    * ScriptContoller and ScriptMeasure can now store global values in a LuaModel, which can be accessed in other scripts acting on the same model, via set_custom_value(), get_custom_value() and has_custom_value()
+    * Added set_gravity() script function to LuaModel
+    * LuaFrame now supports set_vec3()
+  * 3D Viewer updates
+    * Muscle visualization width can now be set to Fixed, PCSA and Dynamic PCSA (default)
+    * Camera positions can now be stored and retrieved using 'Control + 1-9' and '1-9'
+    * Clicking on a body in the 3D viewer now shows the local point coordinates
+    * Model Geometry folders are now automatically remembered, so that geometry loads correctly during results playback
+    * New viewer setting to control if joint forces and torques are in parent or child direction
+    * Display geometry can now be mirrored, either by finding a mirrored mesh file or mirroring a vtp on load
+
+=== Fixes ===
+  * Improved detection of the main .scone file when multiple .scone files are open
+  * Line number column in editor window is now always at least two characters wide
+  * Selecting bodies with named geometry now works correctly
+  * Improved visibility of selected items in inactive windows
+  * SCONE Studio now shows a more informative error message when trying to use an OpenSim 4 model on Linux or macOS
+  * Show/hide contact geometries from single bodies now works correctly
+  * Model Conversion now correctly handles rotational joints attached to the ground
+  * GaitMeasure can now handle min_velocity = 0 (useful for treadmills)
+  * SequentialController signature is now the same as CompositeController
+  * Model Converter now correctly computes inertia for 3D welded OpenSim bodies
+  * SequentialController now corrects for child controller start time
+  * ModelConverter now correctly rounds down small numbers
+  * GaitMeasure and EffortMeasure now handle scenarios in which the ground body is moving
+  * Updated SconePy examples to use the latest models and settings
+
 ==== SCONE 2.3.0 ====
 //Released December 14, 2023//
 
