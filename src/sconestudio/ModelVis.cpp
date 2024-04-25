@@ -142,9 +142,9 @@ namespace scone
 		{
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b; } );
 			auto& parent_node = idx != NoIndex ? bodies[idx] : root_node_;
-			//bool is_static = idx == 0 || idx == NoIndex;
-			bool is_static = cg->GetBody().GetMass() == 0;
-			bool is_object_geom = cg->GetPos().is_null() && cg->GetBody().GetDisplayGeometries().empty();
+			bool has_display_geom = !cg->GetBody().GetDisplayGeometries().empty();
+			bool is_static = cg->GetBody().GetMass() == 0 && !has_display_geom;
+			bool is_object_geom = cg->GetPos().is_null() && !has_display_geom;
 			vis::mesh geom_mesh;
 			if ( cg->HasFileName() )
 			{

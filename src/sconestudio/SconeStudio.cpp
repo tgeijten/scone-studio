@@ -1414,6 +1414,7 @@ void SconeStudio::viewerSelect()
 			if ( name.empty() )
 				continue;
 
+			// handle body clicks
 			if ( auto b = TryFindPtrByName( scenario_->GetModel().GetBodies(), name ) ) {
 				const auto world_pos = vis::from_osg( intersection->getWorldIntersectPoint() );
 				auto body_pos = b->GetLocalPosOfPoint( Vec3( world_pos ) );
@@ -1639,7 +1640,8 @@ void SconeStudio::copyToScenarioFolder()
 	if ( fileList.size() >= 1 && scenario ) {
 		auto src_path = path_from_qt( fileList.front() );
 		auto src_dir = src_path.parent_path().stem().str();
-		auto trg_file = path( "par" ) / src_dir.substr( 0, xo::find_nth_str( src_dir, ".", 3 ) ) + "." + src_path.filename();
+		auto third_dot_idx = xo::find_nth_str( src_dir, ".", 3 );
+		auto trg_file = path( "par" ) / src_dir.substr( 0, third_dot_idx ) + "." + src_path.filename();
 		auto trg_path = scenario->filePath().parent_path() / trg_file;
 		xo::create_directories( trg_path.parent_path() );
 		xo::copy_file( src_path, trg_path, true );
