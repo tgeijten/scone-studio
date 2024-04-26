@@ -9,6 +9,7 @@ composite_controller.txt
 composite_measure.txt
 com_pivot_reflex.txt
 conditional_muscle_reflex.txt
+constant_function.txt
 controller.txt
 dof_measure.txt
 dof_reflex.txt
@@ -41,7 +42,6 @@ measure.txt
 mimic_measure.txt
 mirror_controller.txt
 model.txt
-model_hfd.txt
 model_objective.txt
 model_open_sim3.txt
 model_open_sim4.txt
