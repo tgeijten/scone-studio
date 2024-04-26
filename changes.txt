@@ -2,7 +2,7 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.3.1 ====
-//Released //
+//Released April 26, 2024//
 
 === New Features and Updates ===
   * Generic SCONE features
@@ -29,7 +29,7 @@
   * Selecting bodies with named geometry now works correctly
   * Improved visibility of selected items in inactive windows
   * SCONE Studio now shows a more informative error message when trying to use an OpenSim 4 model on Linux or macOS
-  * Show/hide contact geometries from single bodies now works correctly
+  * Show/hide contact geometries from single bodies now works correctljjjjy
   * Model Conversion now correctly handles rotational joints attached to the ground
   * GaitMeasure can now handle min_velocity = 0 (useful for treadmills)
   * SequentialController signature is now the same as CompositeController
