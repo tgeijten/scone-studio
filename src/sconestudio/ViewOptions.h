@@ -23,7 +23,8 @@ namespace scone
 		MuscleFiberLength,
 		MuscleRadiusFixed,
 		MuscleRadiusPcsa,
-		MuscleRadiusPcsaDynamic
+		MuscleRadiusPcsaDynamic,
+		AuxiliaryGeom
 	};
 
 	using ViewOptions = xo::flag_set<ViewOption>;
@@ -38,7 +39,8 @@ namespace scone
 			ViewOption::GroundPlane,
 			ViewOption::Shadows,
 			ViewOption::MuscleActivation,
-			ViewOption::MuscleRadiusPcsaDynamic
+			ViewOption::MuscleRadiusPcsaDynamic,
+			ViewOption::AuxiliaryGeom
 			} );
 	}
 

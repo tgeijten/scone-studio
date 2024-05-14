@@ -37,6 +37,7 @@ namespace scone
 		arrow_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.force_alpha" ) } ),
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
+		auxiliary_mat( { GetStudioSetting<xo::color>( "viewer.auxiliary" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.auxiliary_alpha" ) } ),
 		static_mat( { GetStudioSetting<xo::color>( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
 		object_mat( { GetStudioSetting<xo::color>( "viewer.object" ), 0.0f, 0.0f, ambient_ } ),
 		muscle_gradient( {
@@ -114,10 +115,10 @@ namespace scone
 				else {
 					// shape
 					if ( dg.options_.get<DisplayGeometryOptions::auxiliary>() ) {
-						const vis::material& mat = contact_mat;
-						contact_geoms.emplace_back(
+						const vis::material& mat = auxiliary_mat;
+						auxiliary_geoms.emplace_back(
 							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
-						contact_geoms.back().set_name( "!" );
+						auxiliary_geoms.back().set_name( "!" );
 					}
 					else {
 						const vis::material& mat = dg.color_.is_null() ? object_mat : color_materials_( dg.color_ );
@@ -443,6 +444,9 @@ namespace scone
 
 		for ( auto& e : contact_geoms )
 			e.show( view_flags( ViewOption::ContactGeom ) );
+
+		for ( auto& e : auxiliary_geoms )
+			e.show( view_flags( ViewOption::AuxiliaryGeom ) );
 
 		for ( auto& e : object_contact_geoms )
 			e.show( view_flags( ViewOption::ContactGeom ) );

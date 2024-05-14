@@ -74,6 +74,7 @@ namespace scone
 		vis::material arrow_mat;
 		vis::material moment_mat;
 		vis::material contact_mat;
+		vis::material auxiliary_mat;
 		vis::material static_mat;
 		vis::material object_mat;
 		xo::color_gradient muscle_gradient;
@@ -87,6 +88,7 @@ namespace scone
 		std::vector< vis::mesh > body_com;
 		std::vector< vis::node > bodies;
 		std::vector< vis::mesh > contact_geoms;
+		std::vector< vis::mesh > auxiliary_geoms;
 		std::vector< vis::mesh > object_contact_geoms;
 		std::vector< vis::mesh > static_contact_geoms;
 		xo::memoize< vis::material( xo::color ) > color_materials_;

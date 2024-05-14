@@ -49,6 +49,8 @@ viewer {
 	contact { type = color label = "Contact color" default { h = 40 s = 0.2 v = 0.8 } }
 	contact_alpha { type = float label = "Contact color transparency" default = 0.2 }
 	contact_geometries_cast_shadows { type = bool label = "Contact geometries cast shadows" default = 0 }
+	auxiliary { type = color label = "Auxiliary color" default { h = 180 s = 0.5 v = 0.8 } }
+	auxiliary_alpha { type = float label = "Auxiliary color transparency" default = 0.5 }
 	static { type = color label = "Static geometry color" default { h = 180 s = 0.25 v = 0.4 } }
 	object { type = color label = "Object geometry color" default { h = 180 s = 0.02 v = 0.55 } }
 	joint { type = color label = "Joint color" default { h = 40 s = 0.2 v = 0.5 } }
