@@ -180,6 +180,7 @@ private:
 	double slomo_factor;
 	xo::delta< scone::Vec3 > com_delta;
 	std::pair<std::string, scone::Vec3> prev_click;
+	void setOrbitVelocity( float v );
 
 	// video capture
 	QString captureFilename;

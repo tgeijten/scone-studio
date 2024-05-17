@@ -316,9 +316,15 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// init orbit menu
 	auto og = new QActionGroup( this );
-	og->addAction( orbitMenu->addAction( "None", [this]() { ui.osgViewer->yawAnimationVelocity = vis::degree( 0 ); } ) );
-	og->addAction( orbitMenu->addAction( "Left", [this]() { ui.osgViewer->yawAnimationVelocity = -GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
-	og->addAction( orbitMenu->addAction( "Right", [this]() { ui.osgViewer->yawAnimationVelocity = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" ); } ) );
+	og->addAction( orbitMenu->addAction( "None", [&]() { setOrbitVelocity( 0.0f ); } ) );
+	orbitMenu->addSeparator();
+	og->addAction( orbitMenu->addAction( "Left - Slow", [&]() { setOrbitVelocity( -0.5f ); } ) );
+	og->addAction( orbitMenu->addAction( "Left - Medium", [&]() { setOrbitVelocity( -1.0f ); } ) );
+	og->addAction( orbitMenu->addAction( "Left - Fast", [&]() { setOrbitVelocity( -2.0f ); } ) );
+	orbitMenu->addSeparator();
+	og->addAction( orbitMenu->addAction( "Right - Slow", [&]() { setOrbitVelocity( 0.5f ); } ) );
+	og->addAction( orbitMenu->addAction( "Right - Medium", [&]() { setOrbitVelocity( 1.0f ); } ) );
+	og->addAction( orbitMenu->addAction( "Right - Fast", [&]() { setOrbitVelocity( 2.0f ); } ) );
 	og->setExclusive( true );
 	for ( auto& a : og->actions() )
 		a->setCheckable( true );
@@ -1555,6 +1561,12 @@ void SconeStudio::captureImage()
 	QString filename = QFileDialog::getSaveFileName( this, "Image Filename", QString(), "png files (*.png)" );
 	if ( !filename.isEmpty() )
 		ui.osgViewer->captureCurrentFrame( xo::path( filename.toStdString() ).replace_extension( "" ).str() );
+}
+
+void SconeStudio::setOrbitVelocity( float v )
+{
+	auto s = GetStudioSetting<vis::degree>( "viewer.camera_orbit_speed" );
+	ui.osgViewer->getCameraMan().setOrbitAnimation( v * s, vis::degree( 0 ), 0.0f );
 }
 
 void SconeStudio::finalizeCapture()
