@@ -523,13 +523,13 @@ void SconeStudio::start()
 	else
 	{
 		// everything is up-to-date, pause idle update timer
-		ui.osgViewer->stopTimer();
+		ui.osgViewer->startPlaybackMode();
 	}
 }
 
 void SconeStudio::stop()
 {
-	ui.osgViewer->startTimer();
+	ui.osgViewer->stopPlaybackMode();
 	refreshAnalysis();
 }
 
@@ -1533,7 +1533,7 @@ void SconeStudio::createVideo()
 	QDir().mkdir( captureFilename + ".images" );
 	ui.osgViewer->startCapture( captureFilename.toStdString() + ".images/image" );
 
-	ui.osgViewer->stopTimer();
+	ui.osgViewer->startPlaybackMode();
 	ui.abortButton->setChecked( false );
 	ui.progressBar->setMaximum( 100 );
 	ui.progressBar->setValue( 0 );
@@ -1553,7 +1553,7 @@ void SconeStudio::createVideo()
 	// finalize recording
 	finalizeCapture();
 	ui.stackedWidget->setCurrentIndex( 0 );
-	ui.osgViewer->startTimer();
+	ui.osgViewer->stopPlaybackMode();
 }
 
 void SconeStudio::captureImage()
