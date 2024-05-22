@@ -73,6 +73,7 @@ viewer {
 	hud_type { type = int label = "Show logo" default = 1 }
 	camera_follow_body { type = string label = "Body to follow by camera (leave blank for CoM)" default = "" }
 	camera_orbit_speed { type = float label = "Medium camera orbit speed" range = [ 0 360 ] default = 10 }
+	camera_transition_duration { type = float label = "Duration of camera transitions during playback" range = [ 0 60 ] default = 0.5 }
 }
 
 optimization {
