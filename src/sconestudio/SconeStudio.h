@@ -117,6 +117,7 @@ public slots:
 
 	void deleteSelectedFileOrFolder();
 	void copyToScenarioFolder();
+	void evaluateSelectedFiles();
 	void sortResultsByDate();
 	void sortResultsByName();
 	void onResultBrowserCustomContextMenu( const QPoint& );

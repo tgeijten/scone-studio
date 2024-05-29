@@ -497,7 +497,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 			}
 		}
 		else if ( fi.suffix() == "pt" ) {
-			evaluateDeprlCheckpoint( QDir::toNativeSeparators( fi.absoluteFilePath() ) );
+			evaluateDeprlCheckpoint( fi.absoluteFilePath() );
 		}
 		else {
 			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
@@ -1668,6 +1668,14 @@ void SconeStudio::copyToScenarioFolder()
 	}
 }
 
+void SconeStudio::evaluateSelectedFiles()
+{
+	auto fileList = getSelectedFiles();
+	for ( const auto& f : fileList )
+		if ( evaluateDeprlCheckpoint( f ) )
+			break;
+}
+
 void SconeStudio::sortResultsByDate()
 {
 	ui.resultsBrowser->fileSystemModel()->sort( 3 );
@@ -1688,6 +1696,10 @@ void SconeStudio::onResultBrowserCustomContextMenu( const QPoint& pos )
 	auto sel = ui.resultsBrowser->selectionModel()->selectedRows();
 	if ( sel.size() == 1 && getActiveScenario() && ui.resultsBrowser->fileSystemModel()->fileInfo( sel.front() ).suffix() == "par" ) {
 		menu.addAction( "&Copy to Scenario Folder", this, &SconeStudio::copyToScenarioFolder );
+		menu.addSeparator();
+	}
+	if ( sel.size() >= 1 && ui.resultsBrowser->fileSystemModel()->fileInfo( sel.front() ).suffix() == "pt" ) {
+		menu.addAction( "&Evaluate", this, &SconeStudio::evaluateSelectedFiles );
 		menu.addSeparator();
 	}
 	if ( sel.size() >= 1 )

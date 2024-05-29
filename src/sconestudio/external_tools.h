@@ -7,6 +7,6 @@
 
 namespace scone
 {
-	void runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent = nullptr, log::level l = log::level::info );
-	void evaluateDeprlCheckpoint( const QString& file, QWidget* parent = nullptr );
+	bool runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent = nullptr, log::level l = log::level::info );
+	bool evaluateDeprlCheckpoint( const QString& file, QWidget* parent = nullptr );
 }

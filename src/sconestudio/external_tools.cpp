@@ -9,7 +9,7 @@
 
 namespace scone
 {
-	void runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent, log::level l )
+	bool runExternalProcess( const QString& title, const QString& file, QStringList& args, QWidget* parent, log::level l )
 	{
 		QProgressDialog dlg( title, "Abort", 0, 1000, parent );
 		dlg.setWindowModality( Qt::WindowModal );
@@ -34,14 +34,17 @@ namespace scone
 			dlg.setValue( progress );
 		}
 		process.close();
+
+		return dlg.wasCanceled();
 	}
 
-	void evaluateDeprlCheckpoint( const QString& file, QWidget* parent )
+	bool evaluateDeprlCheckpoint( const QString& file, QWidget* parent )
 	{
+		auto f = QDir::toNativeSeparators( file );
 		auto episodes = 5;
-		xo::log::info( "Evaluating ", file.toStdString() );
-		QStringList args{ "-m", "deprl.play", "--checkpoint_file", file, "--num_episodes", QString::number( episodes ) };
-		runExternalProcess( "Evaluating " + file, "python", args, parent, log::level::info );
+		xo::log::info( "Evaluating ", f.toStdString() );
+		QStringList args{ "-m", "deprl.play", "--checkpoint_file", f, "--num_episodes", QString::number( episodes ) };
+		return runExternalProcess( "Evaluating " + f, "python", args, parent, log::level::info );
 	}
 }
 
