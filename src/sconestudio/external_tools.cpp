@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QProgressDialog>
 #include <QApplication>
+#include <QDir>
 
 namespace scone
 {
