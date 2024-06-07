@@ -1471,7 +1471,7 @@ void SconeStudio::exportCoordinates()
 void SconeStudio::resetCoordinates()
 {
 	if ( scenario_ && scenario_->HasModel() ) {
-		scenario_->GetModel().SetNullState();
+		scenario_->GetModel().SetDefaultState();
 		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 		scenario_->UpdateVis( 0.0 );
 		ui.osgViewer->update();
