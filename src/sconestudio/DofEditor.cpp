@@ -17,9 +17,12 @@ namespace scone
 
 	DofWidgets::DofWidgets( const Dof& dof, DofEditorGroup* deg, int row ) :
 		useDegrees( dof.IsRotational() ),
-		stepSize_( 0.01 )
+		stepSize_( useDegrees ? 0.1 : 0.01 )
 	{
 		GUI_PROFILE_FUNCTION;
+
+		auto decimals = xo::round_cast<int>( log10( 1 / stepSize_ ) );
+		bool useSpinLimits = false; // #todo: make this a setting
 
 		label_ = new QLabel( to_qt( dof.GetName() ) );
 		deg->grid()->addWidget( label_, row, 0 );
@@ -28,11 +31,12 @@ namespace scone
 		auto pos = radToDegIf( dof.GetPos(), useDegrees );
 		auto min = radToDegIf( r.min, useDegrees );
 		auto max = radToDegIf( r.max, useDegrees );
+		auto maxmax = useDegrees ? 360.0 : 99.99;
 
 		spin_ = new QDoubleSpinBox();
 		spin_->setSingleStep( useDegrees ? 1.0 : 0.01 );
-		spin_->setDecimals( xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
-		spin_->setRange( min, max );
+		spin_->setDecimals( decimals );
+		spin_->setRange( useSpinLimits ? min : -maxmax, useSpinLimits ? max : maxmax );
 		spin_->setAlignment( Qt::AlignRight );
 		QObject::connect( spin_, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), deg,
 			[=]( double d ) { slider_->setValue( to_int( d ) ); emit deg->valueChanged(); } );
@@ -60,8 +64,8 @@ namespace scone
 
 		velocity_ = new QDoubleSpinBox();
 		velocity_->setSingleStep( useDegrees ? 10.0 : 0.1 );
-		velocity_->setDecimals( useDegrees ? 0 : xo::round_cast<int>( log10( 1 / stepSize_ ) ) );
-		double max_vel = useDegrees ? 9999.0 : 99.0;
+		velocity_->setDecimals( useDegrees ? 0 : decimals );
+		double max_vel = useDegrees ? 9999.0 : 99.99;
 		velocity_->setRange( -max_vel, max_vel );
 		velocity_->setAlignment( Qt::AlignRight );
 		QObject::connect( velocity_, QOverload<double>::of( &QDoubleSpinBox::valueChanged ), deg,
@@ -95,16 +99,20 @@ namespace scone
 
 		QWidget* group = new QWidget( this );
 		QVBoxLayout* vl = new QVBoxLayout( group );
-		vl->setMargin( 8 );
-		vl->setSpacing( 16 );
+		vl->setMargin( 6 );
+		vl->setSpacing( 4 );
 
 		dofGrid = new QWidget( group );
 		gridLayout = new QGridLayout();
 		gridLayout->setMargin( 0 );
+		gridLayout->setHorizontalSpacing( 4 );
+		gridLayout->setVerticalSpacing( 4 );
 		dofGrid->setLayout( gridLayout );
 		vl->addWidget( dofGrid );
 
 		auto* hl = new QHBoxLayout( group );
+		hl->setMargin( 10 );
+		hl->setSpacing( 8 );
 		vl->addLayout( hl );
 		resetButton = new QPushButton( "Reset Coordinates", this );
 		resetButton->setIcon( style()->standardIcon( QStyle::SP_DialogResetButton ) );
