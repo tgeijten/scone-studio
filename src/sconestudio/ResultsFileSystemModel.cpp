@@ -65,16 +65,21 @@ ResultsFileSystemModel::~ResultsFileSystemModel()
 
 ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi ) const
 {
-	Status stat{ -1, 0 };
-	if ( fi.isFile() && fi.suffix() == "par" )
+	Status stat;
+	if ( fi.isFile() && ( fi.suffix() == "par" || fi.suffix() == "sto" ) )
 	{
 		auto split = fi.completeBaseName().split( "_" );
-		if ( split.size() > 2 )
+		if ( split.size() == 3 )
+			stat.type = Status::Type::Par;
+		if ( split.size() == 2 )
+			stat.type = Status::Type::Pt;
+
+		if ( stat.type != Status::Type::Invalid )
 		{
 			bool ok = false;
 			if ( auto gen = split[0].toInt( &ok ); ok )
 				stat.gen = gen;
-			if ( auto best = split[2].toDouble( &ok ); ok )
+			if ( auto best = split.back().toDouble( &ok ); ok )
 				stat.best = best;
 		}
 	}
@@ -86,14 +91,21 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi 
 		if ( cache_it != m_StatusCache.end() && abs( cache_it->second.modified.secsTo( fi.lastModified() ) ) < 3 )
 			return cache_it->second;
 
-		//scone::log::trace( "Scanning folder ", fi.absoluteFilePath().toStdString() );
-		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par" }, QDir::Files ); dir_it.hasNext(); )
+		// Using log here causes a recursive loop for some reason
+		//std::cout << "Scanning folder " << fi.absoluteFilePath().toStdString() << std::endl;
+		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par", "*.sto" }, QDir::Files ); dir_it.hasNext(); )
 		{
 			QFileInfo fileinf = QFileInfo( dir_it.next() );
 			if ( fileinf.isFile() ) {
 				auto fs = getStatus( fileinf );
-				if ( fs.gen > stat.gen )
+				if ( stat.type == Status::Type::Invalid )
 					stat = fs;
+				if ( fs.type == Status::Type::Par && fs.gen >= stat.gen )
+					stat = fs;
+				if ( fs.type == Status::Type::Pt ) {
+					xo::set_if_bigger( stat.gen, fs.gen );
+					xo::set_if_bigger( stat.best, fs.best );
+				}
 			}
 			else if ( fileinf.fileName() != ".." && fileinf.fileName() != "." ) {
 				// do something?
@@ -133,12 +145,11 @@ QVariant ResultsFileSystemModel::data( const QModelIndex& idx, int role ) const
 	{
 		auto fi = fileInfo( idx );
 		auto stat = getStatus( fi );
-		if ( stat.gen < 0 )
+		if ( stat.type == Status::Type::Invalid )
 			return QVariant( QString( "" ) );
 
 		switch ( idx.column() - QFileSystemModel::columnCount() )
 		{
-			//		case StateCol: return QVariant( QString( stat.state_str().c_str() ) );
 		case GenCol: return QVariant( stat.gen );
 		case ScoreCol: return QVariant( QString::asprintf( "%7.3f", stat.best ) );
 		default: return QVariant();

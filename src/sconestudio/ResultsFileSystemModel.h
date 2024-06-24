@@ -24,8 +24,10 @@ public:
 	virtual int columnCount( const QModelIndex& parent = QModelIndex() ) const override;
 
 	struct Status {
-		int gen;
-		double best;
+		enum class Type { Invalid, Par, Pt };
+		int gen = 0;
+		double best = 0.0;
+		Type type = Type::Invalid;
 		QDateTime modified;
 	};
 
