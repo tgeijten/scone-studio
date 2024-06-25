@@ -110,6 +110,12 @@ coordinates {
 	export_activations { type = bool label = "Export activations" default = 0 }
 }
 
+sconegym {
+	label = "Settings for sconegym"
+	python { type = string label = "Name of the Python executable used for evaluation" default = "python" }
+	num_episodes { type = int label = "Number of episodes to evaluate" default = 5 }
+}
+
 ui {
 	label = "User Interface Settings"
 	log_level { type = int default = 2 label = "Messages log level (1-7)" }

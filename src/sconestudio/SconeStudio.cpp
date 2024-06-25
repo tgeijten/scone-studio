@@ -497,7 +497,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 			}
 		}
 		else if ( fi.suffix() == "pt" ) {
-			evaluateDeprlCheckpoint( fi.absoluteFilePath() );
+			activeProcesses.emplace_back( evaluateCheckpointAsync( fi.absoluteFilePath() ) );
 		}
 		else {
 			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
@@ -1303,6 +1303,7 @@ void SconeStudio::updateBackgroundTimer()
 	if ( scenario_ )
 		scenario_->CheckWriteResults();
 	checkAutoReload();
+	checkActiveProcesses();
 }
 
 void SconeStudio::checkAutoReload()
@@ -1316,6 +1317,32 @@ void SconeStudio::checkAutoReload()
 	if ( reload ) {
 		createAndVerifyActiveScenario( true );
 	}
+}
+
+void SconeStudio::checkActiveProcesses()
+{
+	if ( activeProcesses.empty() )
+		return;
+
+	auto it = activeProcesses.begin();
+	while ( it != activeProcesses.end() ) {
+		auto& p = **it;
+		if ( p.state() != QProcess::Running ) {
+			p.waitForFinished();
+			p.close();
+			it = activeProcesses.erase( it );
+		}
+		else {
+			if ( p.waitForReadyRead( 0 ) ) 
+				xo::log::debug( p.readAll().toStdString() );
+			it++;
+		}
+	}
+
+	auto n = activeProcesses.size();
+	if ( n > 0 )
+		ui.statusBar->showMessage( QString().sprintf( "Number of active background processes: %d", n ) );
+	else ui.statusBar->showMessage( "All background processes have finished", 3000 );
 }
 
 void SconeStudio::updateOptimizations()
@@ -1672,8 +1699,7 @@ void SconeStudio::evaluateSelectedFiles()
 {
 	auto fileList = getSelectedFiles();
 	for ( const auto& f : fileList )
-		if ( evaluateDeprlCheckpoint( f ) )
-			break;
+		activeProcesses.emplace_back( evaluateCheckpointAsync( f ) );
 }
 
 void SconeStudio::sortResultsByDate()

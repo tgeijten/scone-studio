@@ -21,6 +21,7 @@
 #include "QDockWidget"
 #include "QPropNodeItemModel.h"
 #include <QFileSystemWatcher>
+#include <QProcess>
 
 #include "ui_SconeStudio.h"
 
@@ -93,6 +94,7 @@ public slots:
 	bool abortOptimizations();
 	void updateBackgroundTimer();
 	void checkAutoReload();
+	void checkActiveProcesses();
 	void updateOptimizations();
 	void createVideo();
 	void captureImage();
@@ -233,6 +235,9 @@ private:
 	SconeStorageDataModel optimizationHistoryStorageModel;
 	QDataAnalysisView* optimizationHistoryView = nullptr;
 	QDockWidget* optimizationHistoryDock = nullptr;
+
+	// Background processing
+	std::vector<std::unique_ptr<QProcess>> activeProcesses;
 };
 
 #endif // SCONESTUDIO_H
