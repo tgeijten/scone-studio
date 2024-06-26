@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QString>
 #include <QStringList>
+#include <QProcess>
 #include "scone/core/Log.h"
 
 namespace scone
