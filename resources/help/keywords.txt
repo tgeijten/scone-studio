@@ -42,6 +42,8 @@ measure.txt
 mimic_measure.txt
 mirror_controller.txt
 model.txt
+model_hfd.txt
+model_hyfydy.txt
 model_objective.txt
 model_open_sim3.txt
 model_open_sim4.txt
