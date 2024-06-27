@@ -261,10 +261,10 @@ namespace scone
 		for ( index_t i = 0; i < model_joints.size(); ++i ) {
 			auto pos = model_joints[i]->GetPos();
 			joints[i].pos( vis::vec3f( pos ) );
-			if ( view_flags( ViewOption::Joints ) ) {
+			if ( view_flags( ViewOption::JointReactionForces ) )
 				UpdateForceVis( force_count++, pos, sign * model_joints[i]->GetReactionForce() );
+			if ( view_flags( ViewOption::Joints ) )
 				UpdateMomentVis( moment_count++, pos, sign * model_joints[i]->GetLimitTorque() );
-			}
 		}
 
 		// update contact forces
@@ -317,7 +317,7 @@ namespace scone
 		{
 			moments.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::blue(), 0.3f } );
 			moments.back().set_material( moment_mat );
-			moments.back().show( view_flags( ViewOption::ExternalForces ) );
+			moments.back().show( view_flags( ViewOption::Joints ) );
 			moments.back().set_cast_shadows( forces_cast_shadows_ );
 		}
 		moments[moment_idx].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
@@ -416,9 +416,9 @@ namespace scone
 	{
 		view_flags = f;
 		for ( auto& f : forces )
-			f.show( view_flags( ViewOption::ExternalForces ) );
+			f.show( view_flags( ViewOption::ExternalForces ) || view_flags( ViewOption::JointReactionForces ) );
 		for ( auto& m : moments )
-			m.show( view_flags( ViewOption::ExternalForces ) );
+			m.show( view_flags( ViewOption::Joints ) );
 
 		for ( auto& m : muscles )
 		{
@@ -431,7 +431,7 @@ namespace scone
 			l.show( view_flags( ViewOption::BodyGeom ) );
 
 		for ( auto& e : joints )
-			e.show( view_flags( ViewOption::Joints ) );
+			e.show( view_flags( ViewOption::Joints ) || view_flags( ViewOption::JointReactionForces ) );
 
 		for ( auto& e : body_meshes )
 			e.show( view_flags( ViewOption::BodyGeom ) );

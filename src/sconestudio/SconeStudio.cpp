@@ -287,6 +287,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::Joints] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::JointReactionForces] = viewMenu->addAction( "Show Joint Reaction Forces", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );

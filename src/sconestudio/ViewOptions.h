@@ -24,7 +24,8 @@ namespace scone
 		MuscleRadiusFixed,
 		MuscleRadiusPcsa,
 		MuscleRadiusPcsaDynamic,
-		AuxiliaryGeom
+		AuxiliaryGeom,
+		JointReactionForces
 	};
 
 	using ViewOptions = xo::flag_set<ViewOption>;
