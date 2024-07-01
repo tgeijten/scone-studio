@@ -1460,7 +1460,7 @@ void SconeStudio::viewerSelect()
 				QApplication::clipboard()->setText( to_qt( pos_str ) );
 				if ( prev_click.first == name )
 					pos_str += " dir = [ " + vec3_str( prev_click.second - body_pos ) + " ]";
-				log::info( "body = ", name, " ", pos_str );
+				log::info( "body = ", name, " pos = ", pos_str );
 				prev_click = { name, body_pos };
 			}
 
