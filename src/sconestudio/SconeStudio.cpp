@@ -1456,10 +1456,11 @@ void SconeStudio::viewerSelect()
 			if ( auto b = TryFindPtrByName( scenario_->GetModel().GetBodies(), name ) ) {
 				const auto world_pos = vis::from_osg( intersection->getWorldIntersectPoint() );
 				auto body_pos = b->GetLocalPosOfPoint( Vec3( world_pos ) );
-				auto pos_str = "; pos = [ " + vec3_str( body_pos ) + " ]";
+				auto pos_str = "[ " + vec3_str( body_pos ) + " ]";
+				QApplication::clipboard()->setText( to_qt( pos_str ) );
 				if ( prev_click.first == name )
 					pos_str += " dir = [ " + vec3_str( prev_click.second - body_pos ) + " ]";
-				log::info( "Clicked ", name, pos_str );
+				log::info( "body = ", name, " ", pos_str );
 				prev_click = { name, body_pos };
 			}
 
