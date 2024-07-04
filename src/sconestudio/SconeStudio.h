@@ -138,6 +138,7 @@ private:
 	void restoreCustomSettings( QSettings& settings ) override;
 	void saveCustomSettings( QSettings& settings ) override;
 	scone::ViewOptions getViewOptionsFromMenu() const;
+	void initViewerSettings();
 
 	void performanceTest( bool write_stats );
 	void saveUserInputs( bool show_dialog );

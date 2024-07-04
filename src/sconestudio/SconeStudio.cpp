@@ -394,17 +394,15 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	//
 
 	// init viewer / scene
-	// #todo: move settings stored in preferences to setViewerSettings(), also call after settings change
 	if ( GetStudioSetting<bool>( "viewer.enable_object_cache" ) )
 		ui.osgViewer->enableObjectCache( true );
-	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
 	if ( scone::GetStudioSetting<int>( "viewer.hud_type" ) != 67 )
 		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
-	ui.osgViewer->getCameraMan().setTransitionDuration( GetStudioSetting<double>( "viewer.camera_transition_duration" ) );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
 	scone::TimeSection( "InitViewer" );
+	initViewerSettings();
 
 	createSettings( "SCONE", "SconeStudio" );
 	if ( GetStudioSetting<bool>( "ui.reset_layout" ) )
@@ -1392,6 +1390,13 @@ scone::ViewOptions SconeStudio::getViewOptionsFromMenu() const
 	return f;
 }
 
+void SconeStudio::initViewerSettings()
+{
+	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
+	ui.osgViewer->getCameraMan().setTransitionDuration( GetStudioSetting<double>( "viewer.camera_transition_duration" ) );
+	ui.osgViewer->setLightOffset( GetStudioSetting<vis::vec3f>( "viewer.camera_light_offset" ) );
+}
+
 void SconeStudio::applyViewOptions()
 {
 	if ( scenario_ )
@@ -1406,8 +1411,7 @@ void SconeStudio::showSettingsDialog()
 	if ( ShowPreferencesDialog( this ) == QDialog::Accepted ) {
 		gaitAnalysis->reset();
 		ui.outputText->set_log_level( xo::log::level( GetStudioSetting<int>( "ui.log_level" ) ) );
-		// #todo: move settings stored in preferences to setViewerSettings() and call here
-		ui.osgViewer->getCameraMan().setTransitionDuration( GetStudioSetting<double>( "viewer.camera_transition_duration" ) );
+		initViewerSettings();
 	}
 }
 
