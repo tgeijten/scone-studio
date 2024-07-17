@@ -176,7 +176,7 @@ namespace scone
 		for ( auto& muscle : model.GetMuscles() )
 		{
 			MuscleVis mv;
-			mv.muscle_radius = auto_muscle_width_factor * float( sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) );
+			mv.muscle_radius = auto_muscle_width_factor * float( std::sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) );
 			mv.tendon_radius = relative_tendon_width * mv.muscle_radius;
 
 			// add path
