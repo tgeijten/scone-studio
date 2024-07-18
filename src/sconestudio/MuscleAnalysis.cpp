@@ -110,6 +110,7 @@ namespace scone
 
 	void MuscleAnalysis::StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const
 	{
+		const auto& model = mus.GetModel();
 		const auto& name = mus.GetName();
 		bool normalized_only = true;
 
@@ -120,8 +121,11 @@ namespace scone
 			frame[name + ".mtu_force"] = mus.GetForce();
 		}
 
+		// moment arms
+		for ( auto* d : mus.GetDofs() )
+			frame[name + "." + d->GetName() + ".moment_arm"] = mus.GetMomentArm( *d );
+
 		// tendon / mtu properties
-		frame[name + ".moment_arm"] = mus.GetMomentArm( dof );
 		frame[name + ".fiber_length_norm"] = mus.GetNormalizedFiberLength();
 		frame[name + ".tendon_length_norm"] = mus.GetNormalizedTendonLength() - 1;
 		frame[name + ".mtu_length_norm"] = mus.GetLength() / ( mus.GetOptimalFiberLength() + mus.GetTendonSlackLength() );
