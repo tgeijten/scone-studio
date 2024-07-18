@@ -12,6 +12,12 @@ if(UNIX AND NOT APPLE)
 	set(LINUX TRUE)
 endif()
 
+# Change default MSVC flags
+if (MSVC)
+	string(REPLACE "/Ob2" "/Ob3" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+	string(REPLACE "/Ob2" "/Ob3" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
+endif()
+
 # scone-studio options
 option(SCONE_STUDIO_CPACK "Build SCONE Studio installer using CPack" OFF)
 if (LINUX)
