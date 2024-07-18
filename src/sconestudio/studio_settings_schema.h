@@ -1,12 +1,12 @@
 const char* studio_settings_schema = R"str(
 file {
-	label = "File settings"
+	label = "File"
 	auto_write_scone_evaluation { type = bool label = "Automatically write data after evaluating a .scone file" default = 0 }
 	auto_write_par_evaluation { type = bool label = "Automatically write data after evaluating a .par file" default = 1 }
 }
 
 gait_analysis {
-	label = "Gait Analysis settings"
+	label = "Gait Analysis"
 	template { type = path default = "" label = "Template used for gait analysis" }
 	plot_individual_cycles { type = bool default = 1 label = "Plot individual gait cycles" }
 	show_fit { type = bool default = 1 label = "Show data fit" }
@@ -19,7 +19,7 @@ gait_analysis {
 }
 
 video {
-	label = "Video settings"
+	label = "Video"
 	path_to_ffmpeg { type = path default = "" label = "Location of ffmpeg.exe (required for videos)" }
 	frame_rate { type = float label = "Video output frame rate" default = 30 }
 	quality { type = int default = 2 label = "Quality for video output" }
@@ -28,7 +28,7 @@ video {
 }
 
 viewer {
-	label = "3D Viewer settings"
+	label = "3D Viewer"
 	background { type = color label = "Background color" default = 0xc0c0c0 }
 	tile1 { type = color label = "Viewer Tile A color" default = 0xc4c4c4 }
 	tile2 { type = color label = "Viewer Tile B color" default = 0xbcbcbc }
@@ -78,12 +78,12 @@ viewer {
 }
 
 optimization {
-	label = "Optimization settings"
+	label = "Optimization"
 	use_external_process { type = bool default = 0 label = "Perform optimizations using external process" }
 }
 
 progress {
-	label = "Optimization progress settings"
+	label = "Optimization progress"
 	update_interval { type = int default = 250 label = "Interval [ms] to update progress graphs" range = [ 10 1000 ] }
 	line_width { type = float default = 1 label = "Line width of progress graphs (use 1 for best performance)" range = [ 1 10 ] }
 	show_prediction { type = bool default = 0 label = "Show predicted fitness" }
@@ -94,31 +94,31 @@ progress {
 }
 
 analysis {
-	label = "Analysis settings"
+	label = "Analysis"
 	line_width { type = float default = 1 label = "Line width for analysis (use 1 for best performance)" range = [ 1 10 ] }
 	auto_fit_vertical_axis { type = bool default = 1 label = "Automatically scale vertical axis to fit data in range" }
 }
 
 muscle_analysis {
-	label = "Muscle Analysis settings"
+	label = "Muscle Analysis"
 	step_size { type = float default = 1 label = "Increments to use in Muscle Analysis graph [deg]" range = [ 0.01 10 ] }
 	max_steps { type = int default = 360 label = "Maximum number of samples in Muscle Analysis graph" range = [ 1 10000 ] }
 	analyze_on_load { type = bool default = 0 label = "Perform muscle analysis on scenario load" }
 }
 
 coordinates {
-	label = "Coordinates settings"
+	label = "Coordinates"
 	export_activations { type = bool label = "Export activations" default = 0 }
 }
 
 sconegym {
-	label = "Settings for sconegym"
+	label = "Sconegym"
 	python { type = string label = "Name of the Python executable used for evaluation" default = "python" }
 	num_episodes { type = int label = "Number of episodes to evaluate" default = 5 }
 }
 
 ui {
-	label = "User Interface Settings"
+	label = "User Interface"
 	log_level { type = int default = 2 label = "Messages log level (1-7)" }
 	enable_profiler { type = bool default = 0 label = "Enable GUI profiler" }
 	show_conversion_support_message { type = bool default = 1 label = "Show support message after convert to Hyfydy" }
