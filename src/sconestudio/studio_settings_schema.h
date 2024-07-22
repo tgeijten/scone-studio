@@ -3,6 +3,7 @@ file {
 	label = "File"
 	auto_write_scone_evaluation { type = bool label = "Automatically write data after evaluating a .scone file" default = 0 }
 	auto_write_par_evaluation { type = bool label = "Automatically write data after evaluating a .par file" default = 1 }
+	playback_start { type = float label = "Time to start playback, negative numbers start from end" default = 0 }
 }
 
 gait_analysis {
