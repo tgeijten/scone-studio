@@ -89,6 +89,7 @@ namespace scone
 			{
 				if ( !dg.filename_.empty() )
 				{
+					// MESH FILE
 					dg.filename_.make_preferred();
 					try {
 						auto geom_file = xo::try_find_file( dg.filename_, geom_model_dirs );
@@ -103,7 +104,8 @@ namespace scone
 							log::trace( "Loading geometry for body ", body->GetName(), ": ", *geom_file );
 							vis::mesh_options mo;
 							mo.mirror_on_load = dg.options_.get<DisplayGeometryOptions::mirror>();
-							body_meshes.push_back( MakeMesh( body_node, *geom_file, bone_mat, dg.pos_, dg.ori_, dg.scale_, mo ) );
+							const vis::material& mat = dg.color_.is_null() ? bone_mat : color_materials_( dg.color_ );
+							body_meshes.push_back( MakeMesh( body_node, *geom_file, mat, dg.pos_, dg.ori_, dg.scale_, mo ) );
 							body_meshes.back().set_name( body->GetName().c_str() );
 						}
 						else log::warning( "Could not find ", dg.filename_ );
@@ -113,7 +115,7 @@ namespace scone
 					}
 				}
 				else {
-					// shape
+					// SHAPE
 					if ( dg.options_.get<DisplayGeometryOptions::auxiliary>() ) {
 						const vis::material& mat = auxiliary_mat;
 						auxiliary_geoms.emplace_back(
