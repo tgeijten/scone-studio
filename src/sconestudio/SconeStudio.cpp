@@ -1562,7 +1562,9 @@ void SconeStudio::createVideo()
 
 	fixViewerWindowSize();
 
-	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", QString(), "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
+	QString defaultName = to_qt( xo::path( scenario_->GetFileName() ).replace_extension( "mp4" ) );
+
+	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", defaultName, "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
 	if ( captureFilename.isEmpty() )
 		return;
 	if ( !captureFilename.contains( "." ) )
