@@ -91,6 +91,19 @@ namespace scone
 				if ( mus->HasMomentArm( *activeDof ) )
 					StoreMuscleData( f, *mus, *activeDof );
 		}
+		// compute moment arms using difference in mtu_length
+		SCONE_ASSERT( !storage.IsEmpty() );
+		for ( auto mus : model.GetMuscles() ) {
+			auto len_str = mus->GetName() + ".mtu_length_norm";
+			auto mom_str = mus->GetName() + ".moment_arm";
+			auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonLength() ) / ( 2 * step.rad_value() );
+			for ( index_t i = 1; i < storage.GetFrameCount() - 1; ++i ) {
+				if ( mus->HasMomentArm( *activeDof ) ) {
+					auto dl = storage.GetFrame( i + 1 )[len_str] - storage.GetFrame( i - 1 )[len_str];
+					storage.GetFrame( i )[mom_str] = norm_factor * -dl;
+				}
+			}
+		}
 
 		storageModel.setStorage( &storage );
 		view->reloadData();
@@ -122,6 +135,7 @@ namespace scone
 		}
 
 		// moment arms
+		frame[name + ".moment_arm"] = mus.GetMomentArm( dof ); // will be recalculated later
 		for ( auto* d : mus.GetDofs() )
 			frame[name + "." + d->GetName() + ".moment_arm"] = mus.GetMomentArm( *d );
 
