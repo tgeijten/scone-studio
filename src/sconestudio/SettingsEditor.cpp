@@ -117,7 +117,7 @@ namespace scone
 				scone_settings.set( "hyfydy.enabled", hfd_new_enabled );
 				if ( hfd_new_enabled )
 					if ( ShowLicenseDialog( parent ) == QDialog::Accepted )
-						RegisterSconeHfd( hfd_new_license );
+						sconehfd::RegisterSconeHfd( hfd_new_license );
 			}
 #endif
 			scone_settings.save();
@@ -137,7 +137,7 @@ namespace scone
 	{
 #if SCONE_HYFYDY_ENABLED
 		auto license_key = GetSconeSetting<String>( "hyfydy.license" );
-		if ( auto la_result = GetHfdLicenseAgreement( license_key.c_str() ) )
+		if ( auto la_result = sconehfd::GetHfdLicenseAgreement( license_key.c_str() ) )
 		{
 			auto& agreement = la_result.value();
 			QDialog lic_dlg( parent );
@@ -182,7 +182,7 @@ namespace scone
 	void ShowRequestLicenseDialog()
 	{
 #if SCONE_HYFYDY_ENABLED
-		auto hid = to_qt( GetHardwareId() );
+		auto hid = to_qt( sconehfd::GetHardwareId() );
 		QApplication::clipboard()->setText( hid );
 		auto message = "This is your Hardware ID (copied to clipboard):<br><br><b>" + hid + "</b><br><br>";
 		message += "Please navigate to <a href='https://hyfydy.com/trial'>hyfydy.com/trial</a> to complete your request.";
