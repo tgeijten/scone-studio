@@ -6,6 +6,7 @@
 #include "scone/core/Log.h"
 #include "scone/model/Muscle.h"
 #include "scone/model/Ligament.h"
+#include "scone/model/Spring.h"
 #include "scone/model/Joint.h"
 #include "xo/geometry/path_alg.h"
 #include "scone/core/math.h"
@@ -28,12 +29,14 @@ namespace scone
 		forces_cast_shadows_( GetStudioSetting<bool>( "viewer.forces_cast_shadows" ) ),
 		joint_forces_are_for_parents_( GetStudioSetting<bool>( "viewer.joint_forces_are_for_parents" ) ),
 		fixed_muscle_width_( GetStudioSetting<float>( "viewer.muscle_width" ) ),
+		spring_width_( GetStudioSetting<float>( "viewer.spring_width" ) ),
 		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
 		joint_mat( { GetStudioSetting<xo::color>( "viewer.joint" ), specular_, shininess_, ambient_ } ),
 		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
 		muscle_mat( { GetStudioSetting<xo::color>( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
 		tendon_mat( { GetStudioSetting<xo::color>( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
 		ligament_mat( { GetStudioSetting<xo::color>( "viewer.ligament" ), specular_, shininess_, ambient_ } ),
+		spring_mat( { GetStudioSetting<xo::color>( "viewer.spring" ), specular_, shininess_, ambient_ } ),
 		arrow_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.force_alpha" ) } ),
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
@@ -204,6 +207,13 @@ namespace scone
 			ligaments.push_back( std::move( lv ) );
 		}
 
+		for ( auto* spr : model.GetSprings() )
+		{
+			auto sv = vis::trail( root_node_, vis::trail_info{ spring_width_, xo::color::yellow(), 0.3f } );
+			sv.set_material( spring_mat );
+			springs.push_back( std::move( sv ) );
+		}
+
 		const auto joint_radius = GetStudioSetting<float>( "viewer.joint_radius" );
 		for ( auto& j : model.GetJoints() )
 		{
@@ -255,6 +265,17 @@ namespace scone
 		for ( index_t i = 0; i < model_ligaments.size(); ++i ) {
 			auto p = model_ligaments[i]->GetLigamentPath();
 			ligaments[i].set_points( p.begin(), p.end() );
+		}
+
+		// update spring paths
+		Real nudge = 0.1;
+		auto& model_springs = model.GetSprings();
+		for ( index_t i = 0; i < model_springs.size(); ++i ) {
+			const auto& spr = *model_springs[i];
+			auto p = std::array{ spr.GetParentPos(), spr.GetChildPos() };
+			//auto rw = ( spr.GetRestLength() + nudge ) / ( xo::distance( p[0], p[1] ) + nudge );
+			auto rw = 1.0;
+			springs[i].set_points( p.begin(), p.end(), rw );
 		}
 
 		// update joints
@@ -430,7 +451,10 @@ namespace scone
 		}
 
 		for ( auto& l : ligaments )
-			l.show( view_flags( ViewOption::BodyGeom ) );
+			l.show( view_flags( ViewOption::Muscles ) );
+
+		for ( auto& s : springs )
+			s.show( view_flags( ViewOption::BodyGeom ) );
 
 		for ( auto& e : joints )
 			e.show( view_flags( ViewOption::Joints ) || view_flags( ViewOption::JointReactionForces ) );

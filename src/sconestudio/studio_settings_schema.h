@@ -40,7 +40,8 @@ viewer {
 	max_shadow_dist { type = real label = "Maximum distance from the focus point at which shadows are renderd" default = 10 }
 	bone { type = color label = "Bone color" default { h = 40 s = 0.2 v = 0.8 } }
 	tendon { type = color label = "Tendon color" default { h = 40 s = 0.02 v = 0.8 } }
-	ligament { type = color label = "Tendon color" default { h = 40 s = 0.4 v = 0.8 } }
+	ligament { type = color label = "Ligament color" default { h = 40 s = 0.4 v = 0.8 } }
+	spring { type = color label = "Spring color" default { h = 60 s = 0.4 v = 0.6 } }
 	force { type = color label = "Force arrow color" default { h = 60 s = 0.8 v = 0.8 } }
 	force_alpha { type = float label = "Force arrow transparency" default = 1 }
 	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
@@ -69,6 +70,7 @@ viewer {
 	muscle_width { type = float label = "Muscle line radius (if not derived from PCSA)" default = 0.005 }
 	muscle_position { type = float label = "Relative muscle belly position (0-1)" range = [ 0 1 ] default = 0.333 }
 	relative_tendon_width { type = float label = "Tendon diameter relative to muscle" range = [ 0.1 1 ] default = 0.618 }
+	spring_width { type = float label = "Spring line radius" default = 0.005 }
 	joint_radius { type = float label = "Joint sphere radius" range = [ 0.001 1 ] default = 0.015 }
 	enable_object_cache { type = bool label = "Enable mesh caching for faster reloading (needs restart)" default = 1 }
 	hud_type { type = int label = "Show logo" default = 1 }
