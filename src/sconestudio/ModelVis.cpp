@@ -268,7 +268,6 @@ namespace scone
 		}
 
 		// update spring paths
-		Real nudge = 0.1;
 		auto& model_springs = model.GetSprings();
 		for ( index_t i = 0; i < model_springs.size(); ++i ) {
 			const auto& spr = *model_springs[i];

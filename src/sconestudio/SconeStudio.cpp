@@ -960,6 +960,9 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
 			ui.playControl->reset();
+			if ( scenario_->IsEvaluating() && scenario_->GetModel().GetInteractionSpring() )
+				ui.playControl->setPlayButtonRecordIcon( true );
+			else ui.playControl->setPlayButtonRecordIcon( false );
 		}
 
 		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";

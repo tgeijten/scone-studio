@@ -1,4 +1,5 @@
 /*
+
 ** StudioModel.cpp
 **
 ** Copyright (C) Thomas Geijtenbeek and contributors. All rights reserved.
@@ -146,9 +147,15 @@ namespace scone
 				if ( !storage_.IsEmpty() && !state_data_index.empty() )
 				{
 					// update model state from data
+					const auto& f = storage_.GetInterpolatedFrame( time );
 					for ( index_t i = 0; i < model_state.GetSize(); ++i )
-						model_state[i] = storage_.GetInterpolatedValue( time, state_data_index[i] );
+						model_state[i] = f.value( state_data_index[i] );
 					model_->SetState( model_state, time );
+
+					// update spring from data
+					if ( auto* spr = model_->GetInteractionSpring() ) {
+						spr->SetStateFromData( storage_.GetClosestFrame( time ) );
+					}
 				}
 
 				vis_->Update( *model_ );
