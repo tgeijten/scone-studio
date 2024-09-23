@@ -242,7 +242,7 @@ private:
 	QDockWidget* optimizationHistoryDock = nullptr;
 
 	// Background processing
-	std::vector<std::unique_ptr<QProcess>> activeProcesses;
+	std::vector<std::unique_ptr<QProcess>> activeProcesses, queuedProcesses;
 };
 
 #endif // SCONESTUDIO_H

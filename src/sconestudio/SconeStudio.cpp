@@ -503,7 +503,9 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 			}
 		}
 		else if ( fi.suffix() == "pt" ) {
-			activeProcesses.emplace_back( evaluateCheckpointAsync( fi.absoluteFilePath() ) );
+			//evaluateCheckpointSync( fi.absoluteFilePath() );
+			//activeProcesses.emplace_back( evaluateCheckpointAsync( fi.absoluteFilePath() ) );
+			queuedProcesses.emplace_back( makeCheckpointProcess( fi.absoluteFilePath(), this ) );
 		}
 		else {
 			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
@@ -1327,9 +1329,10 @@ void SconeStudio::checkAutoReload()
 
 void SconeStudio::checkActiveProcesses()
 {
-	if ( activeProcesses.empty() )
+	if ( activeProcesses.empty() && queuedProcesses.empty() )
 		return;
 
+	// handle running processes
 	auto it = activeProcesses.begin();
 	while ( it != activeProcesses.end() ) {
 		auto& p = **it;
@@ -1339,15 +1342,27 @@ void SconeStudio::checkActiveProcesses()
 			it = activeProcesses.erase( it );
 		}
 		else {
-			if ( p.waitForReadyRead( 0 ) ) 
+			if ( p.waitForReadyRead( 0 ) )
 				xo::log::debug( p.readAll().toStdString() );
 			it++;
 		}
 	}
 
-	auto n = activeProcesses.size();
-	if ( n > 0 )
-		ui.statusBar->showMessage( QString().sprintf( "Number of active background processes: %d", n ) );
+	// start new processes
+	auto max_process_count = std::thread::hardware_concurrency() / 2;
+	while ( activeProcesses.size() < max_process_count && queuedProcesses.size() > 0 ) {
+		activeProcesses.emplace_back( std::move( queuedProcesses.front() ) );
+		queuedProcesses.erase( queuedProcesses.begin() );
+		startProcess( *activeProcesses.back() );
+	}
+
+	// update status bar
+	if ( activeProcesses.size() > 0 || queuedProcesses.size() > 0 ) {
+		QString msg = QString().sprintf( "Number of active background processes: %d", activeProcesses.size() );
+		if ( queuedProcesses.size() > 0 )
+			msg += QString().sprintf( " (%d queued)", queuedProcesses.size() );
+		ui.statusBar->showMessage( msg );
+	}
 	else ui.statusBar->showMessage( "All background processes have finished", 3000 );
 }
 
@@ -1756,7 +1771,7 @@ void SconeStudio::evaluateSelectedFiles()
 {
 	auto fileList = getSelectedFiles();
 	for ( const auto& f : fileList )
-		activeProcesses.emplace_back( evaluateCheckpointAsync( f ) );
+		queuedProcesses.emplace_back( makeCheckpointProcess( f, this ) );
 }
 
 void SconeStudio::sortResultsByDate()
