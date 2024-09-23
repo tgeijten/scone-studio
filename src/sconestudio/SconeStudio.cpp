@@ -72,6 +72,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	scene_( true, GetStudioSetting< float >( "viewer.ambient_intensity" ) ),
 	slomo_factor( 1 ),
 	com_delta( Vec3( 0, 0, 0 ) ),
+	drag_distance_( 0 ),
 	captureProcess( nullptr )
 {
 	scone::TimeSection( "CreateWindow" );
@@ -402,6 +403,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
+	connect( ui.osgViewer, &QOsgViewer::pressed, this, &SconeStudio::viewerPress );
+	connect( ui.osgViewer, &QOsgViewer::dragged, this, &SconeStudio::viewerDrag );
+	connect( ui.osgViewer, &QOsgViewer::released, this, &SconeStudio::viewerRelease );
 	scone::TimeSection( "InitViewer" );
 	initViewerSettings();
 
@@ -522,7 +526,7 @@ void SconeStudio::start()
 		( s->hasFocus() && scenario_->GetFileName() != path_from_qt( s->fileName ) ) ) )
 	{
 		// update the simulation
-		evaluateActiveScenario();
+		evaluateActiveScenario( EvaluationMode::real_time );
 	}
 	else
 	{
@@ -1479,6 +1483,48 @@ void SconeStudio::viewerSelect()
 			}
 		}
 	}
+}
+
+void SconeStudio::viewerPress()
+{
+	if ( scenario_ && scenario_->IsEvaluating() ) {
+		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() ) {
+			if ( auto* intersection = ui.osgViewer->getTopNamedIntersection() ) {
+				for ( auto it = intersection->nodePath.rbegin(); it != intersection->nodePath.rend(); it++ ) {
+					if ( auto* b = TryFindPtrByName( scenario_->GetModel().GetBodies(), ( *it )->getName() ) ) {
+						if ( !b->IsStatic() ) {
+							const auto world_pos = Vec3( vis::from_osg( intersection->getWorldIntersectPoint() ) );
+							auto body_pos = b->GetLocalPosOfPoint( world_pos );
+							spr->SetParent( scenario_->GetModel().GetGroundBody(), world_pos );
+							spr->SetChild( *b, body_pos );
+							drag_distance_ = xo::distance( world_pos, Vec3( ui.osgViewer->getMouseRay().pos ) );
+							ui.osgViewer->getCameraMan().setEnableCameraManipulation( false );
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void SconeStudio::viewerDrag()
+{
+	if ( scenario_ && scenario_->IsEvaluating() ) {
+		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() ) {
+			auto p = spr->GetParentPos();
+			auto mr = ui.osgViewer->getMouseRay();
+			auto p_new = Vec3( mr.pos + drag_distance_ * mr.dir );
+			spr->SetParent( scenario_->GetModel().GetGroundBody(), p_new );
+		}
+	}
+}
+
+void SconeStudio::viewerRelease()
+{
+	if ( scenario_ )
+		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() )
+			spr->SetChild( scenario_->GetModel().GetGroundBody(), Vec3::zero() );
+	ui.osgViewer->getCameraMan().setEnableCameraManipulation( true );
 }
 
 void SconeStudio::exportCoordinates()

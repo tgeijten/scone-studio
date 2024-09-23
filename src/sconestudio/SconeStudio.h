@@ -113,6 +113,9 @@ public slots:
 	void fixViewerWindowSize();
 	void viewerTooltip();
 	void viewerSelect();
+	void viewerPress();
+	void viewerDrag();
+	void viewerRelease();
 	void exportCoordinates();
 	void resetCoordinates();
 	void convertScenario();
@@ -184,6 +187,7 @@ private:
 	double slomo_factor;
 	xo::delta< scone::Vec3 > com_delta;
 	std::pair<std::string, scone::Vec3> prev_click;
+	double drag_distance_;
 	void setOrbitVelocity( float v );
 
 	// video capture

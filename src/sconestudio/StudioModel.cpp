@@ -245,6 +245,10 @@ namespace scone
 					write_results_ = std::async( [this]() { return this->WriteResults(); } );
 				}
 
+				// disable the spring
+				if ( auto* spr = model_->GetInteractionSpring() )
+					spr->SetChild( model_->GetGroundBody(), Vec3::zero() );
+
 				// we're done!
 				status_ = Status::Finished;
 			}

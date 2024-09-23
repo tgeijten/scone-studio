@@ -272,10 +272,11 @@ namespace scone
 		auto& model_springs = model.GetSprings();
 		for ( index_t i = 0; i < model_springs.size(); ++i ) {
 			const auto& spr = *model_springs[i];
-			auto p = std::array{ spr.GetParentPos(), spr.GetChildPos() };
-			//auto rw = ( spr.GetRestLength() + nudge ) / ( xo::distance( p[0], p[1] ) + nudge );
-			auto rw = 1.0;
-			springs[i].set_points( p.begin(), p.end(), rw );
+			springs[i].show( spr.IsActive() );
+			if ( spr.IsActive() ) {
+				auto p = std::array{ spr.GetParentPos(), spr.GetChildPos() };
+				springs[i].set_points( p.begin(), p.end() );
+			}
 		}
 
 		// update joints
