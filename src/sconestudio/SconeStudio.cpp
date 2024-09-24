@@ -662,14 +662,15 @@ void SconeStudio::evaluateRealTime()
 {
 	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
 	auto max_interval = 0.05;
+	auto slomo = ui.playControl->slowMotionFactor();
 
 	xo::timer timer;
 	while ( scenario_->IsEvaluating() )
 	{
-		auto t = timer().secondsd();
+		auto t = slomo * timer().secondsd();
 		if ( t - scenario_->GetTime() > max_interval ) {
 			t = scenario_->GetTime() + max_interval;
-			timer.set( xo::time_from_seconds( t ) );
+			timer.set( xo::time_from_seconds( t ) / slomo );
 		}
 
 		setTime( t, true );
