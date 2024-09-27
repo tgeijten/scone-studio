@@ -121,6 +121,7 @@ namespace scone
 		ui.outputModel->setText( to_qt( scenario.GetModel().GetModelFile().replace_extension( "hfd" ) ) );
 		ui.outputScenario->setText( to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_hfd" ) ) );
 		ui.usePinJoints->setChecked( mc.use_pint_joints_ );
+		ui.keepOrigin->setChecked( mc.keep_body_origin_ );
 
 		if ( QDialog::Accepted == dlg.exec() ) {
 			mc.body_mass_threshold_ = ui.bodyMassThreshold->value();
@@ -131,6 +132,7 @@ namespace scone
 			mc.compound_welded_bodies = ui.compoundBodies->isChecked();
 			mc.compound_mass_threshold = ui.compoundMassThreshold->value();
 			mc.use_pint_joints_ = ui.usePinJoints->isChecked();
+			mc.keep_body_origin_ = ui.keepOrigin->isChecked();
 
 			auto& model = scenario.GetModel();
 			auto hfd_model_pn = mc.ConvertModel( model );

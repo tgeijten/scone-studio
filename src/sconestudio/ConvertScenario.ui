@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>360</height>
+    <width>385</width>
+    <height>402</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
      <property name="checkable">
       <bool>true</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QFileEdit" name="outputModel" native="true"/>
       </item>
@@ -166,6 +166,16 @@
        <widget class="QCheckBox" name="usePinJoints">
         <property name="text">
          <string>Convert OpenSim &amp;PinJoint to Hyfydy pin_joint</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="keepOrigin">
+        <property name="text">
+         <string>Keep OpenSim Body &amp;origin</string>
         </property>
         <property name="checked">
          <bool>true</bool>
