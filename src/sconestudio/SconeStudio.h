@@ -87,13 +87,13 @@ public slots:
 
 	void helpSearch();
 	void helpForum();
-	void evaluateActiveScenario( EvaluationMode m = EvaluationMode::offline );
+	void evaluateActiveScenario();
 	void writeEvaluationResults();
 	void optimizeScenario();
 	void optimizeScenarioMultiple();
 	bool abortOptimizations();
 	void updateBackgroundTimer();
-	void checkAutoReload();
+	void handleAutoReload();
 	void checkActiveProcesses();
 	void updateOptimizations();
 	void createVideo();
@@ -146,9 +146,10 @@ private:
 	void performanceTest( bool write_stats );
 	void saveUserInputs( bool show_dialog );
 
-	void evaluate( EvaluationMode m );
+	void evaluate();
 	void evaluateOffline();
 	void evaluateRealTime();
+	void startRealTimeEvaluation();
 	void setTime( TimeInSeconds t, bool update_vis );
 
 	std::vector< QCodeEditor* > changedDocuments();
@@ -172,6 +173,8 @@ private:
 	// simulation
 	TimeInSeconds current_time;
 	TimeInSeconds evaluation_time_step;
+	TimeInSeconds max_real_time_evaluation_step_;
+	bool real_time_evaluation_enabled_;
 
 	// scenario
 	std::vector< ProgressDockWidget* > optimizations;

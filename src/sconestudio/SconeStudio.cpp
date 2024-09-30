@@ -69,6 +69,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	close_all( false ),
 	current_time(),
 	evaluation_time_step( 1.0 / 8 ),
+	max_real_time_evaluation_step_( 0.05 ),
+	real_time_evaluation_enabled_( false ),
 	scene_( true, GetStudioSetting< float >( "viewer.ambient_intensity" ) ),
 	slomo_factor( 1 ),
 	com_delta( Vec3( 0, 0, 0 ) ),
@@ -334,7 +336,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	og->actions().first()->setChecked( true );
 
 	// Scenario menu
-	scenarioMenu->addAction( "&Evaluate Scenario", [this]() { evaluateActiveScenario( EvaluationMode::offline ); }, QKeySequence( "Ctrl+E" ) );
+	scenarioMenu->addAction( "&Evaluate Scenario", [this]() { evaluateActiveScenario(); }, QKeySequence( "Ctrl+E" ) );
 	//scenarioMenu->addAction( "&Evaluate Scenario (Real-time)", [this]() { evaluateActiveScenario( EvaluationMode::real_time ); }, QKeySequence( "Ctrl+I" ) );
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
@@ -496,7 +498,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		else if ( fi.suffix() == "par" || fi.suffix() == "sto" ) {
 			if ( createScenario( fi.absoluteFilePath() ) ) {
 				if ( scenario_->IsEvaluating() )
-					evaluate( EvaluationMode::offline ); // .par file
+					evaluate(); // .par file
 				if ( auto t = scone::GetStudioSetting<TimeInSeconds>( "file.playback_start" ); t != 0.0 )
 					ui.playControl->setTime( t );
 				ui.playControl->play(); // automatic playback after evaluation
@@ -527,8 +529,9 @@ void SconeStudio::start()
 		scenario_->IsEvaluating() ||
 		( s->hasFocus() && scenario_->GetFileName() != path_from_qt( s->fileName ) ) ) )
 	{
-		// update the simulation
-		evaluateActiveScenario( EvaluationMode::real_time );
+		// evaluate the simulation in real-time
+		//evaluateActiveScenario( EvaluationMode::real_time );
+		startRealTimeEvaluation();
 	}
 	else
 	{
@@ -539,6 +542,15 @@ void SconeStudio::start()
 
 void SconeStudio::stop()
 {
+	if ( real_time_evaluation_enabled_ ) {
+		real_time_evaluation_enabled_ = false;
+		if ( scenario_ && scenario_->IsEvaluating() )
+			scenario_->AbortEvaluation();
+		if ( scenario_->HasData() )
+			updateModelDataWidgets();
+		scenario_->UpdateVis( scenario_->GetTime() );
+		updateEvaluationReport();
+	}
 	ui.osgViewer->stopPlaybackMode();
 	refreshAnalysis();
 }
@@ -588,7 +600,7 @@ void SconeStudio::muscleAnalysisValueChanged( const QString& dof, double value )
 	}
 }
 
-void SconeStudio::evaluate( EvaluationMode m )
+void SconeStudio::evaluate()
 {
 	GUI_PROFILE_FUNCTION;
 	SCONE_ASSERT( scenario_ );
@@ -608,11 +620,8 @@ void SconeStudio::evaluate( EvaluationMode m )
 	ui.stackedWidget->setCurrentIndex( 1 );
 	QApplication::processEvents();
 
-	// actual simulation
-	if ( m == EvaluationMode::offline )
-		evaluateOffline();
-	else if ( m == EvaluationMode::real_time )
-		evaluateRealTime();
+	// actual evaluation
+	evaluateOffline();
 
 	// cleanup
 	ui.progressBar->setValue( 1000 );
@@ -661,15 +670,14 @@ void SconeStudio::evaluateOffline()
 void SconeStudio::evaluateRealTime()
 {
 	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
-	auto max_interval = 0.05;
 	auto slomo = ui.playControl->slowMotionFactor();
 
 	xo::timer timer;
 	while ( scenario_->IsEvaluating() )
 	{
 		auto t = slomo * timer().secondsd();
-		if ( t - scenario_->GetTime() > max_interval ) {
-			t = scenario_->GetTime() + max_interval;
+		if ( t - scenario_->GetTime() > max_real_time_evaluation_step_ ) {
+			t = scenario_->GetTime() + max_real_time_evaluation_step_;
 			timer.set( xo::time_from_seconds( t ) / slomo );
 		}
 
@@ -680,6 +688,24 @@ void SconeStudio::evaluateRealTime()
 		if ( ui.abortButton->isChecked() )
 			scenario_->AbortEvaluation();
 	}
+}
+
+void SconeStudio::startRealTimeEvaluation()
+{
+	SCONE_ASSERT( scenario_ );
+
+	// disable dof editor and model input editor
+	dofEditor->setEnableEditing( false );
+	muscleAnalysis->setEnableEditing( false );
+#if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	userInputEditor->setEnableEditing( false );
+#endif
+
+	real_time_evaluation_enabled_ = true;
+	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
+	ui.playControl->setRange( 0.0, max_time );
+	ui.playControl->play();
+	log::info( "Starting evaluation" );
 }
 
 void SconeStudio::modelAnalysis()
@@ -711,9 +737,20 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 	if ( scenario_ )
 	{
 		// advance simulation
-		current_time = t;
-		if ( scenario_->IsEvaluating() )
+		if ( scenario_->IsEvaluating() ) {
+			if ( real_time_evaluation_enabled_ ) {
+				if ( t - scenario_->GetTime() > max_real_time_evaluation_step_ ) {
+					t = scenario_->GetTime() + max_real_time_evaluation_step_;
+					ui.playControl->adjustCurrentTime( t );
+				}
+			}
 			scenario_->EvaluateTo( t );
+			if ( real_time_evaluation_enabled_ && scenario_->IsFinished() )
+				ui.playControl->stop(); // stop triggers real-time evaluation handling
+		}
+
+		// set time
+		current_time = t;
 
 		// update UI and visualization
 		if ( update_vis && scenario_->HasModel() )
@@ -823,7 +860,7 @@ void SconeStudio::fileCloseTriggered()
 
 void SconeStudio::handleFileChanged( const QString& filename )
 {
-	log::trace( "File changed: ", filename.toStdString() );
+	log::debug( "File changed: ", filename.toStdString() );
 	if ( !reloadFiles.contains( filename ) )
 		reloadFiles.append( filename );
 }
@@ -906,6 +943,11 @@ void SconeStudio::clearScenario()
 {
 	GUI_PROFILE_FUNCTION;
 
+	// remove files from watcher
+	if ( scenario_ )
+		for ( const auto& p : scenario_->GetModel().GetExternalResources() )
+			fileWatcher.removePath( to_qt( p ) );
+
 	ui.playControl->stop();
 	scenario_.reset();
 	analysisStorageModel.setStorage( nullptr );
@@ -962,8 +1004,8 @@ bool SconeStudio::createScenario( const QString& any_file )
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
 			ui.playControl->reset();
 			if ( scenario_->IsEvaluating() && scenario_->GetModel().GetInteractionSpring() )
-				ui.playControl->setPlayButtonRecordIcon( true );
-			else ui.playControl->setPlayButtonRecordIcon( false );
+				ui.playControl->setRecordingMode( true );
+			else ui.playControl->setRecordingMode( false );
 		}
 
 		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";
@@ -1129,6 +1171,10 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_h
 				information( scenario_->GetScenarioFileName(), "This scenario does not contain any free parameters" );
 				return false;
 			}
+			// add all scenario files to file watcher
+			for ( const auto& p : scenario_->GetModel().GetExternalResources() )
+				fileWatcher.addPath( to_qt( p ) ); 
+			
 			return true; // everything loaded ok or invalid settings ignored
 		}
 		else return false; // failed to create scenario
@@ -1201,7 +1247,7 @@ void SconeStudio::optimizeScenarioMultiple()
 	}
 }
 
-void SconeStudio::evaluateActiveScenario( EvaluationMode m )
+void SconeStudio::evaluateActiveScenario()
 {
 	if ( scone::GetStudioSetting<bool>( "ui.enable_profiler" ) )
 		getGuiProfiler().start();
@@ -1209,9 +1255,8 @@ void SconeStudio::evaluateActiveScenario( EvaluationMode m )
 	if ( createAndVerifyActiveScenario( false ) )
 	{
 		if ( scenario_->IsEvaluating() )
-			evaluate( m );
-		if ( m == EvaluationMode::offline )
-			ui.playControl->play();
+			evaluate();
+		ui.playControl->play();
 	}
 
 	if ( getGuiProfiler().enabled() )
@@ -1226,7 +1271,7 @@ void SconeStudio::writeEvaluationResults()
 			scenario_->WriteResults();
 		else if ( scenario_->IsEvaluating() ) {
 			scenario_->SetWriteResultsAfterEvaluation( true );
-			evaluate( EvaluationMode::offline );
+			evaluate();
 			ui.playControl->play();
 		}
 	}
@@ -1234,7 +1279,7 @@ void SconeStudio::writeEvaluationResults()
 	{
 		if ( scenario_->IsEvaluating() ) {
 			scenario_->SetWriteResultsAfterEvaluation( true );
-			evaluate( EvaluationMode::offline );
+			evaluate();
 		}
 		ui.playControl->play();
 	}
@@ -1314,17 +1359,23 @@ void SconeStudio::updateBackgroundTimer()
 		updateOptimizations();
 	if ( scenario_ )
 		scenario_->CheckWriteResults();
-	checkAutoReload();
+	handleAutoReload();
 	checkActiveProcesses();
 }
 
-void SconeStudio::checkAutoReload()
+void SconeStudio::handleAutoReload()
 {
 	bool reload = false;
-	for ( auto& filename : reloadFiles )
-		for ( auto e : codeEditors )
+	for ( auto& filename : reloadFiles ) {
+		for ( auto* e : codeEditors )
 			if ( e->fileName == filename )
 				reload |= e->reload();
+		if ( scenario_ ) {
+			log::info( "checking ", filename.toStdString(), " in ", scenario_->GetModel().GetExternalResources() );
+			if ( xo::contains( scenario_->GetModel().GetExternalResources(), filename.toStdString() ) )
+				reload = true;
+		}
+	}
 	reloadFiles.clear();
 	if ( reload ) {
 		createAndVerifyActiveScenario( true );
