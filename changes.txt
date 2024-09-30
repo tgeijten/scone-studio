@@ -1,6 +1,47 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.3.2 ====
+//Released//
+
+=== Updates ===
+  * Viewer
+    * Viewer camera light position can now be configured via viewer.camera_light_offset
+    * Changing the camera during playback now uses smooth transitions
+    * Camera orbit velocity can now be set to Slow, Medium or Fast
+    * 3D Viewer can now display auxiliary geometry such as wrapping geometry
+    * Creating videos now defaults to the same base filename as the .par or .scone file
+    * New View option: Joint Reaction Forces
+  * SconePy
+    * sconepy.Vec3 and sconepy.Quat now have constructors and support multiplication and division, addition and subtraction, negation, length(), dot() and normalize()
+    * SconePy Body now has members point_pos(), point_vel(), and point_acc()
+  * SconeGym
+    * External sconegym evaluations are now queued to reduce processor load
+    * Checkpoints (.pt) are now evaluated in the background, with additional configuration options
+    * Improved display of sconegym results in Results Browser
+    * Added option to evaluate multiple .pt files by right-clicking on a selection
+  * Muscle Analysis
+    * Muscle Analysis now computes moment_arm using mtu_length
+    * Muscle Analysis now shows moment arms for all relevant dofs
+  * Coordinates
+    * Coordinate slider number boxes are no longer clamped to ranges
+    * New option file.playback_start, for setting the default playback start time
+    * The Reset Coordinates button now reverts all coordinates to their default values instead of zero
+  * Model Conversion Tool
+    * Model Conversion now provides option to keep OpenSim Body origin
+    * Convert to Hyfydy now unchecks 'Use pin joints' by default
+  * Data storage
+    * New data channel: simulation_frequency_average
+    * Data storage now has separate 'detailed muscle properties' setting
+  * ModelHfd option: enable_collision_between_objects
+  * BodyMeasure now has 'scale' parameter to scale the magnitude of measured X, Y and Z components
+  * SequentialController can now use the same controller(s) multiple times, individual parameter names can be specified using the child_names setting
+
+=== Fixes ===
+  * ReflexController parameter names now always respect symmetric = 1
+  * Contact force stiffness is now converted to Hyfydy correctly with OpenSim4 models
+  * Mesh color settings are now handled properly
+
 ==== SCONE 2.3.1 ====
 //Released April 26, 2024//
 
