@@ -96,7 +96,7 @@ namespace scone
 		for ( auto mus : model.GetMuscles() ) {
 			auto len_str = mus->GetName() + ".mtu_length_norm";
 			auto mom_str = mus->GetName() + ".moment_arm";
-			auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonLength() ) / ( 2 * step.rad_value() );
+			auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonSlackLength() ) / ( 2 * step.rad_value() );
 			for ( index_t i = 1; i < storage.GetFrameCount() - 1; ++i ) {
 				if ( mus->HasMomentArm( *activeDof ) ) {
 					auto dl = storage.GetFrame( i + 1 )[len_str] - storage.GetFrame( i - 1 )[len_str];
