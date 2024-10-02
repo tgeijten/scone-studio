@@ -94,13 +94,14 @@ namespace scone
 		// compute moment arms using difference in mtu_length
 		SCONE_ASSERT( !storage.IsEmpty() );
 		for ( auto mus : model.GetMuscles() ) {
-			auto len_str = mus->GetName() + ".mtu_length_norm";
-			auto mom_str = mus->GetName() + ".moment_arm";
-			auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonSlackLength() ) / ( 2 * step.rad_value() );
-			for ( index_t i = 1; i < storage.GetFrameCount() - 1; ++i ) {
-				if ( mus->HasMomentArm( *activeDof ) ) {
-					auto dl = storage.GetFrame( i + 1 )[len_str] - storage.GetFrame( i - 1 )[len_str];
-					storage.GetFrame( i )[mom_str] = norm_factor * -dl;
+			if ( mus->HasMomentArm( *activeDof ) ) {
+				auto len_str = mus->GetName() + ".mtu_length_norm";
+				auto mom_str = mus->GetName() + ".moment_arm";
+				auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonSlackLength() ) / ( step.rad_value() );
+				for ( int i = 0; i < storage.GetFrameCount(); ++i ) {
+					int i0 = std::max( 0, i - 1 ), i1 = std::min( (int)storage.GetFrameCount() - 1, i + 1 );
+					auto dl = storage.GetFrame( i1 )[len_str] - storage.GetFrame( i0 )[len_str];
+					storage.GetFrame( i )[mom_str] = norm_factor * -dl / ( i1 - i0 );
 				}
 			}
 		}
@@ -125,8 +126,8 @@ namespace scone
 	{
 		const auto& model = mus.GetModel();
 		const auto& name = mus.GetName();
-		bool normalized_only = true;
 
+		bool normalized_only = true;
 		if ( !normalized_only ) {
 			frame[name + ".fiber_length"] = mus.GetFiberLength();
 			frame[name + ".tendon_length"] = mus.GetTendonLength();
@@ -135,9 +136,12 @@ namespace scone
 		}
 
 		// moment arms
+		bool all_moment_arms = false; // this is not always correct (e.g. deltoid), figure out why
 		frame[name + ".moment_arm"] = mus.GetMomentArm( dof ); // will be recalculated later
-		for ( auto* d : mus.GetDofs() )
-			frame[name + "." + d->GetName() + ".moment_arm"] = mus.GetMomentArm( *d );
+		if ( all_moment_arms ) {
+			for ( auto* d : mus.GetDofs() )
+				frame[name + "." + d->GetName() + ".moment_arm"] = mus.GetMomentArm( *d );
+		}
 
 		// tendon / mtu properties
 		frame[name + ".fiber_length_norm"] = mus.GetNormalizedFiberLength();
