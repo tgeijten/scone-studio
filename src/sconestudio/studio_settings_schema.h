@@ -38,29 +38,29 @@ viewer {
 	tile_count_z { type = int label = "Viewer tile count in z direction" default = 128 }
 	tiles_follow_body { type = bool label = "Automatically adjust ground tiles to always remain visible" default = 1 }
 	max_shadow_dist { type = real label = "Maximum distance from the focus point at which shadows are renderd" default = 10 }
-	bone { type = color label = "Bone color" default { h = 40 s = 0.2 v = 0.8 } }
-	tendon { type = color label = "Tendon color" default { h = 40 s = 0.02 v = 0.8 } }
-	ligament { type = color label = "Ligament color" default { h = 40 s = 0.4 v = 0.8 } }
-	spring { type = color label = "Spring color" default { h = 60 s = 0.8 v = 0.8 } }
-	force { type = color label = "Force arrow color" default { h = 60 s = 0.8 v = 0.8 } }
+	bone { type = color label = "Bone color" default = "hsv(40, 20, 80)" }
+	tendon { type = color label = "Tendon color" default = "hsv(40, 2, 80)" }
+	ligament { type = color label = "Ligament color" default = "hsv(40, 40, 80)" }
+	spring { type = color label = "Spring color" default = "hsv(60, 80, 80)" }
+	force { type = color label = "Force arrow color" default = "hsv(60, 80, 80)" }
 	force_alpha { type = float label = "Force arrow transparency" default = 1 }
 	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
 	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
 	joint_forces_are_for_parents { type = bool label = "Show joint forces and torques in the direction of parent bodies" default = 0 }
-	moment { type = color label = "Moment color" default { h = 5 s = 0.8 v = 0.8 } }
-	contact { type = color label = "Contact color" default { h = 40 s = 0.2 v = 0.8 } }
+	moment { type = color label = "Moment color" default = "hsv(5, 80, 80)" }
+	contact { type = color label = "Contact color" default = "hsv(40, 20, 80)" }
 	contact_alpha { type = float label = "Contact color transparency" default = 0.2 }
 	contact_geometries_cast_shadows { type = bool label = "Contact geometries cast shadows" default = 0 }
-	auxiliary { type = color label = "Auxiliary color" default { h = 180 s = 0.5 v = 0.8 } }
+	auxiliary { type = color label = "Auxiliary color" default = "hsv(180, 50, 80)" }
 	auxiliary_alpha { type = float label = "Auxiliary color transparency" default = 0.5 }
-	static { type = color label = "Static geometry color" default { h = 180 s = 0.25 v = 0.4 } }
-	object { type = color label = "Object geometry color" default { h = 180 s = 0.02 v = 0.55 } }
-	joint { type = color label = "Joint color" default { h = 40 s = 0.2 v = 0.5 } }
-	com { type = color label = "Center of Mass color" default { h = 105 s = 0.5 v = 0.5 } }
-	muscle_min100 { type = color label = "Muscle color at -100%" default { h = 120 s = 0.7 v = 0.65 } }
-	muscle_0 { type = color label = "Muscle color at 0%" default { h = 240 s = 0.7 v = 0.65 } }
-	muscle_50 { type = color label = "Muscle color at 50%" default { h = 0 s = 0.8 v = 0.8 } }
-	muscle_100 { type = color label = "Muscle color at 100%" default { h = 0 s = 0.9 v = 1.0 } }
+	static { type = color label = "Static geometry color" default = "hsv(180, 25, 40)" }
+	object { type = color label = "Object geometry color" default = "hsv(180, 2, 55)" }
+	joint { type = color label = "Joint color" default = "hsv(40, 20, 50)" }
+	com { type = color label = "Center of Mass color" default = "hsv(105, 50, 50)" }
+	muscle_min100 { type = color label = "Muscle color at -100%" default = "hsv(120, 70, 65)" }
+	muscle_0 { type = color label = "Muscle color at 0%" default = "hsv(240, 70, 65)" }
+	muscle_50 { type = color label = "Muscle color at 50%" default = "hsv(0, 80, 80)" }
+	muscle_100 { type = color label = "Muscle color at 100%" default = "hsv(0, 90, 100)" }
 	specular { type = float label = "Model specular" default = 1 }
 	shininess { type = float label = "Model shininess" default = 30 }
 	ambient { type = float label = "Model ambient" default = 1 }
@@ -70,7 +70,7 @@ viewer {
 	muscle_width { type = float label = "Muscle line radius (if not derived from PCSA)" default = 0.005 }
 	muscle_position { type = float label = "Relative muscle belly position (0-1)" range = [ 0 1 ] default = 0.333 }
 	relative_tendon_width { type = float label = "Tendon diameter relative to muscle" range = [ 0.1 1 ] default = 0.618 }
-	spring_width { type = float label = "Spring line radius" default = 0.005 }
+	spring_width { type = float label = "Spring line radius" default = 0.0075 }
 	joint_radius { type = float label = "Joint sphere radius" range = [ 0.001 1 ] default = 0.015 }
 	enable_object_cache { type = bool label = "Enable mesh caching for faster reloading (needs restart)" default = 1 }
 	hud_type { type = int label = "Show logo" default = 1 }
