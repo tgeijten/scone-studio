@@ -124,13 +124,16 @@ namespace scone
 
 	void StudioModel::InitStateDataIndices()
 	{
-		SCONE_ASSERT( model_ );
-		SCONE_ASSERT( state_data_index.empty() );
-		SCONE_ERROR_IF( storage_.IsEmpty(), "Could not find any data" );
+		if ( !model_ )
+			return log::warning( "InitStateDataIndices() called without model" );
+		if ( !state_data_index.empty() )
+			return log::warning( "InitStateDataIndices() called while state_data_index is non-empty" );
+		if (storage_.IsEmpty())
+			return log::warning( "InitStateDataIndices() called without data" );
+
 		model_state = model_->GetState();
 		state_data_index.resize( model_state.GetSize() );
-		for ( size_t state_idx = 0; state_idx < state_data_index.size(); state_idx++ )
-		{
+		for ( size_t state_idx = 0; state_idx < state_data_index.size(); state_idx++ ) {
 			auto data_idx = ( storage_.TryGetChannelIndex( model_state.GetName( state_idx ) ) );
 			SCONE_ASSERT_MSG( data_idx != NoIndex, "Could not find state channel " + model_state.GetName( state_idx ) );
 			state_data_index[state_idx] = data_idx;
