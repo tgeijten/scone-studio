@@ -1559,16 +1559,17 @@ void SconeStudio::viewerPress()
 {
 	if ( scenario_ && scenario_->IsEvaluating() ) {
 		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() ) {
-			if ( auto* intersection = ui.osgViewer->getTopNamedIntersection() ) {
-				for ( auto it = intersection->nodePath.rbegin(); it != intersection->nodePath.rend(); it++ ) {
+			for ( auto& intersection : ui.osgViewer->getIntersections() ) {
+				for ( auto it = intersection.nodePath.rbegin(); it != intersection.nodePath.rend(); it++ ) {
 					if ( auto* b = TryFindPtrByName( scenario_->GetModel().GetBodies(), ( *it )->getName() ) ) {
 						if ( !b->IsStatic() ) {
-							const auto world_pos = Vec3( vis::from_osg( intersection->getWorldIntersectPoint() ) );
+							const auto world_pos = Vec3( vis::from_osg( intersection.getWorldIntersectPoint() ) );
 							auto body_pos = b->GetLocalPosOfPoint( world_pos );
 							spr->SetParent( scenario_->GetModel().GetGroundBody(), world_pos );
 							spr->SetChild( *b, body_pos );
 							drag_distance_ = xo::distance( world_pos, Vec3( ui.osgViewer->getMouseRay().pos ) );
 							ui.osgViewer->getCameraMan().setEnableCameraManipulation( false );
+							return;
 						}
 					}
 				}
