@@ -26,11 +26,11 @@ namespace scone
 		shininess_( GetStudioSetting<float>( "viewer.shininess" ) ),
 		ambient_( GetStudioSetting<float>( "viewer.ambient" ) ),
 		combine_contact_forces_( GetStudioSetting<bool>( "viewer.combine_contact_forces" ) ),
-		fixed_length_contact_forces_( GetStudioSetting<bool>( "viewer.fixed_length_contact_forces" ) ),
 		forces_cast_shadows_( GetStudioSetting<bool>( "viewer.forces_cast_shadows" ) ),
 		joint_forces_are_for_parents_( GetStudioSetting<bool>( "viewer.joint_forces_are_for_parents" ) ),
 		joint_arrow_length_( GetStudioSetting<float>( "viewer.joint_arrow_length" ) ),
 		force_arrow_length_( GetStudioSetting<float>( "viewer.force_arrow_length" ) ),
+		arrow_shape_( GetStudioSetting<float>( "viewer.arrow_shape" ) ),
 		fixed_muscle_width_( GetStudioSetting<float>( "viewer.muscle_width" ) ),
 		spring_width_( GetStudioSetting<float>( "viewer.spring_width" ) ),
 		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
@@ -41,6 +41,7 @@ namespace scone
 		ligament_mat( { GetStudioSetting<xo::color>( "viewer.ligament" ), specular_, shininess_, ambient_ } ),
 		spring_mat( { GetStudioSetting<xo::color>( "viewer.spring" ), specular_, shininess_, ambient_ } ),
 		force_mat( { GetStudioSetting<xo::color>( "viewer.force" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.force_alpha" ) } ),
+		joint_force_mat( { GetStudioSetting<xo::color>( "viewer.joint_force" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.force_alpha" ) } ),
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
 		auxiliary_mat( { GetStudioSetting<xo::color>( "viewer.auxiliary" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.auxiliary_alpha" ) } ),
@@ -223,6 +224,11 @@ namespace scone
 			joints.push_back( vis::mesh( root_node_, vis::shape_info{ xo::sphere( joint_radius ), xo::color::red(), xo::vec3f::zero(), 0.75f } ) );
 			joints.back().set_material( joint_mat );
 			joints.back().set_name( j->GetName().c_str() );
+
+			joint_forces.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::yellow(), 0.3f } );
+			joint_forces.back().set_material( joint_force_mat );
+			joint_forces.back().show( view_flags( ViewOption::JointReactionForces ) );
+			joint_forces.back().set_cast_shadows( forces_cast_shadows_ );
 		}
 
 		heading_ = vis::arrow( root_node_, vis::arrow_info{ 0.01f, 0.02f, xo::color::green() } );
@@ -247,16 +253,15 @@ namespace scone
 
 			// contact forces
 			if ( auto f = b->GetContactForce(); view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !f.is_null() ) {
-				if ( fixed_length_contact_forces_ ) {
-					auto [vec, r] = GetJointVec( f, force_arrow_length_, force_scale_ );
-					UpdateForceVis( force_count++, b->GetContactPoint(), vec, 1.0f, r );
-				}
-				else UpdateForceVis( force_count++, b->GetContactPoint(), f );
+				auto [vec, r] = GetArrowVec( f, force_arrow_length_, force_scale_ );
+				UpdateForceVis( force_count++, b->GetContactPoint(), vec, r );
 			}
 
 			// external forces
-			if ( auto f = b->GetExternalForce(); !f.is_null() )
-				UpdateForceVis( force_count++, b->GetPosOfPointOnBody( b->GetExternalForcePoint() ), f, 0.004f, 0.5f );
+			if ( auto f = b->GetExternalForce(); !f.is_null() ) {
+				auto [vec, r] = GetArrowVec( f, force_arrow_length_, force_scale_ );
+				UpdateForceVis( force_count++, b->GetPosOfPointOnBody( b->GetExternalForcePoint() ), vec, r );
+			}
 
 			// external moments
 			if ( auto m = b->GetExternalMoment(); !m.is_null() )
@@ -293,12 +298,12 @@ namespace scone
 			auto pos = model_joints[i]->GetPos();
 			joints[i].pos( vis::vec3f( pos ) );
 			if ( view_flags( ViewOption::JointReactionForces ) ) {
-				auto [vec, r] = GetJointVec( sign * model_joints[i]->GetReactionForce(), joint_arrow_length_, joint_force_scale_ );
-				UpdateForceVis( force_count++, pos, vec, 1.0f, r );
+				auto [vec, r] = GetArrowVec( sign * model_joints[i]->GetReactionForce(), joint_arrow_length_, joint_force_scale_ );
+				joint_forces[i].pos_ofs( vis::vec3f( pos ), vis::vec3f( vec ), r );
 			}
 			if ( view_flags( ViewOption::Joints ) ) {
-				auto [vec, r] = GetJointVec( sign * model_joints[i]->GetLimitTorque(), joint_arrow_length_, moment_scale_ );
-				UpdateMomentVis( moment_count++, pos - 0.5 * vec, vec, 1.0f, r );
+				auto [vec, r] = GetArrowVec( sign * model_joints[i]->GetLimitTorque(), joint_arrow_length_, moment_scale_ );
+				UpdateMomentVis( moment_count++, pos - 0.5 * vec, vec, r );
 			}
 		}
 
@@ -306,11 +311,8 @@ namespace scone
 		if ( view_flags( ViewOption::ExternalForces ) && !combine_contact_forces_ ) {
 			auto fvec = model.GetContactForceValues();
 			for ( auto& cf : fvec ) {
-				if ( fixed_length_contact_forces_ ) {
-					auto [vec, r] = GetJointVec( cf.force, force_arrow_length_, force_scale_ );
-					UpdateForceVis( force_count++, cf.point, vec, 1.0f, r );
-				}
-				else UpdateForceVis( force_count++, cf.point, cf.force );
+				auto [vec, r] = GetArrowVec( cf.force, force_arrow_length_, force_scale_ );
+				UpdateForceVis( force_count++, cf.point, vec, r );
 			}
 		}
 
@@ -339,20 +341,22 @@ namespace scone
 			moments.pop_back();
 	}
 
-	std::tuple<scone::Vec3, float> ModelVis::GetJointVec( Vec3 vec, Real length, float scale )
+	std::tuple<scone::Vec3, Real> ModelVis::GetArrowVec( Vec3 vec, Real length, Real scale, Real shape )
 	{
-		auto len = xo::normalize( vec );
-		auto r = std::sqrt( scale * len );
-		if ( r < min_arrow_scale_ ) {
-			auto f = xo::squared( r / min_arrow_scale_ );
-			length *= f;
-			r = min_arrow_scale_;
-		}
+		if ( shape < 0 )
+			shape = arrow_shape_;
 
-		return { length * vec, r };
+		auto v = scale * xo::normalize( vec );
+		if ( xo::equal( v, Real( 0 ) ) )
+			return { Vec3::zero(), 0.0 };
+
+		auto r = std::pow( v, shape / 2 );
+		auto l = length * v / ( r * r );
+
+		return { l * vec, r };
 	}
 
-	void ModelVis::UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float len_scale, float rad_scale )
+	void ModelVis::UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float rad_scale )
 	{
 		while ( forces.size() <= force_idx )
 		{
@@ -361,10 +365,10 @@ namespace scone
 			forces.back().show( view_flags( ViewOption::ExternalForces ) );
 			forces.back().set_cast_shadows( forces_cast_shadows_ );
 		}
-		forces[force_idx].pos_ofs( vis::vec3f( cop ), len_scale * vis::vec3f( force ), rad_scale );
+		forces[force_idx].pos_ofs( vis::vec3f( cop ), vis::vec3f( force ), rad_scale );
 	}
 
-	void ModelVis::UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float len_scale, float rad_scale )
+	void ModelVis::UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float rad_scale )
 	{
 		while ( moments.size() <= moment_idx )
 		{
@@ -373,7 +377,7 @@ namespace scone
 			moments.back().show( view_flags( ViewOption::Joints ) );
 			moments.back().set_cast_shadows( forces_cast_shadows_ );
 		}
-		moments[moment_idx].pos_ofs( vis::vec3f( pos ), len_scale * vis::vec3f( moment ), rad_scale );
+		moments[moment_idx].pos_ofs( vis::vec3f( pos ), vis::vec3f( moment ), rad_scale );
 	}
 
 	void ModelVis::UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis )
@@ -488,6 +492,9 @@ namespace scone
 
 		for ( auto& e : joints )
 			e.show( view_flags( ViewOption::Joints ) || view_flags( ViewOption::JointReactionForces ) );
+
+		for ( auto& e : joint_forces )
+			e.show( view_flags( ViewOption::JointReactionForces ) );
 
 		for ( auto& e : body_meshes )
 			e.show( view_flags( ViewOption::BodyGeom ) );

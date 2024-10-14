@@ -43,13 +43,14 @@ viewer {
 	ligament { type = color label = "Ligament color" default = "hsv(40, 40, 80)" }
 	spring { type = color label = "Spring color" default = "hsv(60, 80, 80)" }
 	force { type = color label = "Force arrow color" default = "hsv(60, 80, 80)" }
+	joint_force { type = color label = "Joint force arrow color" default = "hsv(60, 40, 80)" }
 	force_alpha { type = float label = "Force arrow transparency" default = 1 }
 	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
 	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
-	fixed_length_contact_forces { type = bool label = "Contact force arrows have a fixed length" default = 0 }
 	joint_forces_are_for_parents { type = bool label = "Show joint forces and torques in the direction of parent bodies" default = 0 }
 	joint_arrow_length { type = float label = "Length of arrows representing joint force and moment" default = 0.15 }
 	force_arrow_length { type = float label = "Length of arrows representing ground reaction forces" default = 0.3 }
+	arrow_shape { type = float label = "The degree by which arrows change in length (0.0) or width (1.0)" range = [ 0 1 ] default = 0.8 }
 	moment { type = color label = "Moment color" default = "hsv(5, 80, 80)" }
 	contact { type = color label = "Contact color" default = "hsv(40, 20, 80)" }
 	contact_alpha { type = float label = "Contact color transparency" default = 0.2 }
