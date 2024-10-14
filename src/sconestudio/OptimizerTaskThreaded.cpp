@@ -7,8 +7,8 @@
 
 namespace scone
 {
-	OptimizerTaskThreaded::OptimizerTaskThreaded( const QString& scenario, const QStringList& options ) :
-		OptimizerTask( scenario, options ),
+	OptimizerTaskThreaded::OptimizerTaskThreaded( const QString& scenario_file, const QStringList& options ) :
+		OptimizerTask( scenario_file, options ),
 		has_optimizer_( false ),
 		active_( true )
 	{

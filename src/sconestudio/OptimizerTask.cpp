@@ -6,8 +6,8 @@
 
 namespace scone
 {
-	OptimizerTask::OptimizerTask( const QString& scenario, const QStringList& options ) :
-		scenario_file_( scenario ),
+	OptimizerTask::OptimizerTask( const QString& scenario_file, const QStringList& options ) :
+		scenario_file_( scenario_file ),
 		options_( options ),
 		has_message_( false )
 	{}
