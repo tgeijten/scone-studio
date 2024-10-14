@@ -36,6 +36,7 @@ namespace scone
 			float tendon_radius = 0.0f;
 		};
 
+		std::tuple<Vec3, float> GetJointVec( Vec3 vec, Real length, float scale );
 		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float len_scale = 0.001f, float rad_scale = 1.0f );
 		void UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float len_scale = 0.001f, float rad_scale = 1.0f );
 		void UpdateMuscleVis( const class Muscle& mus, MuscleVis& vis );
@@ -60,8 +61,15 @@ namespace scone
 		float shininess_;
 		float ambient_;
 		const bool combine_contact_forces_;
+		const bool fixed_length_contact_forces_;
 		const bool forces_cast_shadows_;
 		const bool joint_forces_are_for_parents_;
+		float joint_arrow_length_;
+		float force_arrow_length_;
+		float min_arrow_scale_ = 0.25f;
+		float force_scale_ = 0.002f;
+		float joint_force_scale_ = 0.0005f;
+		float moment_scale_ = 0.05f;
 		vis::vec3f focus_point_;
 		float fixed_muscle_width_;
 		float spring_width_;
@@ -73,7 +81,7 @@ namespace scone
 		vis::material tendon_mat;
 		vis::material ligament_mat;
 		vis::material spring_mat;
-		vis::material arrow_mat;
+		vis::material force_mat;
 		vis::material moment_mat;
 		vis::material contact_mat;
 		vis::material auxiliary_mat;
