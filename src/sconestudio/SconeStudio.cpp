@@ -405,9 +405,9 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
-	connect( ui.osgViewer, &QOsgViewer::pressed, this, &SconeStudio::viewerPress );
-	connect( ui.osgViewer, &QOsgViewer::dragged, this, &SconeStudio::viewerDrag );
-	connect( ui.osgViewer, &QOsgViewer::released, this, &SconeStudio::viewerRelease );
+	connect( ui.osgViewer, &QOsgViewer::pressed, this, &SconeStudio::viewerMousePush );
+	connect( ui.osgViewer, &QOsgViewer::dragged, this, &SconeStudio::viewerMouseDrag );
+	connect( ui.osgViewer, &QOsgViewer::released, this, &SconeStudio::viewerMouseRelease );
 	scone::TimeSection( "InitViewer" );
 	initViewerSettings();
 
@@ -705,7 +705,6 @@ void SconeStudio::startRealTimeEvaluation()
 	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
 	ui.playControl->setRange( 0.0, max_time );
 	ui.playControl->play();
-	log::info( "Starting evaluation" );
 }
 
 void SconeStudio::modelAnalysis()
@@ -945,7 +944,7 @@ void SconeStudio::clearScenario()
 
 	// remove files from watcher
 	if ( scenario_ )
-		for ( const auto& p : scenario_->GetModel().GetExternalResources() )
+		for ( const auto& p : scenario_->GetExternalResources() )
 			fileWatcher.removePath( to_qt( p ) );
 
 	ui.playControl->stop();
@@ -1173,9 +1172,10 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_h
 				information( scenario_->GetScenarioFileName(), "This scenario does not contain any free parameters" );
 				return false;
 			}
-			// add all scenario files to file watcher
-			for ( const auto& p : scenario_->GetModel().GetExternalResources() )
-				fileWatcher.addPath( to_qt( p ) ); 
+
+			// add all model files to file watcher
+			for ( const auto& p : scenario_->GetExternalResources() )
+				fileWatcher.addPath( to_qt( p ) );
 			
 			return true; // everything loaded ok or invalid settings ignored
 		}
@@ -1373,8 +1373,7 @@ void SconeStudio::handleAutoReload()
 			if ( e->fileName == filename )
 				reload |= e->reload();
 		if ( scenario_ ) {
-			log::info( "checking ", filename.toStdString(), " in ", scenario_->GetModel().GetExternalResources() );
-			if ( xo::contains( scenario_->GetModel().GetExternalResources(), filename.toStdString() ) )
+			if ( xo::contains( scenario_->GetExternalResources(), filename.toStdString() ) )
 				reload = true;
 		}
 	}
@@ -1557,9 +1556,9 @@ void SconeStudio::viewerSelect()
 	}
 }
 
-void SconeStudio::viewerPress()
+void SconeStudio::viewerMousePush()
 {
-	if ( scenario_ && scenario_->IsEvaluating() ) {
+	if ( scenario_ && scenario_->IsEvaluating() && scenario_->HasModel() ) {
 		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() ) {
 			for ( auto& intersection : ui.osgViewer->getIntersections() ) {
 				for ( auto it = intersection.nodePath.rbegin(); it != intersection.nodePath.rend(); it++ ) {
@@ -1580,9 +1579,9 @@ void SconeStudio::viewerPress()
 	}
 }
 
-void SconeStudio::viewerDrag()
+void SconeStudio::viewerMouseDrag()
 {
-	if ( scenario_ && scenario_->IsEvaluating() ) {
+	if ( scenario_ && scenario_->IsEvaluating() && scenario_->HasModel() ) {
 		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() ) {
 			auto p = spr->GetParentPos();
 			auto mr = ui.osgViewer->getMouseRay();
@@ -1592,9 +1591,9 @@ void SconeStudio::viewerDrag()
 	}
 }
 
-void SconeStudio::viewerRelease()
+void SconeStudio::viewerMouseRelease()
 {
-	if ( scenario_ )
+	if ( scenario_ && scenario_->HasModel() )
 		if ( auto* spr = scenario_->GetModel().GetInteractionSpring() )
 			spr->SetChild( scenario_->GetModel().GetGroundBody(), Vec3::zero() );
 	ui.osgViewer->getCameraMan().setEnableCameraManipulation( true );

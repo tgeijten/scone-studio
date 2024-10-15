@@ -223,7 +223,7 @@ namespace scone
 				auto& result = result_pn_.add_child( "Result", model_->GetMeasure()->GetReport() );
 				result.set_value( fitness ); // needed because result value is only set by ModelObjective
 			}
-			else log::warning( "Model has no Measure" );
+			else result_pn_.add_child( "Result", PropNode( "<no result>" ) );
 		}
 		return result_pn_;
 	}

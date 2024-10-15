@@ -113,9 +113,9 @@ public slots:
 	void fixViewerWindowSize();
 	void viewerTooltip();
 	void viewerSelect();
-	void viewerPress();
-	void viewerDrag();
-	void viewerRelease();
+	void viewerMousePush();
+	void viewerMouseDrag();
+	void viewerMouseRelease();
 	void exportCoordinates();
 	void resetCoordinates();
 	void convertScenario();
