@@ -288,11 +288,11 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	viewActions[ViewOption::Tendons] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::BodyGeom] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Cente&r of Mass", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Ce&nter of Mass", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::Joints] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::JointReactionForces] = viewMenu->addAction( "Show Joint Reaction Forces", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::JointReactionForces] = viewMenu->addAction( "Show Joint &Reaction Forces", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::AuxiliaryGeom] = viewMenu->addAction( "Show Auxiliary Geometry", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::AuxiliaryGeom] = viewMenu->addAction( "Show Au&xiliary Geometry", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
 	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
 	viewMenu->addSeparator();
@@ -1004,7 +1004,8 @@ bool SconeStudio::createScenario( const QString& any_file )
 			ui.playControl->reset();
 			if ( scenario_->IsEvaluating() && scenario_->GetModel().GetInteractionSpring() ) {
 				ui.playControl->setRecordingMode( true );
-				viewActions[ViewOption::StaticCamera]->setChecked( true );
+				if ( !viewActions[ViewOption::StaticCamera]->isChecked() )
+					viewActions[ViewOption::StaticCamera]->trigger();
 			}
 			else ui.playControl->setRecordingMode( false );
 		}
