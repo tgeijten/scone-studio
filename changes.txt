@@ -1,11 +1,18 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.3.2 ====
+==== SCONE 2.4.0 ====
 //Released//
+
+=== Major New Features ===
+  * New Interactive Mode, which lets you interact with models in real-time (see the new "Interactive Demo" example)
+  * You can now load scenarios and run optimizations via the SconePy python interface (see "SconePy/optimization_example.py")
+  * Added the option to apply soft limits to muscle inputs (see the new "Soft Limits" examples)
+  * Several new and updated Examples (see the "Examples" folder)
 
 === Updates ===
   * Viewer
+    * Improved the visualization of force and moment arrows
     * Viewer camera light position can now be configured via viewer.camera_light_offset
     * Changing the camera during playback now uses smooth transitions
     * Camera orbit velocity can now be set to Slow, Medium or Fast
@@ -34,11 +41,15 @@
     * New data channel: simulation_frequency_average
     * Data storage now has separate 'detailed muscle properties' setting
   * ModelHfd option: enable_collision_between_objects
+  * Optimizations now use a thread pool by default (see settings -> optimizer -> evaluator)
   * BodyMeasure now has 'scale' parameter to scale the magnitude of measured X, Y and Z components
   * SequentialController can now use the same controller(s) multiple times, individual parameter names can be specified using the child_names setting
 
 === Fixes ===
-  * ReflexController parameter names now always respect symmetric = 1
+  * Fixed "Assertion failure: model_"  error messages
+  * Empty line comments (starting with ''#'') are now handled correctly
+  * Muscle Analysis moment arms are now derived directly from MTU length change, avoiding occasional incorrect values
+  * ReflexController parameter names now always respect ''symmetric = 1''
   * Contact force stiffness is now converted to Hyfydy correctly with OpenSim4 models
   * Mesh color settings are now handled properly
 
