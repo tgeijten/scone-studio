@@ -6,8 +6,9 @@
 
 === Major New Features ===
   * New Interactive Mode, which lets you interact with models in real-time (see the new "Interactive Demo" example)
-  * You can now load scenarios and run optimizations via the SconePy python interface (see "SconePy/optimization_example.py")
-  * Added the option to apply soft limits to muscle inputs (see the new "Soft Limits" examples)
+  * You can now load .scone scenarios and run optimizations via the SconePy Python interface (see "SconePy/optimization_example.py")
+  * ScriptControllers can now modulate reflex parameters of child Controllers during a simulation
+  * Optional soft lower and upper limits for muscle inputs (see the new "Soft Limits" examples)
   * Several new and updated Examples (see the "Examples" folder)
 
 === Updates ===
@@ -27,9 +28,6 @@
     * Checkpoints (.pt) are now evaluated in the background, with additional configuration options
     * Improved display of sconegym results in Results Browser
     * Added option to evaluate multiple .pt files by right-clicking on a selection
-  * Muscle Analysis
-    * Muscle Analysis now computes moment_arm using mtu_length
-    * Muscle Analysis now shows moment arms for all relevant dofs
   * Coordinates
     * Coordinate slider number boxes are no longer clamped to ranges
     * New option file.playback_start, for setting the default playback start time
@@ -40,16 +38,18 @@
   * Data storage
     * New data channel: simulation_frequency_average
     * Data storage now has separate 'detailed muscle properties' setting
+  * SequentialController can now use the same controller(s) multiple times, individual parameter names can be specified using the child_names setting
+  * EffortMeasure now supports MuscleActivation measure
   * ModelHfd option: enable_collision_between_objects
   * Optimizations now use a thread pool by default (see settings -> optimizer -> evaluator)
   * BodyMeasure now has 'scale' parameter to scale the magnitude of measured X, Y and Z components
-  * SequentialController can now use the same controller(s) multiple times, individual parameter names can be specified using the child_names setting
 
 === Fixes ===
   * Fixed "Assertion failure: model_"  error messages
   * Empty line comments (starting with ''#'') are now handled correctly
   * Muscle Analysis moment arms are now derived directly from MTU length change, avoiding occasional incorrect values
   * ReflexController parameter names now always respect ''symmetric = 1''
+  * ScriptController now writes data from child Controllers
   * Contact force stiffness is now converted to Hyfydy correctly with OpenSim4 models
   * Mesh color settings are now handled properly
 
