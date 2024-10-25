@@ -63,7 +63,7 @@ namespace scone
 		const path& GetScenarioPath() const { return scenario_filename_; }
 		QString GetScenarioFileName() const { return to_qt( scenario_filename_ ); }
 		const PropNode& GetScenarioPropNode() const { return scenario_pn_; }
-		const HasExternalResources& GetExternalResources() const;
+		const ExternalResourceContainer& GetExternalResources() const;
 
 		enum class Status { Initializing, Evaluating, Overtime, Finished, Aborted, Error };
 		Status GetStatus() const { return status_; }

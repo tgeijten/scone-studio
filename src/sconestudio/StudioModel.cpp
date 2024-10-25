@@ -210,14 +210,14 @@ namespace scone
 		}
 	}
 
-	const HasExternalResources& StudioModel::GetExternalResources() const
+	const ExternalResourceContainer& StudioModel::GetExternalResources() const
 	{
 		if ( optimizer_ )
-			return dynamic_cast<const HasExternalResources&>( optimizer_->GetObjective() );
+			return optimizer_->GetObjective().GetExternalResources();
 		else if ( HasModel() )
-			return dynamic_cast<const HasExternalResources&>( GetModel() );
+			return GetModel().GetExternalResources();
 		else
-			return dynamic_cast<const HasExternalResources&>( null_objective_ );
+			return null_objective_.GetExternalResources();
 	}
 
 	const PropNode& StudioModel::GetResult()
