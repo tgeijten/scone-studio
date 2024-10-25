@@ -79,8 +79,10 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi 
 			bool ok = false;
 			if ( auto gen = split[0].toInt( &ok ); ok )
 				stat.gen = gen;
+			else stat.type = Status::Type::Invalid;
 			if ( auto best = split.back().toDouble( &ok ); ok )
 				stat.best = best;
+			else stat.type = Status::Type::Invalid;
 		}
 	}
 	else if ( fi.isDir() )
