@@ -1637,8 +1637,10 @@ void SconeStudio::convertScenario()
 {
 	if ( !( createAndVerifyActiveScenario( true ) && scenario_->HasModel() ) )
 		return;
-	if ( scenario_->GetModel().GetModelFile().extension_no_dot() == "hfd" )
-		return information( "Cannot Convert Scenario", "This scenario already uses a Hyfdy model" );
+	if ( scenario_->GetModel().GetModelFile().extension_no_dot() == "hfd" ) {
+		if ( !question( "Convert to Hyfydy", "This scenario already uses a Hyfydy model. Do you wish to convert it still?" ) )
+			return;
+	}
 
 	auto new_scenario = ShowConvertScenarioDialog( this, *scenario_ );
 	if ( !new_scenario.isEmpty() && GetStudioSetting<bool>( "ui.show_conversion_support_message" ) ) {
