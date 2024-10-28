@@ -2,7 +2,7 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.4.0 ====
-//Released//
+//Released October 28, 2024//
 
 === Major New Features ===
   * New Interactive Mode, which lets you interact with models in real-time (see the new "Interactive Demo" example)
