@@ -7,9 +7,9 @@
 === Major New Features ===
   * New Interactive Mode, which lets you interact with models in real-time (see the new "Interactive Demo" example)
   * You can now load .scone scenarios and run optimizations via the SconePy Python interface (see "SconePy/optimization_example.py")
+  * Hyfydy now supports double-precision floating point simulation through ModelHyfydyPrecise
   * ScriptControllers can now modulate reflex parameters of child Controllers during a simulation
   * Optional soft lower and upper limits for muscle inputs (see the new "Soft Limits" examples)
-  * Hyfydy now supports Double Precision simulation through ModelHyfydyPrecise
   * Several new and updated Examples (see the "Examples" folder)
 
 === Updates ===

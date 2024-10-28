@@ -252,9 +252,11 @@ namespace scone
 			bodies[i].pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
 
 			// contact forces
-			if ( auto f = b->GetContactForce(); view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !f.is_null() ) {
-				auto [vec, r] = GetArrowVec( f, force_arrow_length_, force_scale_ );
-				UpdateForceVis( force_count++, b->GetContactPoint(), vec, r );
+			if ( view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !b->IsStatic() ) {
+				if ( auto f = b->GetContactForce(); !f.is_null() ) {
+					auto [vec, r] = GetArrowVec( f, force_arrow_length_, force_scale_ );
+					UpdateForceVis( force_count++, b->GetContactPoint(), vec, r );
+				}
 			}
 
 			// external forces
