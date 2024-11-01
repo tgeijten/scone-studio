@@ -1259,6 +1259,8 @@ void SconeStudio::evaluateActiveScenario()
 	{
 		if ( scenario_->IsEvaluating() )
 			evaluate();
+		if ( auto t = scone::GetStudioSetting<TimeInSeconds>( "file.playback_start" ); t != 0.0 )
+			ui.playControl->setTime( t );
 		ui.playControl->play();
 	}
 
