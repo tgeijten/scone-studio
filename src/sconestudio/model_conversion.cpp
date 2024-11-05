@@ -48,7 +48,7 @@ namespace scone
 
 		ui.jointStiffness->setValue( 1e6 );
 		ui.limitStiffness->setValue( 500 );
-		ui.bodyMassThreshold->setValue( 1.0 );
+		ui.bodyMassThreshold->setValue( 0.1 );
 
 		if ( QDialog::Accepted == dlg.exec() )
 		{
