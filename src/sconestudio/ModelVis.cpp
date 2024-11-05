@@ -514,7 +514,7 @@ namespace scone
 			e.show( view_flags( ViewOption::AuxiliaryGeom ) );
 
 		for ( auto& e : object_contact_geoms )
-			e.show( view_flags( ViewOption::ContactGeom ) );
+			e.show( view_flags( ViewOption::BodyGeom ) );
 
 		if ( ground_.node_id() )
 			ground_.show( view_flags( ViewOption::GroundPlane ) );
