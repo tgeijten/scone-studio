@@ -283,18 +283,18 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	editMenu->addAction( "&Duplicate Selection", [this]() { if ( auto* e = getActiveCodeEditor() ) e->duplicateText(); }, QKeySequence( "Ctrl+U" ) );
 
 	// View menu
-	viewActions[ViewOption::ExternalForces] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::Muscles] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::Tendons] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::BodyGeom] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Ce&nter of Mass", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::Joints] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::JointReactionForces] = viewMenu->addAction( "Show Joint &Reaction Forces", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::AuxiliaryGeom] = viewMenu->addAction( "Show Au&xiliary Geometry", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions );
-	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::ExternalForces] = viewMenu->addAction( "Show External &Forces", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+F" ) );
+	viewActions[ViewOption::Muscles] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+M" ) );
+	viewActions[ViewOption::Tendons] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+T" ) );
+	viewActions[ViewOption::BodyGeom] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+B" ) );
+	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+A" ) );
+	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Ce&nter of Mass", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+N" ) );
+	viewActions[ViewOption::Joints] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+J" ) );
+	viewActions[ViewOption::JointReactionForces] = viewMenu->addAction( "Show Joint &Reaction Forces", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+R" ) );
+	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+C" ) );
+	viewActions[ViewOption::AuxiliaryGeom] = viewMenu->addAction( "Show Au&xiliary Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+X" ) );
+	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+G" ) );
+	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+H" ) );
 	viewMenu->addSeparator();
 	auto musColMenu = viewMenu->addMenu( "Muscle Co&lor" );
 	auto musColGroup = new QActionGroup( this );
