@@ -516,6 +516,9 @@ namespace scone
 		for ( auto& e : object_contact_geoms )
 			e.show( view_flags( ViewOption::BodyGeom ) );
 
+		for ( auto& e : static_contact_geoms )
+			e.show( view_flags( ViewOption::BodyGeom ) );
+
 		if ( ground_.node_id() )
 			ground_.show( view_flags( ViewOption::GroundPlane ) );
 
