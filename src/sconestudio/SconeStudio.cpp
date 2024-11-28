@@ -310,7 +310,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	musLineGroup->setExclusive( true );
 	viewMenu->addSeparator();
 	auto orbitMenu = viewMenu->addMenu( "Camera &Orbit" );
-	viewActions[ViewOption::StaticCamera] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions );
+	viewActions[ViewOption::StaticCamera] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+S" ) );
 
 	// init view options
 	auto defaultOptions = MakeDefaultViewOptions();
