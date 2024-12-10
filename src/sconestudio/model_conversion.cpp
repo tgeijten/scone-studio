@@ -118,12 +118,13 @@ namespace scone
 		QDialog dlg( parent );
 		Ui::ConvertScenario ui;
 		ui.setupUi( &dlg );
-		ui.outputModel->setText( to_qt( scenario.GetModel().GetModelFile().replace_extension( "hfd" ) ) );
-		ui.outputScenario->setText( to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_hfd" ) ) );
+		ui.outputModel->init( QFileEdit::SaveFile, "*.hfd", to_qt( scenario.GetModel().GetModelFile().replace_extension( "hfd" ) ) );
+		ui.outputScenario->init( QFileEdit::SaveFile, "*.scone", to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_hfd" ) ) );
 		ui.usePinJoints->setChecked( mc.use_pint_joints_ );
 		ui.keepOrigin->setChecked( mc.keep_body_origin_ );
 
 		if ( QDialog::Accepted == dlg.exec() ) {
+			mc.use_body_mass_threshold_ = ui.useBodyMassThreshold->isChecked();
 			mc.body_mass_threshold_ = ui.bodyMassThreshold->value();
 			mc.joint_stiffness_ = ui.jointStiffness->value();
 			mc.joint_limit_stiffness_ = ui.limitStiffness->value();
