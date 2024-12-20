@@ -1,6 +1,36 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.4.1 ====
+
+=== New Features ===
+  * New SconePy functions:
+    * Model.set_control_parameter(name, value)
+    * Model.get_control_parameter(name)
+    * Model.get_control_parameter_names()
+    * SconePy.Scenario.get(key)
+  * New ScriptController features:
+    * controller.get_control_parameter()
+    * controller.create_control_parameter()
+    * Added support for LuaSpring
+  * New viewer shortcut Shift+X/Y/Z to place camera in opposite direction of X/Y/Z
+  * Static Camera shortcut
+  * Model Info now includes Contact Geometries
+
+=== Updates ===
+  * BodyMeasure now supports target_position and target_orientation
+  * GaitMeasure now has option use_height_wrt_feet to measure termination height relative to average foot position
+  * GaitStateController now supports Reset()
+  * com_offset is now shown in Body Model Properties
+  * sconetools.py now checks SCONE_PATH environment variable and LocalAppData (Windows)
+  * Convert Model now has Use Body Mass Threshold option
+  * Object geometries are show as body geometry
+
+=== Fixes ===
+  * Convert to Hyfydy no longer crashes when the model is already a Hyfydy model
+  * Calling reset() on a model with neural delays no longer causes a crash (SconePy)
+  * Parameter init statement with locked = 1 now respects include and exclude
+
 ==== SCONE 2.4.0 ====
 //Released October 28, 2024//
 
