@@ -38,6 +38,7 @@ lua_model.txt
 lua_muscle.txt
 lua_params.txt
 lua_scone.txt
+lua_spring.txt
 measure.txt
 mimic_measure.txt
 mirror_controller.txt
