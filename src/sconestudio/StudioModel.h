@@ -47,6 +47,7 @@ namespace scone
 		bool IsEvaluating() const { return status_ == Status::Evaluating; }
 		bool IsEvaluatingStart() const { return status_ == Status::Evaluating && GetTime() == 0.0; }
 		bool IsFinished() const { return status_ == Status::Finished; }
+		bool IsFinishedOrAborted() const { return status_ == Status::Finished || status_ == Status::Aborted; }
 		bool IsValid() const { return status_ != Status::Error; }
 
 		TimeInSeconds GetTime() const { return model_ ? model_->GetTime() : 0.0; }

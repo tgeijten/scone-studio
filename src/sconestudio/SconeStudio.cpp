@@ -1028,7 +1028,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 		}
 	}
 	catch ( FactoryNotFoundException& e ) {
-		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd", "HyfydyModel" } ) )
+		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd", "HyfydyModel", "ModelHyfydyPrecise" } ) )
 			error( "Error creating scenario",
 				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
 				"Please check Tools -> Preferences -> Hyfydy, or visit <a href = 'https://hyfydy.com'>hyfydy.com</a> for more information." );
@@ -1272,7 +1272,7 @@ void SconeStudio::writeEvaluationResults()
 {
 	if ( scenario_ )
 	{
-		if ( scenario_->IsFinished() )
+		if ( scenario_->IsFinishedOrAborted() )
 			scenario_->WriteResults();
 		else if ( scenario_->IsEvaluating() ) {
 			scenario_->SetWriteResultsAfterEvaluation( true );
