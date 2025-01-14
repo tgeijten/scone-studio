@@ -52,13 +52,15 @@ namespace scone
 		{
 			optimizer_ = GetOptimizerFactory().create( opt_fp.type(), opt_fp.props(), scenario_pn_, file.parent_path() );
 			model_objective_ = dynamic_cast<ModelObjective*>( &optimizer_->GetObjective() );
+			if ( !model_objective_ )
+				log::info( "Objective does not use a model, visualization is disabled" );
 		}
 		else if ( auto mod_fp = TryFindFactoryProps( GetModelFactory(), scenario_pn_, "Model" ); mod_fp )
 		{
 			spot::null_objective_info par;
 			model_ = CreateModel( mod_fp, par, file.parent_path() );
 		}
-		else log::warning( "Not a model objective, disabling visualization" );
+		else log::trace( "Cannot create model or optimizer from ", filename_ );
 
 		try
 		{
@@ -295,15 +297,17 @@ namespace scone
 	{
 		SCONE_ASSERT( model_ );
 		xo::timer t;
-		auto result_files = model_->WriteResults( filename_ );
-		return { result_files, t() };
+		auto r = model_->WriteResults( filename_ );
+		auto d = t();
+		log::info( "Results written to ", concat_str( r, ", " ), " in ", d, "s" );
+		return { r, d };
 	}
 
 	void StudioModel::WaitForWriteResults()
 	{
 		if ( write_results_.valid() ) {
 			auto r = write_results_.get();
-			log::debug( "Results written to ", concat_str( r.first, ", " ), " in ", r.second.secondsd(), "s" );
+			//log::debug( "Results written to ", concat_str( r.first, ", " ), " in ", r.second.secondsd(), "s" );
 		}
 	}
 
