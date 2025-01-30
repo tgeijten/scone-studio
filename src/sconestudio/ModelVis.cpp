@@ -266,8 +266,10 @@ namespace scone
 			}
 
 			// external moments
-			if ( auto m = b->GetExternalMoment(); !m.is_null() )
-				UpdateMomentVis( moment_count++, b->GetComPos(), m );
+			if ( auto m = b->GetExternalMoment(); !m.is_null() ) {
+				auto [vec, r] = GetArrowVec( m, joint_arrow_length_, moment_scale_ );
+				UpdateMomentVis( moment_count++, b->GetComPos() - 0.5 * vec, vec, r );
+			}
 		}
 
 		// update muscle paths
