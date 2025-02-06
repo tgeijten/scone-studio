@@ -24,8 +24,10 @@ namespace scone
 
 	void GaitAnalysis::reset()
 	{
-		if ( grid_ )
+		if ( grid_ ) {
 			delete grid_;
+			grid_ = nullptr;
+		}
 		plots_.clear();
 		info_ = "Gait Analysis";
 
