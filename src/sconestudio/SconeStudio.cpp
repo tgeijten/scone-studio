@@ -1028,7 +1028,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 		}
 	}
 	catch ( FactoryNotFoundException& e ) {
-		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd", "HyfydyModel", "ModelHyfydyPrecise" } ) )
+		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd", "HyfydyModel", "ModelHyfydyPrecise", "ModelHfdPrecise" } ) )
 			error( "Error creating scenario",
 				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
 				"Please check Tools -> Preferences -> Hyfydy, or visit <a href = 'https://hyfydy.com'>hyfydy.com</a> for more information." );
@@ -1834,6 +1834,9 @@ void SconeStudio::evaluateSelectedFiles()
 	auto fileList = getSelectedFiles();
 	for ( const auto& f : fileList )
 		queuedProcesses.emplace_back( makeCheckpointProcess( f, this ) );
+
+	QString msg = "The following files are being evaluated in the background (see the status bar for progress):\n\n";
+	information( "Evaluate .pt files", msg + fileList.join( "\n") );
 }
 
 void SconeStudio::sortResultsByDate()
