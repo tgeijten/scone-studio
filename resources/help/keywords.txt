@@ -31,6 +31,8 @@ jump_measure.txt
 lua_actuator.txt
 lua_body.txt
 lua_controller.txt
+lua_delayed_actuator.txt
+lua_delayed_sensor.txt
 lua_dof.txt
 lua_frame.txt
 lua_joint.txt
@@ -38,6 +40,7 @@ lua_model.txt
 lua_muscle.txt
 lua_params.txt
 lua_scone.txt
+lua_sensor.txt
 lua_spring.txt
 measure.txt
 mimic_measure.txt
