@@ -12,6 +12,11 @@ if(UNIX AND NOT APPLE)
 	set(LINUX TRUE)
 endif()
 
+# Use position-independent code on Unix (required for static libraries)
+if(UNIX)
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # Change default MSVC flags
 if (MSVC)
 	string(REPLACE "/Ob2" "/Ob3" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
