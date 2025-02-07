@@ -10,23 +10,43 @@
     * Model.get_control_parameter_names()
     * SconePy.Scenario.get(key)
   * New ScriptController features:
-    * controller.get_control_parameter()
-    * controller.create_control_parameter()
-    * Added support for LuaSpring
+    * Support for control parameters, which allows reflex modulation (see Tutorial 6c)
+      * controller.set_control_parameter(name, value)
+      * controller.get_control_parameter(name)
+      * controller.get_control_parameter_names()
+      * controller.create_control_parameter()
+      * See new Tutorial 6c for more information
+    * Added the ability to create delayed sensors and actuators
+      * LuaMuscle now has create_delayed_muscle_X_sensor() and create_delayed_muscle_actuator()
+      * LuaDof now has create_delayed_position_sensor(), create_delayed_velocity_sensor()
+      * See new Tutorial 6d for more information
+    * New LuaSpring class for controlling springs
+    * LuaMuscle now supports force_velocity_multiplier(), moment_arm(dof) and moment_arm_3D(joint)
+    * LuaDof now has actuator_torque()
+  * New Tutorials for Script Reflex Modulation and Neural Delays
   * New viewer shortcut Shift+X/Y/Z to place camera in opposite direction of X/Y/Z
-  * Static Camera shortcut
+  * Static Camera shortcut key
   * Model Info now includes Contact Geometries
+  * Added option use_simbody_material_combine_method (default = 1)
 
 === Updates ===
   * BodyMeasure now supports target_position and target_orientation
   * GaitMeasure now has option use_height_wrt_feet to measure termination height relative to average foot position
-  * GaitStateController now supports Reset()
+  * Show message window when evaluating .pt files
+  * GaitStateController now supports Reset(), for use in SconePy
   * com_offset is now shown in Body Model Properties
   * sconetools.py now checks SCONE_PATH environment variable and LocalAppData (Windows)
   * Convert Model now has Use Body Mass Threshold option
   * Object geometries are show as body geometry
 
 === Fixes ===
+  * ModelHyfydyPrecise now also works on Linux
+  * Fixed contact point calculation for box-sphere collisions, added use_legacy_box_sphere_collision for backwards compatibility
+  * Spring now correctly handles body_frame offsets
+  * planar_joint_force_pnld joint limits are now correct beyond +/-90 degree rotations, added use_legacy_planar_joint_limits for backwards compatibility
+  * Updated Uneven Terrain examples to work with box-sphere collision fix and planar_joint_force_pnld fix
+  * Evaluation data can now be stored even when simulation is aborted
+  * External moment visualization is now consistent with joint moment visualization
   * Convert to Hyfydy no longer crashes when the model is already a Hyfydy model
   * Calling reset() on a model with neural delays no longer causes a crash (SconePy)
   * Parameter init statement with locked = 1 now respects include and exclude
