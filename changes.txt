@@ -4,7 +4,9 @@
 ==== SCONE 2.4.1 ====
 
 === New Features ===
-  * New SconePy functions:
+  * New SconePy features:
+    * Added new gait_reflex_modulation_example.py
+    * sconepy.load(model, par_file) for loading a model with a parameter set
     * Model.set_control_parameter(name, value)
     * Model.get_control_parameter(name)
     * Model.get_control_parameter_names()
@@ -45,6 +47,7 @@
   * Spring now correctly handles body_frame offsets
   * planar_joint_force_pnld joint limits are now correct beyond +/-90 degree rotations, added use_legacy_planar_joint_limits for backwards compatibility
   * Updated Uneven Terrain examples to work with box-sphere collision fix and planar_joint_force_pnld fix
+  * sconepy.Model.reset() now works properly with Reflex Controllers
   * Evaluation data can now be stored even when simulation is aborted
   * External moment visualization is now consistent with joint moment visualization
   * Convert to Hyfydy no longer crashes when the model is already a Hyfydy model
