@@ -337,7 +337,6 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 
 	// Scenario menu
 	scenarioMenu->addAction( "&Evaluate Scenario", [this]() { evaluateActiveScenario(); }, QKeySequence( "Ctrl+E" ) );
-	//scenarioMenu->addAction( "&Evaluate Scenario (Real-time)", [this]() { evaluateActiveScenario( EvaluationMode::real_time ); }, QKeySequence( "Ctrl+I" ) );
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
 	scenarioMenu->addAction( "Run &Multiple Optimizations", this, &SconeStudio::optimizeScenarioMultiple, QKeySequence( "Ctrl+Shift+F5" ) );
@@ -505,9 +504,9 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 			}
 		}
 		else if ( fi.suffix() == "pt" ) {
-			//evaluateCheckpointSync( fi.absoluteFilePath() );
-			//activeProcesses.emplace_back( evaluateCheckpointAsync( fi.absoluteFilePath() ) );
 			queuedProcesses.emplace_back( makeCheckpointProcess( fi.absoluteFilePath(), this ) );
+			QString msg = "The following file is being evaluated in the background (see the status bar for progress):\n\n";
+			information( "Evaluate .pt files", msg + fi.absoluteFilePath() );
 		}
 		else {
 			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
@@ -530,7 +529,6 @@ void SconeStudio::start()
 		( s->hasFocus() && scenario_->GetFileName() != path_from_qt( s->fileName ) ) ) )
 	{
 		// evaluate the simulation in real-time
-		//evaluateActiveScenario( EvaluationMode::real_time );
 		startRealTimeEvaluation();
 	}
 	else
