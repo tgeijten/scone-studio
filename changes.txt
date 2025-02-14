@@ -47,6 +47,7 @@
   * Spring now correctly handles body_frame offsets
   * planar_joint_force_pnld joint limits are now correct beyond +/-90 degree rotations, added use_legacy_planar_joint_limits for backwards compatibility
   * Updated Uneven Terrain examples to work with box-sphere collision fix and planar_joint_force_pnld fix
+  * ScriptController and ScriptMeasure now show an error message (instead of crashing) when passing an invalid object to a Lua function
   * sconepy.Model.reset() now works properly with Reflex Controllers
   * Evaluation data can now be stored even when simulation is aborted
   * External moment visualization is now consistent with joint moment visualization
