@@ -11,6 +11,7 @@
     * Model.get_control_parameter(name)
     * Model.get_control_parameter_names()
     * SconePy.Scenario.get(key)
+    * Many API documentation updates
   * New ScriptController features:
     * Support for control parameters, which allows reflex modulation (see Tutorial 6c)
       * controller.set_control_parameter(name, value)
