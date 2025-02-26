@@ -9,65 +9,65 @@ env:
 jobs:
   osx:
     if: ${{ false }}
-      name: Build on MacOS 12
-      runs-on: macos-12
+    name: Build on MacOS 12
+    runs-on: macos-12
 
-      steps:
-        - uses: actions/checkout@v1
+    steps:
+    - uses: actions/checkout@v1
 
-        - name: Get Brew
-        run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    - name: Get Brew
+      run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-        - name: Get Dependencies
-        run: cd $GITHUB_WORKSPACE && ./tools/mac_1_get-dependencies
+    - name: Get Dependencies
+      run: cd $GITHUB_WORKSPACE && ./tools/mac_1_get-dependencies
 
-        - name: Check cache for openscenegraph
-        id: cache_osg
-        uses: actions/cache@v1
-        with:
-          path: ${{ env.OSG_INSTALL_PATH }}
-          key: ${{ runner.os }}-osg-${{ hashFiles('OpenSceneGraph/src') }}
+    - name: Check cache for openscenegraph
+      id: cache_osg
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.OSG_INSTALL_PATH }}
+        key: ${{ runner.os }}-osg-${{ hashFiles('OpenSceneGraph/src') }}
 
-          - name: Build openscenegraph
-          if: steps.cache_osg.outputs.cache-hit != 'true'
-          run: cd $GITHUB_WORKSPACE && ./tools/unix_2a_build-osg
+    - name: Build openscenegraph
+      if: steps.cache_osg.outputs.cache-hit != 'true'
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2a_build-osg
 
-          - name: Check cache for simbody
-          id: cache_simbody
-          uses: actions/cache@v1
-          with:
-            path: ${{ env.SIMBODY_INSTALL_PATH }}
-            key: ${{ runner.os }}-simbody-${{ hashFiles('simbody/Simbody') }}
+    - name: Check cache for simbody
+      id: cache_simbody
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.SIMBODY_INSTALL_PATH }}
+        key: ${{ runner.os }}-simbody-${{ hashFiles('simbody/Simbody') }}
 
-            - name: Build simbody (if not cached)
-            if: steps.cache_simbody.outputs.cache-hit != 'true'
-            run: cd $GITHUB_WORKSPACE && ./tools/unix_2b_build-simbody
+    - name: Build simbody (if not cached)
+      if: steps.cache_simbody.outputs.cache-hit != 'true'
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2b_build-simbody
 
-            - name: Cache opensim3
-            id: cache_opensim3
-            uses: actions/cache@v1
-            with:
-              path: ${{ env.OPENSIM3_INSTALL_PATH }}
-              key: ${{ runner.os }}-opensim3-${{ hashFiles('opensim3-scone/OpenSim') }}
+    - name: Cache opensim3
+      id: cache_opensim3
+      uses: actions/cache@v1
+      with:
+        path: ${{ env.OPENSIM3_INSTALL_PATH }}
+        key: ${{ runner.os }}-opensim3-${{ hashFiles('opensim3-scone/OpenSim') }}
 
-              - name: Build opensim3 (if not cached)
-              if: steps.cache_opensim3.outputs.cache-hit != 'true'
-              run: cd $GITHUB_WORKSPACE && ./tools/unix_2c_build-opensim3
+    - name: Build opensim3 (if not cached)
+      if: steps.cache_opensim3.outputs.cache-hit != 'true'
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2c_build-opensim3
 
-              - name: Build SCONE
-              run: cd $GITHUB_WORKSPACE && ./tools/unix_2d_build-scone
+    - name: Build SCONE
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2d_build-scone
 
-              - name: Rearrange SCONE into portable install dir
-              run: cd $GITHUB_WORKSPACE && ./tools/mac_3_create-install-dirtree
+    - name: Rearrange SCONE into portable install dir
+      run: cd $GITHUB_WORKSPACE && ./tools/mac_3_create-install-dirtree
 
-              - name: Create .dmg file from the tree
-              run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
+    - name: Create .dmg file from the tree
+      run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
 
-              - name: Upload DMG file as an artifact
-              uses: actions/upload-artifact@v2
-              with:
-                name: sconestudio.dmg
-                path: build/*.dmg
+    - name: Upload DMG file as an artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: sconestudio.dmg
+        path: build/*.dmg
 
   linux:
     name: Build on Ubuntu 20.04
