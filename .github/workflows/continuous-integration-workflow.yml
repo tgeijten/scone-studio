@@ -139,7 +139,7 @@ jobs:
 
 
     - name: Upload deb package artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: deb-installer.zip
         path: build/*.deb
