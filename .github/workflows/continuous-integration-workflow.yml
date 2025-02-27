@@ -60,14 +60,14 @@ jobs:
     - name: Rearrange SCONE into portable install dir
       run: cd $GITHUB_WORKSPACE && ./tools/mac_3_create-install-dirtree
 
-    - name: Create .dmg file from the tree
-      run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
+    # - name: Create .dmg file from the tree
+    #   run: cd $GITHUB_WORKSPACE && ./tools/mac_4_create-dmg
 
-    - name: Upload DMG file as an artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: sconestudio.dmg
-        path: build/*.dmg
+    # - name: Upload DMG file as an artifact
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: sconestudio.dmg
+    #     path: build/*.dmg
 
   linux:
     name: Build on Ubuntu 20.04
