@@ -1,6 +1,6 @@
 # Welcome to SCONE!
 [![.github/workflows/continuous-integration-workflow.yml](https://github.com/tgeijten/scone-studio/actions/workflows/continuous-integration-workflow.yml/badge.svg)](https://github.com/tgeijten/scone-studio/actions/workflows/continuous-integration-workflow.yml)
-<img align="right" height="120" src="https://github.com/tgeijten/scone-studio/blob/master/resources/ui/scone_logo_notext.png">
+<img align="right" height="120" src="https://github.com/tgeijten/scone-studio/blob/main/resources/scone_icon.png">
 
 SCONE is open source software for predictive simulation of biological
 motion. More information on SCONE, including tutorials, examples, community
