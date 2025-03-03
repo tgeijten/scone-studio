@@ -118,9 +118,23 @@ namespace scone
 		QDialog dlg( parent );
 		Ui::ConvertScenario ui;
 		ui.setupUi( &dlg );
-		ui.outputModel->init( QFileEdit::SaveFile, "*.hfd", to_qt( scenario.GetModel().GetModelFile().replace_extension( "hfd" ) ) );
-		ui.outputScenario->init( QFileEdit::SaveFile, "*.scone", to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_hfd" ) ) );
-		ui.usePinJoints->setChecked( mc.use_pint_joints_ );
+
+		bool is_hfd = scenario.GetModel().GetModelFile().extension_no_dot() == "hfd";
+		if ( is_hfd ) {
+			ui.outputModel->init( QFileEdit::SaveFile, "*.hfd", to_qt( scenario.GetModel().GetModelFile().concat_stem( "_convert" ) ) );
+			ui.outputScenario->init( QFileEdit::SaveFile, "*.scone", to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_convert" ) ) );
+			ui.convertScenario->setChecked( false );
+			mc.use_body_mass_threshold_ = false;
+			mc.compound_welded_bodies = false;
+		} else {
+			ui.outputModel->init( QFileEdit::SaveFile, "*.hfd", to_qt( scenario.GetModel().GetModelFile().replace_extension( "hfd" ) ) );
+			ui.outputScenario->init( QFileEdit::SaveFile, "*.scone", to_qt( path( scenario.GetScenarioPath() ).concat_stem( "_hfd" ) ) );
+		}
+
+		// set mc settings in ui
+		ui.useBodyMassThreshold->setChecked( mc.use_body_mass_threshold_ );
+		ui.compoundBodies->setChecked( mc.compound_welded_bodies );
+		ui.usePinJoints->setChecked( mc.use_pin_joints_ );
 		ui.keepOrigin->setChecked( mc.keep_body_origin_ );
 
 		if ( QDialog::Accepted == dlg.exec() ) {
@@ -132,7 +146,7 @@ namespace scone
 			mc.use_limits_from_dof_range_ = ui.useCoordinateRange->isChecked();
 			mc.compound_welded_bodies = ui.compoundBodies->isChecked();
 			mc.compound_mass_threshold = ui.compoundMassThreshold->value();
-			mc.use_pint_joints_ = ui.usePinJoints->isChecked();
+			mc.use_pin_joints_ = ui.usePinJoints->isChecked();
 			mc.keep_body_origin_ = ui.keepOrigin->isChecked();
 
 			auto& model = scenario.GetModel();
