@@ -157,7 +157,7 @@ namespace scone
 						model_state[i] = f.value( state_data_index[i] );
 					model_->SetState( model_state, time );
 
-					// update spring from data
+					// update InteractionSpring from data, because spring attachments are not part of the state
 					if ( auto* spr = model_->GetInteractionSpring() ) {
 						spr->SetStateFromData( storage_.GetClosestFrame( time ) );
 					}
