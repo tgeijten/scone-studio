@@ -999,13 +999,18 @@ bool SconeStudio::createScenario( const QString& any_file )
 #endif
 
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
+			bool use_static_camera = scenario_->GetModel().GetRootBody().IsStatic();
 			ui.playControl->reset();
 			if ( scenario_->IsEvaluating() && scenario_->GetModel().GetInteractionSpring() ) {
 				ui.playControl->setRecordingMode( true );
-				if ( !viewActions[ViewOption::StaticCamera]->isChecked() )
-					viewActions[ViewOption::StaticCamera]->trigger();
+				use_static_camera = true;
 			}
 			else ui.playControl->setRecordingMode( false );
+
+			// toggle static camera setting if needed
+			if ( use_static_camera != viewActions[ViewOption::StaticCamera]->isChecked()  )
+				viewActions[ViewOption::StaticCamera]->trigger();
+
 		}
 
 		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";
