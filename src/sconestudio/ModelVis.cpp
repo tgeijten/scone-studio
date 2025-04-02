@@ -33,8 +33,11 @@ namespace scone
 		arrow_shape_( GetStudioSetting<float>( "viewer.arrow_shape" ) ),
 		fixed_muscle_width_( GetStudioSetting<float>( "viewer.muscle_width" ) ),
 		spring_width_( GetStudioSetting<float>( "viewer.spring_width" ) ),
-		bone_mat( { GetStudioSetting<xo::color>( "viewer.bone" ), specular_, shininess_, ambient_ } ),
-		joint_mat( { GetStudioSetting<xo::color>( "viewer.joint" ), specular_, shininess_, ambient_ } ),
+		body_axes_length_( GetStudioSetting<float>( "viewer.body_axes_length" ) ),
+		bone_color( GetStudioSetting<xo::color>( "viewer.bone" ) ),
+		bone_mat( { bone_color, specular_, shininess_, ambient_ } ),
+		joint_color( GetStudioSetting<xo::color>( "viewer.joint" ) ),
+		joint_mat( { joint_color, specular_, shininess_, ambient_ } ),
 		com_mat( { GetStudioSetting<xo::color>( "viewer.com" ), specular_, shininess_, ambient_ } ),
 		muscle_mat( { GetStudioSetting<xo::color>( "viewer.muscle_0" ), specular_, shininess_, ambient_ } ),
 		tendon_mat( { GetStudioSetting<xo::color>( "viewer.tendon" ), specular_, shininess_, ambient_ } ),
@@ -82,8 +85,11 @@ namespace scone
 		{
 			auto& body_node = bodies.emplace_back( vis::node( &root_node_ ) );
 			body_node.set_name( body->GetName().c_str() );
-			body_axes.push_back( vis::axes( body_node, vis::axes_info{ vis::vec3f::diagonal( 0.1 ) } ) );
+			auto body_axes_info = vis::axes_info{ vis::vec3f::diagonal( body_axes_length_ ), body_axes_length_ * 0.05f };
+			auto& ba = body_axes.emplace_back( vis::axes( body_node, body_axes_info ) );
 			body_axes.back().set_cast_shadows( body->GetMass() > 0 );
+			for ( index_t i = 0; i < 3; ++i )
+				ba.meshes()[i].set_color( xo::lerp( body_axes_info.colors_[i], bone_color, 0.333f ) );
 
 			if ( body->GetMass() > 0 )
 			{
@@ -221,9 +227,15 @@ namespace scone
 		const auto joint_radius = GetStudioSetting<float>( "viewer.joint_radius" );
 		for ( auto& j : model.GetJoints() )
 		{
-			joints.push_back( vis::mesh( root_node_, vis::shape_info{ xo::sphere( joint_radius ), xo::color::red(), xo::vec3f::zero(), 0.75f } ) );
-			joints.back().set_material( joint_mat );
-			joints.back().set_name( j->GetName().c_str() );
+			auto& joint_node = joints.emplace_back( vis::node( &root_node_ ) );
+			auto joint_shape = vis::shape_info{ xo::sphere( joint_radius ), xo::color::red(), xo::vec3f::zero(), 0.75f };
+			joint_meshes.emplace_back( vis::mesh( joint_node, joint_shape ) );
+			joint_meshes.back().set_material( joint_mat );
+			joint_meshes.back().set_name( j->GetName().c_str() );
+			auto joint_axes_info = vis::axes_info{ vis::vec3f::diagonal( joint_radius * 1.1f ), joint_radius * 0.2f };
+			auto& ja = joint_axes.emplace_back( vis::axes( joint_node, joint_axes_info ) );
+			for ( index_t i = 0; i < 3; ++i )
+				ja.meshes()[i].set_color( xo::lerp( joint_axes_info.colors_[i], joint_color, 0.667f ) );
 
 			joint_forces.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::yellow(), 0.3f } );
 			joint_forces.back().set_material( joint_force_mat );
@@ -299,14 +311,18 @@ namespace scone
 		auto& model_joints = model.GetJoints();
 		auto sign = joint_forces_are_for_parents_ ? -1.0 : 1.0;
 		for ( index_t i = 0; i < model_joints.size(); ++i ) {
-			auto pos = model_joints[i]->GetPos();
-			joints[i].pos( vis::vec3f( pos ) );
+			auto& j = *model_joints[i];
+			auto& pb = j.GetParentBody();
+			auto pos = j.GetPos();
+			auto ori_p = pb.GetOrientation() * j.GetOriInParent();
+			joints[i].pos_ori( vis::vec3f( pos ), vis::quatf( ori_p ) );
+
 			if ( view_flags( ViewOption::JointReactionForces ) ) {
-				auto [vec, r] = GetArrowVec( sign * model_joints[i]->GetReactionForce(), joint_arrow_length_, joint_force_scale_ );
+				auto [vec, r] = GetArrowVec( sign * j.GetReactionForce(), joint_arrow_length_, joint_force_scale_ );
 				joint_forces[i].pos_ofs( vis::vec3f( pos ), vis::vec3f( vec ), r );
 			}
 			if ( view_flags( ViewOption::Joints ) ) {
-				auto [vec, r] = GetArrowVec( sign * model_joints[i]->GetLimitTorque(), joint_arrow_length_, moment_scale_ );
+				auto [vec, r] = GetArrowVec( sign * j.GetLimitTorque(), joint_arrow_length_, moment_scale_ );
 				UpdateMomentVis( moment_count++, pos - 0.5 * vec, vec, r );
 			}
 		}

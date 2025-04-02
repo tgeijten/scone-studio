@@ -72,8 +72,11 @@ namespace scone
 		vis::vec3f focus_point_;
 		float fixed_muscle_width_;
 		float spring_width_;
+		float body_axes_length_;
 
+		xo::color bone_color;
 		vis::material bone_mat;
+		xo::color joint_color;
 		vis::material joint_mat;
 		vis::material com_mat;
 		vis::material muscle_mat;
@@ -89,7 +92,9 @@ namespace scone
 		vis::material object_mat;
 		xo::color_gradient muscle_gradient;
 		std::vector< vis::mesh > body_meshes;
-		std::vector< vis::mesh > joints;
+		std::vector< vis::node > joints;
+		std::vector< vis::mesh > joint_meshes;
+		std::vector< vis::axes > joint_axes;
 		std::vector< MuscleVis > muscles;
 		std::vector< vis::trail > ligaments;
 		std::vector< vis::trail > springs;

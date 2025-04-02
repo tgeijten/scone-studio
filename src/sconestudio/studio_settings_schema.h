@@ -76,6 +76,7 @@ viewer {
 	relative_tendon_width { type = float label = "Tendon diameter relative to muscle" range = [ 0.1 1 ] default = 0.618 }
 	spring_width { type = float label = "Spring line radius" default = 0.0075 }
 	joint_radius { type = float label = "Joint sphere radius" range = [ 0.001 1 ] default = 0.015 }
+	body_axes_length { type = float label = "Body axes length" range = [ 0.001 1 ] default = 0.05 }
 	enable_object_cache { type = bool label = "Enable mesh caching for faster reloading (needs restart)" default = 1 }
 	hud_type { type = int label = "Show logo" default = 1 }
 	camera_follow_body { type = string label = "Body to follow by camera (leave blank for CoM)" default = "" }
