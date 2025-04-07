@@ -64,6 +64,8 @@ namespace scone
 		auto episodes = QString::number( scone::GetStudioSetting<int>( "sconegym.num_episodes" ) );
 		auto python = QString( scone::GetStudioSetting<String>( "sconegym.python" ).c_str() );
 		QStringList args{ "-m", "deprl.play", "--checkpoint_file", f, "--num_episodes", episodes };
+		auto command = python + " " + args.join( " " );
+		log::info( "Running command: ", command.toStdString() );
 		return makeProcess( python, args, parent );
 	}
 
