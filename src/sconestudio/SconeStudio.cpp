@@ -758,7 +758,7 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 				auto p = scenario_->GetFollowPoint();
 				ui.osgViewer->setFocusPoint( osg::Vec3( p.x, p.y, p.z ) );
 			}
-			scenario_->SetVisFocusPoint( scone::Vec3( vis::from_osg( ui.osgViewer->getCameraMan().getFocusPoint() ) ) );
+			scenario_->SetVisFocusPoint( scone::Vec3( ui.osgViewer->getCameraMan().getFocusPoint() ) );
 			ui.osgViewer->setFrameTime( current_time );
 
 			// update UI elements
