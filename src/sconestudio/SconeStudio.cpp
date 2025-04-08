@@ -287,13 +287,13 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	viewActions[ViewOption::Muscles] = viewMenu->addAction( "Show &Muscles", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+M" ) );
 	viewActions[ViewOption::Tendons] = viewMenu->addAction( "Show &Tendons", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+T" ) );
 	viewActions[ViewOption::BodyGeom] = viewMenu->addAction( "Show &Body Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+B" ) );
-	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body A&xes", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+A" ) );
+	viewActions[ViewOption::BodyAxes] = viewMenu->addAction( "Show Body &Axes", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+A" ) );
 	viewActions[ViewOption::BodyCom] = viewMenu->addAction( "Show Body Ce&nter of Mass", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+N" ) );
 	viewActions[ViewOption::Joints] = viewMenu->addAction( "Show &Joints", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+J" ) );
 	viewActions[ViewOption::JointReactionForces] = viewMenu->addAction( "Show Joint &Reaction Forces", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+R" ) );
-	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show &Contact Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+C" ) );
+	viewActions[ViewOption::ContactGeom] = viewMenu->addAction( "Show Contact &Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+G" ) );
 	viewActions[ViewOption::AuxiliaryGeom] = viewMenu->addAction( "Show Au&xiliary Geometry", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+X" ) );
-	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show &Ground Plane", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+G" ) );
+	viewActions[ViewOption::GroundPlane] = viewMenu->addAction( "Show Ground &Plane", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+P" ) );
 	viewActions[ViewOption::ModelComHeading] = viewMenu->addAction( "Show Model COM and &Heading", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+H" ) );
 	viewMenu->addSeparator();
 	auto musColMenu = viewMenu->addMenu( "Muscle Co&lor" );
@@ -309,8 +309,14 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	musLineGroup->addAction( viewActions[ViewOption::MuscleRadiusPcsaDynamic] = musLineMenu->addAction( "&Dynamic PCSA", this, &SconeStudio::applyViewOptions ) );
 	musLineGroup->setExclusive( true );
 	viewMenu->addSeparator();
-	auto orbitMenu = viewMenu->addMenu( "Camera &Orbit" );
-	viewActions[ViewOption::StaticCamera] = viewMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+S" ) );
+	auto camMenu = viewMenu->addMenu( "&Camera" );
+	auto camGroup = new QActionGroup( this );
+	camGroup->addAction( viewActions[ViewOption::StaticCamera] = camMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+S" ) ) );
+	camGroup->addAction( viewActions[ViewOption::FollowCamera] = camMenu->addAction( "&Dynamic Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+D" ) ) );
+	camGroup->addAction( viewActions[ViewOption::TrackingCamera] = camMenu->addAction( "&Tracking Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+Q" ) ) );
+	camGroup->setExclusive( true );
+	camMenu->addSeparator();
+	auto orbitMenu = camMenu->addMenu( "Camera &Orbit" );
 
 	// init view options
 	auto defaultOptions = MakeDefaultViewOptions();
@@ -755,8 +761,10 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 			// update 3D viewer
 			scenario_->UpdateVis( t );
 			if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() ) {
-				auto p = scenario_->GetFollowPoint();
-				ui.osgViewer->setFocusPoint( osg::Vec3( p.x, p.y, p.z ) );
+				auto fp = vis::to_osg( scenario_->GetFollowPoint() );
+				if ( scenario_->GetViewOptions().get<ViewOption::FollowCamera>() )
+					ui.osgViewer->setFocusPoint( fp );
+				else ui.osgViewer->setTrackingPoint( fp );
 			}
 			scenario_->SetVisFocusPoint( scone::Vec3( ui.osgViewer->getCameraMan().getFocusPoint() ) );
 			ui.osgViewer->setFrameTime( current_time );
@@ -1008,9 +1016,10 @@ bool SconeStudio::createScenario( const QString& any_file )
 			else ui.playControl->setRecordingMode( false );
 
 			// toggle static camera setting if needed
-			if ( use_static_camera != viewActions[ViewOption::StaticCamera]->isChecked()  )
+			if ( use_static_camera && !viewActions[ViewOption::StaticCamera]->isChecked() )
 				viewActions[ViewOption::StaticCamera]->trigger();
-
+			else if ( !use_static_camera && viewActions[ViewOption::StaticCamera]->isChecked() )
+				viewActions[ViewOption::FollowCamera]->trigger();
 		}
 
 		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";

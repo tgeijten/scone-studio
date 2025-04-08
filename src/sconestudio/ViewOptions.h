@@ -25,7 +25,9 @@ namespace scone
 		MuscleRadiusPcsa,
 		MuscleRadiusPcsaDynamic,
 		AuxiliaryGeom,
-		JointReactionForces
+		JointReactionForces,
+		FollowCamera,
+		TrackingCamera
 	};
 
 	using ViewOptions = xo::flag_set<ViewOption>;
@@ -41,7 +43,8 @@ namespace scone
 			ViewOption::Shadows,
 			ViewOption::MuscleActivation,
 			ViewOption::MuscleRadiusPcsaDynamic,
-			ViewOption::AuxiliaryGeom
+			ViewOption::AuxiliaryGeom,
+			ViewOption::FollowCamera
 			} );
 	}
 
