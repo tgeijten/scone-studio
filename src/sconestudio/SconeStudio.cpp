@@ -1207,7 +1207,7 @@ void SconeStudio::updateEvaluationReport()
 	PropNode report_pn = scenario_->GetResult();
 	report_pn.append( scenario_->GetModel().GetSimulationReport() );
 	reportModel->setData( std::move( report_pn ) );
-	reportView->expandToDepth( 0 );
+	reportView->expandToDepth( 1 );
 }
 
 void SconeStudio::updateModelDataWidgets()
