@@ -18,6 +18,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         -DHFD_BUILD_SNEL=ON
         -DHFD_BUILD_PRECISION_DOUBLE=ON
         -DSCONE_STUDIO_CPACK=ON
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     )
 else
     cmake_extra_args=(
