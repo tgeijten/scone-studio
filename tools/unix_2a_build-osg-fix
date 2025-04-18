@@ -11,9 +11,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations"
 
         # because brew-installed qt5 isn't on the search path
-        -DCMAKE_PREFIX_PATH="${QT5_BREW_PATH}/lib/cmake/Qt5Widgets/"
+        -DCMAKE_PREFIX_PATH="${QT5_BREW_PATH}/lib/cmake/Qt5Widgets/;${HOMEBREW_PREFIX}/opt/Qt@5/lib/cmake/Qt5Widgets/;"
         -DCMAKE_MACOSX_RPATH=TRUE
         -DCMAKE_INSTALL_RPATH="@executable_path/../lib"
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     )
 else
     cmake_extra_flags=(
