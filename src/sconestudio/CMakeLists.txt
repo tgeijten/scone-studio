@@ -9,6 +9,7 @@ set(STUDIOFILES
 	StudioModel.h
 	ModelVis.cpp
 	ModelVis.h
+	ViewOptions.h
 	studio_config.h
 	help_tools.cpp
 	help_tools.h

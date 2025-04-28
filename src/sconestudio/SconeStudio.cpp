@@ -312,7 +312,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	auto camMenu = viewMenu->addMenu( "&Camera" );
 	auto camGroup = new QActionGroup( this );
 	camGroup->addAction( viewActions[ViewOption::StaticCamera] = camMenu->addAction( "&Static Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+S" ) ) );
-	camGroup->addAction( viewActions[ViewOption::FollowCamera] = camMenu->addAction( "&Dynamic Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+D" ) ) );
+	camGroup->addAction( viewActions[ViewOption::FollowCamera] = camMenu->addAction( "&Dynamic Follow Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+D" ) ) );
 	camGroup->addAction( viewActions[ViewOption::TrackingCamera] = camMenu->addAction( "&Tracking Camera", this, &SconeStudio::applyViewOptions, QKeySequence( "Alt+Shift+Q" ) ) );
 	camGroup->setExclusive( true );
 	camMenu->addSeparator();
@@ -469,8 +469,13 @@ void SconeStudio::restoreCustomSettings( QSettings& settings )
 	if ( settings.contains( "viewSettings" ) )
 	{
 		auto f = MakeViewOptions( settings.value( "viewSettings" ).toULongLong() );
-		for ( auto& va : viewActions )
-			va.second->setChecked( f.get( va.first ) );
+		for ( auto& va : viewActions ) {
+			if ( va.second->actionGroup() && va.second->actionGroup()->isExclusive() ) {
+				if ( f.get( va.first ) )
+					va.second->setChecked( true ); // only set exclusive if checked
+			}
+			else va.second->setChecked( f.get( va.first ) );
+		}
 	}
 }
 
