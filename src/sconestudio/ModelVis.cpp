@@ -236,6 +236,7 @@ namespace scone
 			auto& ja = joint_axes.emplace_back( vis::axes( joint_node, joint_axes_info ) );
 			for ( index_t i = 0; i < 3; ++i )
 				ja.meshes()[i].set_color( xo::lerp( joint_axes_info.colors_[i], joint_color, 0.667f ) );
+			ja.show( view_flags( ViewOption::Joints ) || view_flags( ViewOption::JointReactionForces ) );
 
 			joint_forces.emplace_back( root_node_, vis::arrow_info{ 0.01, 0.02, xo::color::yellow(), 0.3f } );
 			joint_forces.back().set_material( joint_force_mat );
@@ -511,6 +512,9 @@ namespace scone
 			s.show( view_flags( ViewOption::BodyGeom ) );
 
 		for ( auto& e : joints )
+			e.show( view_flags( ViewOption::Joints ) || view_flags( ViewOption::JointReactionForces ) );
+
+		for ( auto& e : joint_axes )
 			e.show( view_flags( ViewOption::Joints ) || view_flags( ViewOption::JointReactionForces ) );
 
 		for ( auto& e : joint_forces )
