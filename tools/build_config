@@ -74,11 +74,21 @@ export NUM_BUILD_JOBS="${NUM_BUILD_JOBS:-$(num_processors)}"
 
 # if on mac, detect where Qt is installed (by brew)
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    QT5_VERSIONS=(/usr/local/Cellar/qt@5/*)
-    if [ ${#QT5_VERSIONS[@]} -ne 1 ]; then
-        echo "ERROR: more than one version of qt5 detected in /usr/local/Cellar/qt"
-        find /usr/local/Cellar/qt
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "arm64" ]]; then
+        # Perform Apple Silicon-specific actions here
+        echo "Running on Apple Silicon (ARM)"
+        export QT5_BREW_PATH=${HOMEBREW_PREFIX}/opt/Qt@5
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        # Perform Intel-specific actions here
+        echo "Running on Intel (x86_64)"
+        QT5_VERSIONS=(/usr/local/Cellar/qt@5/*)
+        if [ ${#QT5_VERSIONS[@]} -ne 1 ]; then
+            echo "ERROR: more than one version of qt5 detected in /usr/local/Cellar/qt"
+            find /usr/local/Cellar/qt
+        fi
+        export QT5_BREW_PATH=${QT5_VERSIONS[0]}
+    else
+        echo "Unknown architecture: $ARCH"
     fi
-    export QT5_BREW_PATH=${QT5_VERSIONS[0]}
 fi
-

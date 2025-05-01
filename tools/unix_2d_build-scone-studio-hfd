@@ -5,7 +5,7 @@ source "$( dirname ${BASH_SOURCE} )/build_config"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     cmake_extra_args=(
-        -DCMAKE_PREFIX_PATH="${OSG_INSTALL_PATH}/lib64;${QT5_BREW_PATH};${HOMEBREW_PREFIX}/opt/Qt@5"
+        -DCMAKE_PREFIX_PATH="${OSG_INSTALL_PATH}/lib64;${QT5_BREW_PATH}"
         -DOSGQT_INCLUDE_DIR="${OSG_INSTALL_PATH}/lib64"
         -DOSGQT_LIBRARY_RELEASE="${OSG_INSTALL_PATH}/lib/libosgQt.dylib"
         -DSCONE_LUA=ON
