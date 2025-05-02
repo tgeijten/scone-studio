@@ -3,6 +3,7 @@ bezier.txt
 body_measure.txt
 body_orientation_reflex.txt
 body_point_reflex.txt
+body_posture_muscle_reflex.txt
 cma_optimizer.txt
 cma_pool_optimizer.txt
 composite_controller.txt
