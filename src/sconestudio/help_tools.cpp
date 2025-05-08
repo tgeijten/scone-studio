@@ -38,7 +38,7 @@ namespace scone
 	void showAbout( QWidget* parent )
 	{
 		QString title = "<b>" + to_qt( "SCONE version " + xo::to_str( GetSconeVersion() ) ) + "</b><br><br>";
-		QString author = "Copyright (C) 2013 - 2023 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
+		QString author = "Copyright (C) 2013 - 2025 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
 		QString scone_license =
 			"<b>SCONE</b> is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>. "
 			"It uses the following external libraries:<ul>"
