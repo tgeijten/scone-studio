@@ -977,6 +977,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 	try {
 		// create scenario and update viewer
+		bool is_reload = currentFilename == any_file;
 		currentFilename = any_file;
 		scenario_ = std::make_unique< StudioModel >( scene_, path_from_qt( currentFilename ), getViewOptionsFromMenu() );
 
@@ -1021,10 +1022,12 @@ bool SconeStudio::createScenario( const QString& any_file )
 			else ui.playControl->setRecordingMode( false );
 
 			// toggle static camera setting if needed
-			if ( use_static_camera && !viewActions[ViewOption::StaticCamera]->isChecked() )
-				viewActions[ViewOption::StaticCamera]->trigger();
-			else if ( !use_static_camera && viewActions[ViewOption::StaticCamera]->isChecked() )
-				viewActions[ViewOption::FollowCamera]->trigger();
+			if ( !is_reload ) {
+				if ( use_static_camera && !viewActions[ViewOption::StaticCamera]->isChecked() )
+					viewActions[ViewOption::StaticCamera]->trigger();
+				else if ( !use_static_camera && viewActions[ViewOption::StaticCamera]->isChecked() )
+					viewActions[ViewOption::FollowCamera]->trigger();
+			}
 		}
 
 		auto history_file = scenario_->GetFileName().parent_path() / "history.txt";
