@@ -103,7 +103,7 @@ public slots:
 	void tabCloseRequested( int idx );
 	void applyViewOptions();
 	void showSettingsDialog();
-	void setPlaybackTime( TimeInSeconds t ) { setTime( t, true ); }
+	void setPlaybackTime( TimeInSeconds t ) { setTime( t ); updateVisualization(); }
 	void updateTabTitles();
 	void findDialog() { if ( auto* e = getActiveCodeEditor() ) e->findDialog(); }
 	void findNext() { if ( auto* e = getActiveCodeEditor() ) e->findNext(); }
@@ -150,7 +150,8 @@ private:
 	void evaluateOffline();
 	void evaluateRealTime();
 	void startRealTimeEvaluation();
-	void setTime( TimeInSeconds t, bool update_vis );
+	void setTime( TimeInSeconds t );
+	void updateVisualization();
 
 	std::vector< QCodeEditor* > changedDocuments();
 	bool requestSaveChanges( const std::vector<QCodeEditor*>& modified_docs );

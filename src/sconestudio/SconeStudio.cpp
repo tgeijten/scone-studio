@@ -654,12 +654,15 @@ void SconeStudio::evaluateOffline()
 	xo::timer real_time;
 	for ( double t = step_size; scenario_->IsEvaluating(); t += step_size )
 	{
+		setTime( t );
+
 		auto rt = real_time();
 		if ( progress_update.check( rt ) )
 		{
 			// update 3D visuals and progress bar
-			setTime( t, visualizer_update.check( rt ) );
-			ui.progressBar->setValue( std::min( int( 1000 * t / max_time ), 1000 ) );
+			updateVisualization();
+
+			ui.progressBar->setValue( std::min( int( 1000 * current_time / max_time ), 1000 ) );
 			QApplication::processEvents();
 			if ( ui.abortButton->isChecked() )
 			{
@@ -668,7 +671,6 @@ void SconeStudio::evaluateOffline()
 				break;
 			}
 		}
-		else setTime( t, false );
 	}
 
 	auto real_dur = real_time().secondsd();
@@ -690,7 +692,8 @@ void SconeStudio::evaluateRealTime()
 			timer.set( xo::time_from_seconds( t ) / slomo );
 		}
 
-		setTime( t, true );
+		setTime( t );
+		updateVisualization();
 		ui.progressBar->setValue( std::min( int( 1000 * t / max_time ), 1000 ) );
 		QApplication::processEvents();
 
@@ -738,7 +741,7 @@ void SconeStudio::updateGaitAnalysis()
 	catch ( const std::exception& e ) { error( "Error", e.what() ); }
 }
 
-void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
+void SconeStudio::setTime( TimeInSeconds t )
 {
 	GUI_PROFILE_FUNCTION;
 
@@ -759,27 +762,30 @@ void SconeStudio::setTime( TimeInSeconds t, bool update_vis )
 
 		// set time
 		current_time = t;
+	}
+}
 
-		// update UI and visualization
-		if ( update_vis && scenario_->HasModel() )
-		{
-			// update 3D viewer
-			scenario_->UpdateVis( t );
-			if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() ) {
-				auto fp = vis::to_osg( scenario_->GetFollowPoint() );
-				if ( scenario_->GetViewOptions().get<ViewOption::FollowCamera>() )
-					ui.osgViewer->setFocusPoint( fp );
-				else ui.osgViewer->setTrackingPoint( fp );
-			}
-			scenario_->SetVisFocusPoint( scone::Vec3( ui.osgViewer->getCameraMan().getFocusPoint() ) );
-			ui.osgViewer->setFrameTime( current_time );
-
-			// update UI elements
-			if ( analysisView->isVisible() ) // #todo: isVisible() returns true if the tab is hidden
-				analysisView->setTime( current_time, !ui.playControl->isPlaying() );
-			if ( dofEditor->isVisible() )
-				dofEditor->setSlidersFromDofs( scenario_->GetModel() );
+void SconeStudio::updateVisualization()
+{
+	// update UI and visualization
+	if ( scenario_ && scenario_->HasModel() )
+	{
+		// update 3D viewer
+		scenario_->UpdateVis( current_time );
+		if ( !scenario_->GetViewOptions().get<ViewOption::StaticCamera>() ) {
+			auto fp = vis::to_osg( scenario_->GetFollowPoint() );
+			if ( scenario_->GetViewOptions().get<ViewOption::FollowCamera>() )
+				ui.osgViewer->setFocusPoint( fp );
+			else ui.osgViewer->setTrackingPoint( fp );
 		}
+		scenario_->SetVisFocusPoint( scone::Vec3( ui.osgViewer->getCameraMan().getFocusPoint() ) );
+		ui.osgViewer->setFrameTime( current_time );
+
+		// update UI elements
+		if ( analysisView->isVisible() ) // #todo: isVisible() returns true if the tab is hidden
+			analysisView->setTime( current_time, !ui.playControl->isPlaying() );
+		if ( dofEditor->isVisible() )
+			dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 	}
 }
 
@@ -1728,7 +1734,8 @@ void SconeStudio::createVideo()
 	const double frame_rate = GetStudioSettings().get<double>( "video.frame_rate" );
 	for ( double t = 0.0; t <= scenario_->GetMaxTime(); t += ui.playControl->slowMotionFactor() / frame_rate )
 	{
-		setTime( t, true );
+		setTime( t );
+		updateVisualization();
 		ui.progressBar->setValue( int( t / scenario_->GetMaxTime() * 100 ) );
 		QApplication::processEvents();
 		if ( ui.abortButton->isChecked() )
