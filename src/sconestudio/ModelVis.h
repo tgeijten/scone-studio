@@ -88,6 +88,7 @@ namespace scone
 		vis::material moment_mat;
 		vis::material contact_mat;
 		vis::material auxiliary_mat;
+		vis::material auxiliary_opaque_mat;
 		vis::material static_mat;
 		vis::material object_mat;
 		xo::color_gradient muscle_gradient;

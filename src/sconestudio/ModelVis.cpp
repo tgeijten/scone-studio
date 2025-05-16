@@ -48,6 +48,7 @@ namespace scone
 		moment_mat( { GetStudioSetting<xo::color>( "viewer.moment" ), specular_, shininess_, ambient_ } ),
 		contact_mat( { GetStudioSetting<xo::color>( "viewer.contact" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.contact_alpha" ) } ),
 		auxiliary_mat( { GetStudioSetting<xo::color>( "viewer.auxiliary" ), specular_, shininess_, ambient_, GetStudioSetting<float>( "viewer.auxiliary_alpha" ) } ),
+		auxiliary_opaque_mat( { GetStudioSetting<xo::color>( "viewer.auxiliary" ), specular_, shininess_, ambient_ } ),
 		static_mat( { GetStudioSetting<xo::color>( "viewer.static" ), 0.0f, 0.0f, ambient_ } ),
 		object_mat( { GetStudioSetting<xo::color>( "viewer.object" ), 0.0f, 0.0f, ambient_ } ),
 		muscle_gradient( {
@@ -130,13 +131,13 @@ namespace scone
 				else {
 					// SHAPE
 					if ( dg.options_.get<DisplayGeometryOptions::auxiliary>() ) {
-						const vis::material& mat = auxiliary_mat;
+						const auto& mat = dg.options_.get<DisplayGeometryOptions::opaque>() ? auxiliary_opaque_mat : auxiliary_mat;
 						auxiliary_geoms.emplace_back(
 							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
 						auxiliary_geoms.back().set_name( "!" );
 					}
 					else {
-						const vis::material& mat = dg.color_.is_null() ? object_mat : color_materials_( dg.color_ );
+						const auto& mat = dg.color_.is_null() ? object_mat : color_materials_( dg.color_ );
 						body_meshes.emplace_back(
 							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
 						bool clickable = dg.color_.is_null() || dg.color_.a == 1;
