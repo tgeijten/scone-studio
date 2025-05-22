@@ -102,8 +102,11 @@ namespace scone
 				}
 
 				// set follow body
-				if ( auto s = GetStudioSetting<String>( "viewer.camera_follow_body" ); !s.empty() )
-					follow_body_ = FindByName( model_->GetBodies(), s );
+				if ( auto s = GetStudioSetting<String>( "viewer.camera_follow_body" ); !s.empty() ) {
+					if ( auto b = TryFindByName( model_->GetBodies(), s ); b != model_->GetBodies().end() )
+						follow_body_ = *b;
+					else log::warning( "Could not find follow body: ", s );
+				}
 
 				// create and init visualizer
 				vis_ = std::make_unique<ModelVis>( *model_, s, vs );
