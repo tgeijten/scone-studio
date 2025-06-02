@@ -646,15 +646,14 @@ void SconeStudio::evaluateOffline()
 {
 	xo::scoped_thread_priority prio_raiser( xo::thread_priority::highest );
 
-	double step_size = std::max( 0.001, scenario_->GetModel().GetSimulationStepSize() );
+	double evaluation_interval = std::max( 0.001, scenario_->GetModel().GetSimulationStepSize() );
 	auto max_time = scenario_->GetMaxTime() > 0 ? scenario_->GetMaxTime() : 60.0;
 
 	xo::interval_checker progress_update( 250_ms );
-	xo::interval_checker visualizer_update( 1000_ms );
 	xo::timer real_time;
-	for ( double t = step_size; scenario_->IsEvaluating(); t += step_size )
+	while ( scenario_->IsEvaluating() )
 	{
-		setTime( t );
+		setTime( current_time + evaluation_interval );
 
 		auto rt = real_time();
 		if ( progress_update.check( rt ) )
@@ -756,12 +755,12 @@ void SconeStudio::setTime( TimeInSeconds t )
 				}
 			}
 			scenario_->EvaluateTo( t );
+			current_time = scenario_->GetTime();
+
 			if ( real_time_evaluation_enabled_ && scenario_->IsFinished() )
 				ui.playControl->stop(); // stop triggers real-time evaluation handling
 		}
-
-		// set time
-		current_time = t;
+		else current_time = t;
 	}
 }
 
