@@ -233,7 +233,8 @@ namespace scone
 			joint_meshes.emplace_back( vis::mesh( joint_node, joint_shape ) );
 			joint_meshes.back().set_material( joint_mat );
 			joint_meshes.back().set_name( j->GetName().c_str() );
-			auto joint_axes_info = vis::axes_info{ vis::vec3f::diagonal( joint_radius * 1.1f ), joint_radius * 0.2f };
+			//auto joint_axes_info = vis::axes_info{ vis::vec3f::diagonal( joint_radius * 1.1f ), joint_radius * 0.2f };
+			auto joint_axes_info = vis::axes_info{ vis::vec3f::diagonal( body_axes_length_ ), body_axes_length_ * 0.05f };
 			auto& ja = joint_axes.emplace_back( vis::axes( joint_node, joint_axes_info ) );
 			for ( index_t i = 0; i < 3; ++i )
 				ja.meshes()[i].set_color( xo::lerp( joint_axes_info.colors_[i], joint_color, 0.667f ) );
