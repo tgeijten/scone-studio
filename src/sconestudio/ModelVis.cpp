@@ -191,10 +191,6 @@ namespace scone
 
 		for ( auto* muscle : model.GetMuscles() )
 		{
-			// MuscleGroups should not be visualized, so we skip them
-			if ( dynamic_cast<MuscleGroup*>( muscle ) )
-				break; // stop adding, since the remainder should be MuscleGroups
-
 			MuscleVis mv;
 			mv.muscle_radius = auto_muscle_width_factor * float( std::sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) );
 			mv.tendon_radius = relative_tendon_width * mv.muscle_radius;
