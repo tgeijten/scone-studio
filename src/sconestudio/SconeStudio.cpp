@@ -385,16 +385,19 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	actionMenu->addAction( "Go to &End", ui.playControl, &QPlayControl::end, QKeySequence( "Alt+End" ) );
 
 	// Help menu
-	helpMenu->addAction( "View &Help...", this, &SconeStudio::helpSearch, QKeySequence( "F1" ) );
-	helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
-	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
+	helpMenu->addAction( "Online &Help...", this, &SconeStudio::helpSearch, QKeySequence( "F1" ) );
+	//helpMenu->addAction( "Online &Documentation...", this, []() { QDesktopServices::openUrl( GetWebsiteUrl() ); } );
 	helpMenu->addAction( "User &Forum...", this, []() { QDesktopServices::openUrl( GetForumUrl() ); } );
+	helpMenu->addAction( "Check for &Updates...", this, []() { QDesktopServices::openUrl( GetDownloadUrl() ); } );
 	helpMenu->addAction( "Repair &Tutorials and Examples...", this, []() { updateTutorialsExamples(); } );
+	helpMenu->addSeparator();
+	helpMenu->addAction( "Request Hyfydy &License...", this, []() { ShowRequestLicenseDialog(); } );
 	helpMenu->addSeparator();
 	helpMenu->addAction( "&About...", [this]() { showAbout( this ); } );
 	scone::TimeSection( "InitMenu" );
 
 	// finalize windows menu
+	windowMenu->addAction( "Scenario &Editor", this, [this]() { if ( auto* e = getActiveCodeEditor() ) e->setFocus(); }, QKeySequence( "Esc" ) );
 	windowMenu->addSeparator();
 	windowMenu->addAction( "Reset Window Layout", this, &SconeStudio::resetWindowLayout );
 

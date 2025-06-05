@@ -185,7 +185,7 @@ namespace scone
 		auto hid = to_qt( sconehfd::GetHardwareId() );
 		QApplication::clipboard()->setText( hid );
 		auto message = "This is your Hardware ID (copied to clipboard):<br><br><b>" + hid + "</b><br><br>";
-		message += "Please navigate to <a href='https://hyfydy.com/trial'>hyfydy.com/trial</a> to complete your request.";
+		message += "Please navigate to <a href='https://hyfydy.com/trial'>hyfydy.com/trial</a> to complete your trial request.";
 		QMessageBox msgBox;
 		msgBox.setWindowTitle( "Hyfydy License Request" );
 		msgBox.setTextFormat( Qt::RichText );   //this is what makes the links clickable
