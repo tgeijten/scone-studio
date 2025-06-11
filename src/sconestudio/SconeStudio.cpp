@@ -235,7 +235,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	optimizationHistoryView->setObjectName( "Optimization History" );
 	optimizationHistoryView->setAutoFitVerticalAxis( scone::GetStudioSettings().get<bool>( "analysis.auto_fit_vertical_axis" ) );
 	optimizationHistoryView->setLineWidth( scone::GetStudioSettings().get<float>( "analysis.line_width" ) );
-	optimizationHistoryDock = createDockWidget( "&Optimization History", optimizationHistoryView, Qt::BottomDockWidgetArea );
+	optimizationHistoryDock = createDockWidget( "Optimization &History", optimizationHistoryView, Qt::BottomDockWidgetArea );
 	tabifyDockWidget( ui.messagesDock, optimizationHistoryDock );
 	optimizationHistoryDock->hide();
 
