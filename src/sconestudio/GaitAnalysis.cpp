@@ -51,6 +51,7 @@ namespace scone
 
 	void GaitAnalysis::update( const Storage<>& sto, const path& filename )
 	{
+		log::debug( "Updating Gait Analysis" );
 		auto force_threshold = GetStudioSetting<Real>( "gait_analysis.force_threshold" );
 		auto min_duration = GetStudioSetting<Real>( "gait_analysis.min_stance_duration" );
 		auto skip_first = GetStudioSetting<int>( "gait_analysis.skip_first" );
@@ -76,5 +77,7 @@ namespace scone
 			info_ = QString::asprintf( "Gait Analysis  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_dur, avg_speed );
 		}
 		else log::error( "Could not extract enough gait cycles from ", filename.str() );
+		log::debug( "Gait Analysis extracted ", cycles, " gait cycles" );
+		log::flush();
 	}
 }
