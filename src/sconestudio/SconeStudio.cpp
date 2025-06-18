@@ -740,7 +740,7 @@ void SconeStudio::updateGaitAnalysis()
 			gaitAnalysisDock->raise();
 		}
 	}
-	catch ( const std::exception& e ) { error( "Error", e.what() ); }
+	catch ( const std::exception& e ) { warning( "Could not update Gait Analysis", e.what() ); }
 }
 
 void SconeStudio::setTime( TimeInSeconds t )
@@ -824,7 +824,7 @@ void SconeStudio::openFile( const QString& filename )
 		fileWatcher.addPath( filename );
 		createAndVerifyActiveScenario( false );
 	}
-	catch ( std::exception& e ) { error( "Error opening " + filename, e.what() ); }
+	catch ( std::exception& e ) { warning( "Could not open " + filename, e.what() ); }
 }
 
 void SconeStudio::fileSaveTriggered()
@@ -1057,7 +1057,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 	}
 	catch ( FactoryNotFoundException& e ) {
 		if ( e.name_ == "Model" && e.props_.has_any_key( { "ModelHyfydy", "ModelHfd", "HyfydyModel", "ModelHyfydyPrecise", "ModelHfdPrecise" } ) )
-			error( "Error creating scenario",
+			warning( "Could not create scenario",
 				"This scenario uses a <b>Hyfydy model</b>, but no active license key was found.<br><br>"
 				"Please check Tools -> Preferences -> Hyfydy, or visit <a href = 'https://hyfydy.com'>hyfydy.com</a> for more information." );
 #if !defined( _MSC_VER )
@@ -1065,7 +1065,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 			error( "Error creating scenario",
 				"This scenario uses an <b>OpenSim 4 model</b>, which is currently not supported on Linux and macOS." );
 #endif
-		else error( "Error creating scenario", e.what() );
+		else warning( "Could not create scenario", e.what() );
 		clearScenario();
 		return false;
 	}
