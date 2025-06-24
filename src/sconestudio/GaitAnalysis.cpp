@@ -77,7 +77,7 @@ namespace scone
 			info_ = QString::asprintf( "Gait Analysis  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_dur, avg_speed );
 		}
 		else log::error( "Could not extract enough gait cycles from ", filename.str() );
-		log::debug( "Gait Analysis extracted ", cycles, " gait cycles" );
+		log::debug( "Gait Analysis extracted ", cycles.size(), " gait cycles" );
 		log::flush();
 	}
 }
