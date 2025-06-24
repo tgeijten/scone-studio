@@ -264,6 +264,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "Save Evaluation &Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
 	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
+	fileMenu->addAction( "&Export Muscle Info...", this, &SconeStudio::exportMuscleInfo );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	fileMenu->addAction( "Save &Model Inputs", [this]() { saveUserInputs( false ); } );
 	fileMenu->addAction( "Save &Model Inputs As...", [this]() { saveUserInputs( true ); } );
@@ -1660,6 +1661,16 @@ void SconeStudio::resetCoordinates()
 		dofEditor->setSlidersFromDofs( scenario_->GetModel() );
 		scenario_->UpdateVis( 0.0 );
 		ui.osgViewer->update();
+	}
+}
+
+void SconeStudio::exportMuscleInfo()
+{
+	if ( scenario_ && scenario_->HasModel() ) {
+		auto default_file = to_qt( path( scenario_->GetModel().GetModelFile() ).replace_extension( ".musinf" ) );
+		auto filename = QFileDialog::getSaveFileName( this, "State Filename", default_file, "musinf files (*.musinf)" );
+		if ( !filename.isEmpty() )
+			scenario_->GetModel().ExportMuscleInfo( path_from_qt( filename ) );
 	}
 }
 

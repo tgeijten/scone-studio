@@ -118,6 +118,7 @@ public slots:
 	void viewerMouseRelease();
 	void exportCoordinates();
 	void resetCoordinates();
+	void exportMuscleInfo();
 	void convertScenario();
 
 	void deleteSelectedFileOrFolder();
