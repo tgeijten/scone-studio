@@ -239,6 +239,10 @@ namespace scone
 				result.set_value( fitness ); // needed because result value is only set by ModelObjective
 			}
 			else result_pn_.add_child( "Result", PropNode( "<no result>" ) );
+
+			// append termination reason
+			if ( model_ && !model_->GetTerminationReason().empty() )
+				result_pn_["Termination Reason"] = model_->GetTerminationReason();
 		}
 		return result_pn_;
 	}
