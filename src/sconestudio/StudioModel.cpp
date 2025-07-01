@@ -46,7 +46,10 @@ namespace scone
 		filename_ = file;
 		filetype_ = file.extension_no_dot().str();
 		scenario_filename_ = FindScenario( file );
-		scenario_pn_ = LoadScenario( file );
+		std::vector<path> included_files;
+		scenario_pn_ = LoadScenario( file, &included_files );
+		for ( const auto& p : included_files )
+			external_files_.Add( p, false );
 
 		if ( auto opt_fp = TryFindFactoryProps( GetOptimizerFactory(), scenario_pn_, "Optimizer" ); opt_fp )
 		{
@@ -117,6 +120,12 @@ namespace scone
 		{
 			InvokeError( e.what() );
 		}
+
+		// add external resources to external files list
+		if ( optimizer_ )
+			external_files_.Add( optimizer_->GetObjective().GetExternalResources() );
+		else if ( HasModel() )
+			external_files_.Add( GetModel().GetExternalResources() );
 
 		log::info( "Loaded ", file.filename(), "; dim=", GetObjective().dim(), "; time=", load_time() );
 	}
@@ -213,16 +222,6 @@ namespace scone
 		{
 			InvokeError( e.what() );
 		}
-	}
-
-	const ExternalResourceContainer& StudioModel::GetExternalResources() const
-	{
-		if ( optimizer_ )
-			return optimizer_->GetObjective().GetExternalResources();
-		else if ( HasModel() )
-			return GetModel().GetExternalResources();
-		else
-			return null_objective_.GetExternalResources();
 	}
 
 	const PropNode& StudioModel::GetResult()

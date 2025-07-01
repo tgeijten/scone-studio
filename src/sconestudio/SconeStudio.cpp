@@ -964,7 +964,7 @@ void SconeStudio::clearScenario()
 
 	// remove files from watcher
 	if ( scenario_ )
-		for ( const auto& p : scenario_->GetExternalResources().GetVec() )
+		for ( const auto& p : scenario_->GetExternalFiles().GetVec() )
 			fileWatcher.removePath( to_qt( p.filename_ ) );
 
 	ui.playControl->stop();
@@ -1204,7 +1204,7 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_h
 			}
 
 			// add all model files to file watcher
-			for ( const auto& p : scenario_->GetExternalResources().GetVec() )
+			for ( const auto& p : scenario_->GetExternalFiles().GetVec() )
 				fileWatcher.addPath( to_qt( p.filename_ ) );
 			
 			return true; // everything loaded ok or invalid settings ignored
@@ -1405,7 +1405,7 @@ void SconeStudio::handleAutoReload()
 			if ( e->fileName == filename )
 				reload |= e->reload();
 		if ( scenario_ ) {
-			if ( scenario_->GetExternalResources().Contains( filename.toStdString() ) )
+			if ( scenario_->GetExternalFiles().Contains( filename.toStdString() ) )
 				reload = true;
 		}
 	}
