@@ -193,7 +193,7 @@ namespace scone
 				if ( model_objective_ )
 					model_objective_->AdvanceSimulationTo( *model_, t );
 				else
-					model_->AdvanceSimulationTo( t );
+					model_->AdvanceSimulationTo( t, 1000 );
 				auto te = model_->GetSimulationEndTime();
 				auto t = model_->GetTime();
 				if ( model_->HasSimulationEnded() )
