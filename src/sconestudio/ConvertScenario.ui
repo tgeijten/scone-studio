@@ -81,7 +81,7 @@
          <item row="2" column="0">
           <widget class="QCheckBox" name="useBodyMassThreshold">
            <property name="text">
-            <string>Use body &amp;mass treshold [kg]</string>
+            <string>Use body &amp;mass threshold [kg]</string>
            </property>
            <property name="checked">
             <bool>true</bool>
