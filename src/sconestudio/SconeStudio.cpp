@@ -1437,7 +1437,9 @@ void SconeStudio::checkActiveProcesses()
 	}
 
 	// start new processes
-	auto max_process_count = std::thread::hardware_concurrency() / 2;
+	auto max_process_count = GetStudioSetting<size_t>( "sconegym.max_concurrent_evaluations" );
+	if ( max_process_count == 0 )
+		max_process_count = std::thread::hardware_concurrency() / 2;
 	while ( activeProcesses.size() < max_process_count && queuedProcesses.size() > 0 ) {
 		activeProcesses.emplace_back( std::move( queuedProcesses.front() ) );
 		queuedProcesses.erase( queuedProcesses.begin() );

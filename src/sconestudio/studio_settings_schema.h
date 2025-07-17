@@ -123,6 +123,7 @@ sconegym {
 	label = "Sconegym"
 	python { type = string label = "Name of the Python executable used for evaluation" default = "python" }
 	num_episodes { type = int label = "Number of episodes to evaluate" default = 5 }
+	max_concurrent_evaluations { type = int label = "Maximum number of concurrent evaluations (0=hardware)" default = 0 }
 }
 
 ui {
