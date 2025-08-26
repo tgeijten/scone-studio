@@ -1,6 +1,37 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.4.3 ====
+//Released August 28, 2025//
+
+=== Major Fixes ===
+
+=== New Features ===
+  * EffortMeasure now has option to weight muscle activation by muscle volume (use_muscle_volume_weighting)
+  * SconePy model now has set_store_data_profile() to use minimal storage for results
+  * SconePy and Lua scripts now support set_max_muscle_activation() and set_min_muscle_activation()
+  * Both the Lua and Python API now have a function Model.get_ray_distance( position, direction, max_dist ), which returns the distance until a ray collides with a collision geometry, up until max_dist
+  * Added GaitMeasure option always_apply_early_termination_penalty to indicate if the penalty should be applied even if another Measure caused the simulation to terminate early
+  * GaitStateController now has option allow_stance_swing_transition
+  * Added support for MuscleGroup, to group different muscles and control them as a single actuator
+  * sconegym now has option to set maximum number of concurrent evaluations
+  * Added File menu option to export Model muscle information to a .musinf file
+  * Evaluation Result window now shows Termination Reason when a Measure caused the simulation to terminate early
+  * The evaluation UI is now more responsive with complex Hyfydy simulations
+
+=== Updates ===
+  * CmaOpimizer enable_boundary_transfer is now turned on by default, as leaving it off could significantly reduce optimization performance
+  * DofSensors now automatically adjust unsided parent dof sign and include parent in name
+  * SconeStudio now also reloads the scenario when included scenario files are modified
+  * Show Contact Geometry shortcut is now Alt+Shift+C
+  * Added "Request Hyfydy License" option to Help menu
+  * Show warning instead of error if follow body does not exist
+  * Muscle wrapping line geometry is now non-transparent for better visibility
+
+=== Fixes ===
+  * ModelHfdPrecise now works properly on Linux
+  * Camera mode is no longer automatically adjusted when reloading the same scenario
+
 ==== SCONE 2.4.2 ====
 //Released May 1, 2025//
 
