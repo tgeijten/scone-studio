@@ -111,7 +111,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	resultsModel = new ResultsFileSystemModel( nullptr );
 	ui.resultsBrowser->setModel( resultsModel );
 	ui.resultsBrowser->setNumColumns( 1 );
-	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.scone;step_*.pt" );
+	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.scone;*.osim;*.hfd;step_*.pt" );
 	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -345,8 +345,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	// Scenario menu
 	scenarioMenu->addAction( "&Evaluate Scenario", [this]() { evaluateActiveScenario(); }, QKeySequence( "Ctrl+E" ) );
 	scenarioMenu->addSeparator();
-	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario, QKeySequence( "Ctrl+F5" ) );
-	scenarioMenu->addAction( "Run &Multiple Optimizations", this, &SconeStudio::optimizeScenarioMultiple, QKeySequence( "Ctrl+Shift+F5" ) );
+	scenarioMenu->addAction( "&Optimize Scenario", this, &SconeStudio::optimizeScenario )->setShortcuts( { QKeySequence( "Ctrl+B" ), QKeySequence( "Ctrl+F5" ) } );
+	scenarioMenu->addAction( "Run &Multiple Optimizations", this, &SconeStudio::optimizeScenarioMultiple )->setShortcuts( { QKeySequence( "Ctrl+Shift+B" ), QKeySequence( "Ctrl+Shift+F5" ) } );
 	scenarioMenu->addSeparator();
 	scenarioMenu->addAction( "&Abort Optimizations", this, &SconeStudio::abortOptimizations, QKeySequence() );
 	scenarioMenu->addSeparator();
@@ -504,9 +504,11 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 	auto fi = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
 	if ( fi.isDir() )
 		fi = scone::findBestPar( QDir( fi.absoluteFilePath() ) );
+
+	QStringList openSuffixes = { "scone", "osim", "hfd" };
 	if ( fi.exists() )
 	{
-		if ( fi.suffix() == "scone" ) {
+		if ( openSuffixes.contains( fi.suffix() ) ) {
 			openFile( fi.absoluteFilePath() ); // open the .scone file in a text editor
 		}
 		else if ( fi.suffix() == "par" || fi.suffix() == "sto" ) {
@@ -1214,7 +1216,7 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_h
 	}
 	else
 	{
-		information( "No Scenario Selected", "Please select a .scone file" );
+		//information( "No Scenario Selected", "Please select a .scone file" );
 		return false;
 	}
 }
