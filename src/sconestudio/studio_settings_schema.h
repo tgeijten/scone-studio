@@ -6,6 +6,11 @@ file {
 	playback_start { type = float label = "Time to start playback, negative numbers start from end" default = 0 }
 }
 
+editor {
+	label = "Editor"
+	insert_closing_brackets { type = bool label = "Automatically insert closing brackets or quotes" default = 0 }
+}
+
 gait_analysis {
 	label = "Gait Analysis"
 	template { type = path default = "" label = "Template used for gait analysis" }

@@ -816,6 +816,7 @@ void SconeStudio::openFile( const QString& filename )
 {
 	try {
 		QCodeEditor* edw = new QCodeEditor( this );
+		edw->insertAutoBrackets = scone::GetStudioSetting<bool>( "editor.insert_closing_brackets" );
 		edw->open( filename );
 		int idx = ui.tabWidget->addTab( edw, edw->getTitle() );
 		ui.tabWidget->setCurrentIndex( idx );
