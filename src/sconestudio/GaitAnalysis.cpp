@@ -52,12 +52,13 @@ namespace scone
 	void GaitAnalysis::update( const Storage<>& sto, const path& filename )
 	{
 		log::debug( "Updating Gait Analysis" );
-		auto force_threshold = GetStudioSetting<Real>( "gait_analysis.force_threshold" );
-		auto min_duration = GetStudioSetting<Real>( "gait_analysis.min_stance_duration" );
+		GaitCycleExtractionSettings cfg;
+		cfg.touch_force_threshold = GetStudioSetting<Real>( "gait_analysis.force_threshold" );
+		cfg.min_swing_duraction = GetStudioSetting<Real>( "gait_analysis.min_stance_duration" );
 		auto skip_first = GetStudioSetting<int>( "gait_analysis.skip_first" );
 		auto skip_last = GetStudioSetting<int>( "gait_analysis.skip_last" );
 		auto skip_total = skip_first + skip_last;
-		auto cycles = ExtractGaitCycles( sto, force_threshold, min_duration );
+		auto cycles = ExtractGaitCycles( sto, cfg );
 
 		if ( cycles.size() > skip_total )
 		{

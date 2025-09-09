@@ -30,6 +30,7 @@ namespace scone
 		INIT_MEMBER( pn, channel_multiply_, 1.0 ),
 		INIT_MEMBER( pn, norm_offset_, 0 ),
 		INIT_MEMBER( pn, mirror_left_, false ),
+		norm_event_( pn.try_get<xo::bounds<double>>( "norm_event" ) ),
 		plot_( nullptr ),
 		plot_title_( nullptr )
 	{
@@ -74,6 +75,15 @@ namespace scone
 			else log::warning( "Invalid norm data for ", title_, ", norm_min has ", norm_min->size(), " data points, norm_max has ", norm_max->size() );
 		}
 
+		// event bounds
+		if ( GetStudioSetting<bool>( "gait_analysis.show_swing_start" ) && norm_event_ ) {
+			auto* bar = new QCPItemRect( plot_ );
+			bar->topLeft->setCoords( norm_event_->lower, y_min_ );
+			bar->bottomRight->setCoords( norm_event_->upper, y_max_ );
+			bar->setPen( Qt::NoPen );
+			bar->setBrush( QColor( 0, 0, 0, 30.0 ) );
+		}
+
 		// margins
 		plot_->plotLayout()->setMargins( QMargins( 2, 2, 2, 2 ) );
 		plot_->axisRect()->setMinimumMargins( QMargins( 1, 1, 1, 1 ) );
@@ -110,44 +120,57 @@ namespace scone
 		while ( plot_->graphCount() > 2 )
 			plot_->removeGraph( plot_->graphCount() - 1 );
 
-		// find channels, report error if not find
+		// find channels, report error if not found
 		const auto& labels = sto.GetLabels();
 		auto right_channel_idx = xo::find_index_if( labels, [&]( auto& l ) { return right_channel_( l ); } );
 		auto left_channel_idx = xo::find_index_if( labels, [&]( auto& l ) { return left_channel_( l ); } );
 		if ( right_channel_idx == no_index && left_channel_idx == no_index )
 			return "Could not find " + left_channel_.str() + " / " + right_channel_.str() + "; please verify Tools->Preferences->Data";
 
-		xo::flat_map< double, double > avg_data;
-		auto s = 1.0 / cycles.size();
-
+		// get settings (read here so they can be updated)
 		bool plot_cycles = GetStudioSetting<bool>( "gait_analysis.plot_individual_cycles" );
+		bool show_swing_start = GetStudioSetting<bool>( "gait_analysis.show_swing_start" );
+		Real lookahead = sto.GetAverageFrameDuration() * GetStudioSetting<Real>( "gait_analysis.plot_step_frame_lead" );
 
+		// plot cycles and gather range and avg data
 		xo::boundsd range( y_min_, y_max_ );
-		for ( const auto& cycle : cycles )
-		{
+		xo::flat_map< double, double > avg_data;
+
+		for ( const auto& cycle : cycles ) {
 			bool right = cycle.side_ == Side::Right;
-			const auto& channel_name = right ? right_channel_ : left_channel_;
 			auto channel_idx = right ? right_channel_idx : left_channel_idx;
-			if ( channel_idx != no_index )
-			{
+			if ( channel_idx != no_index ) {
 				auto* graph = plot_cycles ? plot_->addGraph() : nullptr;
 				if ( graph ) graph->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
 				double factor = mirror_left_ && !right ? -channel_multiply_ : channel_multiply_;
-				for ( Real perc : xo::frange<Real>( 0.0, 100.0, 0.5 ) )
-				{
-					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 );
+				for ( Real perc : xo::frange<Real>( 0.0, 100.0, 0.5 ) ) {
+					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 - lookahead );
 					auto value = channel_offset_ + factor * f.value( channel_idx );
 					if ( graph ) graph->addData( perc, value );
-					avg_data[perc] += s * value;
+					avg_data[perc] += value / cycles.size();
 					range.extend( value );
 				}
 			}
-			else log::warning( "Gait Analysis could not find: ", channel_name ); // only shown when *either* left / right is missing
+			else log::warning( "Gait Analysis could not find: ", right ? right_channel_ : left_channel_ ); // only shown when *either* left / right is missing
+		}
+
+		// plot swing start_lines
+		if ( show_swing_start && plot_cycles ) {
+			for ( const auto& cycle : cycles ) {
+				bool right = cycle.side_ == Side::Right;
+				auto t = 100.0 * cycle.stance_duration() / cycle.duration();
+				auto* line = new QCPItemLine( plot_ );
+				QPen pen( right ? Qt::red : Qt::blue, 1 );
+				pen.setStyle( Qt::DotLine );
+				line->setPen( pen );
+				plot_->addItem( line );
+				line->start->setCoords( t, range.lower );
+				line->end->setCoords( t, range.upper );
+			}
 		}
 
 		// add average data plot
-		if ( !avg_data.empty() )
-		{
+		if ( !avg_data.empty() ) {
 			auto* avg_graph = plot_->addGraph();
 			avg_graph->setPen( QPen( Qt::black, 1.5 ) );
 			for ( auto& e : avg_data )
@@ -155,8 +178,7 @@ namespace scone
 		}
 
 		// compute average error in STD
-		if ( !avg_data.empty() && !norm_data_.empty() )
-		{
+		if ( !avg_data.empty() && !norm_data_.empty() ) {
 			double error = 0.0;
 			for ( const auto& [x, r] : norm_data_ )
 				error += xo::abs( r.get_excess( xo::lerp_map( avg_data, x ) ) ) / xo::max( 0.01, r.length() );
