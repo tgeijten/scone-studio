@@ -1683,8 +1683,16 @@ void SconeStudio::convertScenario()
 {
 	if ( !( createAndVerifyActiveScenario( true ) && scenario_->HasModel() ) )
 		return;
+
 	if ( scenario_->GetModel().GetModelFile().extension_no_dot() == "hfd" ) {
-		if ( !question( "Convert to Hyfydy", "This scenario already uses a Hyfydy model. Do you wish to convert it still?" ) )
+		auto r = QMessageBox::question( this, "Convert to Hyfydy", "This scenario already uses a Hyfydy model", "&Save", "&Convert", "Ca&ncel" );
+		if ( r == 0 ) {
+			auto filename = QFileDialog::getSaveFileName( this, "Filename", to_qt( scenario_->GetModel().GetModelFile() ), "hfd files (*.hfd)" );
+			if ( !filename.isEmpty() )
+				scenario_->GetModel().SaveModel( filename.toStdString() );
+			return;
+		}
+		else if ( r == 2 )
 			return;
 	}
 
