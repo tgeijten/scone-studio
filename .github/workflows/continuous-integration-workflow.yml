@@ -15,6 +15,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Setup CMake 3.27
+      uses: lukka/get-cmake@v3
+      with:
+        cmakeVersion: 3.27.9
+
     - name: Get Brew
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
