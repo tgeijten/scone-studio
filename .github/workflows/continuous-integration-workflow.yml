@@ -20,14 +20,14 @@ jobs:
       with:
         cmakeVersion: 3.27.9
 
-    - name: Check cmake version
-      run: cmake --version
-
     - name: Get Brew
       run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
     - name: Get Dependencies
       run: cd $GITHUB_WORKSPACE && ./tools/mac_1_get-dependencies
+
+    - name: Check cmake version
+      run: cmake --version
 
     - name: Check cache for openscenegraph
       id: cache_osg
@@ -35,9 +35,6 @@ jobs:
       with:
         path: ${{ env.OSG_INSTALL_PATH }}
         key: ${{ runner.os }}-osg-${{ hashFiles('OpenSceneGraph/src') }}
-
-    - name: Check cmake version
-      run: cmake --version
 
     - name: Build openscenegraph
       if: steps.cache_osg.outputs.cache-hit != 'true'
@@ -85,6 +82,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
     - name: List directory structure
       run: ls -R
