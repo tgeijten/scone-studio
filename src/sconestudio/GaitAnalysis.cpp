@@ -60,14 +60,18 @@ namespace scone
 		auto skip_total = skip_first + skip_last;
 		auto cycles = ExtractGaitCycles( sto, cfg );
 
+		std::vector<double> scores;
 		if ( cycles.size() > skip_total )
 		{
 			cycles.erase( cycles.begin(), cycles.begin() + skip_first );
 			cycles.erase( cycles.end() - skip_last, cycles.end() );
 
-			for ( auto* p : plots_ )
+			for ( auto* p : plots_ ) {
 				if ( auto em = p->update( sto, cycles ); em.bad() )
 					log::warning( em.message() );
+				if ( p->hasNormData() )
+					scores.emplace_back( p->matchPercentage() );
+			}
 
 			auto f = 1.0 / cycles.size();
 			auto avg_length = f * std::accumulate( cycles.begin(), cycles.end(), 0.0,
@@ -75,7 +79,12 @@ namespace scone
 			auto avg_dur = f * std::accumulate( cycles.begin(), cycles.end(), 0.0,
 				[]( const auto& v, const auto& c ) { return v + c.duration();  } );
 			auto avg_speed = avg_length / avg_dur;
-			info_ = QString::asprintf( "Gait Analysis  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_dur, avg_speed );
+			auto avg_score = xo::average( scores );
+
+			if ( GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
+				info_ = QString::asprintf( "Gait Analysis (%.1f%%) -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", avg_score, cycles.size(), avg_length, avg_dur, avg_speed );
+			else 
+				info_ = QString::asprintf( "Gait Analysis  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_dur, avg_speed );
 		}
 		else log::error( "Could not extract enough gait cycles from ", filename.str() );
 		log::debug( "Gait Analysis extracted ", cycles.size(), " gait cycles" );

@@ -24,6 +24,8 @@ namespace scone
 		virtual ~GaitPlot() {}
 
 		xo::error_message update( const Storage<>& sto, const std::vector<GaitCycle>& cycles );
+		double matchPercentage() const { return match_percentage_; }
+		bool hasNormData() const { return !norm_data_.empty(); }
 
 		String title_;
 		xo::pattern_matcher left_channel_;
@@ -46,5 +48,6 @@ namespace scone
 	private:
 		QCustomPlot* plot_;
 		QCPPlotTitle* plot_title_;
+		double match_percentage_;
 	};
 }

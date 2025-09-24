@@ -32,7 +32,8 @@ namespace scone
 		INIT_MEMBER( pn, mirror_left_, false ),
 		norm_event_( pn.try_get<xo::bounds<double>>( "norm_event" ) ),
 		plot_( nullptr ),
-		plot_title_( nullptr )
+		plot_title_( nullptr ),
+		match_percentage_()
 	{
 		auto l = new QHBoxLayout( this );
 		l->setContentsMargins( 0, 0, 0, 0 );
@@ -183,9 +184,9 @@ namespace scone
 			for ( const auto& [x, r] : norm_data_ )
 				error += xo::abs( r.get_excess( xo::lerp_map( avg_data, x ) ) ) / xo::max( 0.01, r.length() );
 			error /= norm_data_.size();
-			auto fit_perc = 100.0 * xo::clamped( 1.0 - error, 0.0, 1.0 );
+			match_percentage_ = 100.0 * xo::clamped( 1.0 - error, 0.0, 1.0 );
 			if ( plot_title_ && GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
-				plot_title_->setText( title_.c_str() + QString::asprintf( " (%.1f%%)", fit_perc ) );
+				plot_title_->setText( title_.c_str() + QString::asprintf( " (%.1f%%)", match_percentage_ ) );
 		}
 		plot_->yAxis->setRange( range.lower, range.upper );
 		plot_->replot();
