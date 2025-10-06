@@ -130,12 +130,13 @@ namespace scone
 
 		// get settings (read here so they can be updated)
 		bool plot_cycles = GetStudioSetting<bool>( "gait_analysis.plot_individual_cycles" );
-		bool show_swing_start = GetStudioSetting<bool>( "gait_analysis.show_swing_start" );
+		int show_swing_start = GetStudioSetting<int>( "gait_analysis.show_swing_start" );
 		Real lookahead = sto.GetAverageFrameDuration() * GetStudioSetting<Real>( "gait_analysis.plot_step_frame_lead" );
 
 		// plot cycles and gather range and avg data
 		xo::boundsd range( y_min_, y_max_ );
 		xo::flat_map< double, double > avg_data;
+		auto event_line_extents = range.length() / 12;
 
 		for ( const auto& cycle : cycles ) {
 			bool right = cycle.side_ == Side::Right;
@@ -151,12 +152,24 @@ namespace scone
 					avg_data[perc] += value / cycles.size();
 					range.extend( value );
 				}
+
+				// plot swing start point
+				if ( show_swing_start == 1 && plot_cycles ) {
+					auto t = 100.0 * cycle.stance_duration() / cycle.duration();
+					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + t * cycle.duration() / 100.0 - lookahead );
+					auto value = channel_offset_ + factor * f.value( channel_idx );
+					auto* line = new QCPItemLine( plot_ );
+					line->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
+					plot_->addItem( line );
+					line->start->setCoords( t, value - event_line_extents );
+					line->end->setCoords( t, value + event_line_extents );
+				}
 			}
 			else log::warning( "Gait Analysis could not find: ", right ? right_channel_ : left_channel_ ); // only shown when *either* left / right is missing
 		}
 
 		// plot swing start_lines
-		if ( show_swing_start && plot_cycles ) {
+		if ( show_swing_start == 2 && plot_cycles ) {
 			for ( const auto& cycle : cycles ) {
 				bool right = cycle.side_ == Side::Right;
 				auto t = 100.0 * cycle.stance_duration() / cycle.duration();

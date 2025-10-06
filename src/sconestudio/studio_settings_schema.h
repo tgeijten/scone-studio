@@ -15,7 +15,7 @@ gait_analysis {
 	label = "Gait Analysis"
 	template { type = path default = "" label = "Template used for gait analysis" }
 	plot_individual_cycles { type = bool default = 1 label = "Plot individual gait cycles" }
-	show_swing_start { type = bool default = 1 label = "Show swing start in graphs" }
+	show_swing_start { type = int default = 1 label = "Show swing start in graphs (0 = no, 1 = small bars, 2 = full bars)" }
 	show_fit { type = bool default = 1 label = "Show data fit" }
 	force_threshold { type = float default = 0.001 label = "Force threshold [BW] for step detection" }
 	plot_step_frame_lead { type = float default = 1 range = [0 1] label = "Relative frame lead for step detection plots (0-1)" }
