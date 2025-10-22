@@ -77,7 +77,7 @@ namespace scone
 		}
 
 		// event bounds
-		if ( GetStudioSetting<bool>( "gait_analysis.show_swing_start" ) && norm_event_ ) {
+		if ( GetStudioSetting<int>( "gait_analysis.show_swing_start" ) != 0 && norm_event_ ) {
 			auto* bar = new QCPItemRect( plot_ );
 			bar->topLeft->setCoords( norm_event_->lower, y_min_ );
 			bar->bottomRight->setCoords( norm_event_->upper, y_max_ );
