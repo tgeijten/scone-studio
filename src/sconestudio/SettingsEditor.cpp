@@ -117,7 +117,7 @@ namespace scone
 				scone_settings.set( "hyfydy.enabled", hfd_new_enabled );
 				if ( hfd_new_enabled )
 					if ( ShowLicenseDialog( parent ) == QDialog::Accepted )
-						sconehfd::RegisterSconeHfd( hfd_new_license );
+						scone::TryRegisterSconeHfd();
 			}
 #endif
 			scone_settings.save();
