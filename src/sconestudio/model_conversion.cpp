@@ -135,6 +135,8 @@ namespace scone
 		ui.useBodyMassThreshold->setChecked( mc.use_body_mass_threshold_ );
 		ui.compoundBodies->setChecked( mc.compound_welded_bodies );
 		ui.usePinJoints->setChecked( mc.use_pin_joints_ );
+		ui.useBallSocketJoints->setChecked( mc.use_ball_socket_joints_ );
+		ui.useWeldJoints->setChecked( mc.use_weld_joints_ );
 		ui.keepOrigin->setChecked( mc.keep_body_origin_ );
 
 		if ( QDialog::Accepted == dlg.exec() ) {
@@ -147,6 +149,8 @@ namespace scone
 			mc.compound_welded_bodies = ui.compoundBodies->isChecked();
 			mc.compound_mass_threshold = ui.compoundMassThreshold->value();
 			mc.use_pin_joints_ = ui.usePinJoints->isChecked();
+			mc.use_ball_socket_joints_ = ui.useBallSocketJoints->isChecked();
+			mc.use_weld_joints_ = ui.useWeldJoints->isChecked();
 			mc.keep_body_origin_ = ui.keepOrigin->isChecked();
 
 			auto& model = scenario.GetModel();
