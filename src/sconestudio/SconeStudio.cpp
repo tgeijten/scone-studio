@@ -264,8 +264,10 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "Save Evaluation &Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
 	fileMenu->addSeparator();
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
-	fileMenu->addAction( "&Export Muscle Info...", this, &SconeStudio::exportMuscleInfo );
+	fileMenu->addAction( "Export Muscle &Info...", this, &SconeStudio::exportMuscleInfo );
+	fileMenu->addAction( "Export Sce&nario...", this, &SconeStudio::exportScenario );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
+	fileMenu->addSeparator();
 	fileMenu->addAction( "Save &Model Inputs", [this]() { saveUserInputs( false ); } );
 	fileMenu->addAction( "Save &Model Inputs As...", [this]() { saveUserInputs( true ); } );
 #endif
@@ -1676,6 +1678,21 @@ void SconeStudio::exportMuscleInfo()
 		auto filename = QFileDialog::getSaveFileName( this, "State Filename", default_file, "musinf files (*.musinf)" );
 		if ( !filename.isEmpty() )
 			scenario_->GetModel().ExportMuscleInfo( path_from_qt( filename ) );
+	}
+}
+
+void SconeStudio::exportScenario()
+{
+	if ( scenario_ ) {
+		auto qtdir = QFileDialog::getExistingDirectory( this, "Select Directory", to_qt( scone::GetScenarioFolder() ), nullptr );
+		path target_dir = path( qtdir.toStdString() );
+		path scenario_file = scenario_->GetScenarioPath();
+		CopyFileLogErrors( scenario_file, target_dir / scenario_file.filename(), false );
+		for ( auto& r : scenario_->GetExternalFiles().GetVec() ) {
+			path f = path( r.filename_ ).replace( scenario_file.parent_path(), target_dir );
+			xo::create_directories( f.parent_path() );
+			CopyFileLogErrors( r.filename_, f, false );
+		}
 	}
 }
 

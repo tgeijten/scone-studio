@@ -119,6 +119,7 @@ public slots:
 	void exportCoordinates();
 	void resetCoordinates();
 	void exportMuscleInfo();
+	void exportScenario();
 	void convertScenario();
 
 	void deleteSelectedFileOrFolder();
