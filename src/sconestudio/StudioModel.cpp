@@ -86,14 +86,13 @@ namespace scone
 
 			if ( model_ )
 			{
-				if ( filetype_ == "sto" )
+				if ( filetype_ == "sto" || filetype_ == "stob" || filename_ == "txt" )
 				{
 					// file is a .sto, load results
 					xo::timer t;
-					log::debug( "Reading ", file );
-					ReadStorageSto( storage_, file );
+					ReadStorage( storage_, file );
 					InitStateDataIndices();
-					log::trace( "Read ", file, " in ", t(), " seconds" );
+					log::debug( "Read ", storage_.GetFrameCount(), " frames from ", file, " in ", t(), " seconds" );
 					status_ = Status::Finished;
 				}
 				else

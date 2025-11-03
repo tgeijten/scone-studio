@@ -111,7 +111,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	resultsModel = new ResultsFileSystemModel( nullptr );
 	ui.resultsBrowser->setModel( resultsModel );
 	ui.resultsBrowser->setNumColumns( 1 );
-	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.scone;*.osim;*.hfd;step_*.pt" );
+	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.stob;*.txt;*.scone;*.osim;*.hfd;step_*.pt" );
 	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -508,12 +508,13 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 		fi = scone::findBestPar( QDir( fi.absoluteFilePath() ) );
 
 	QStringList openSuffixes = { "scone", "osim", "hfd" };
+	QStringList evaluateSuffixes = { "par", "sto", "stob", "txt" };
 	if ( fi.exists() )
 	{
 		if ( openSuffixes.contains( fi.suffix() ) ) {
 			openFile( fi.absoluteFilePath() ); // open the .scone file in a text editor
 		}
-		else if ( fi.suffix() == "par" || fi.suffix() == "sto" ) {
+		else if ( evaluateSuffixes.contains( fi.suffix() ) ) {
 			if ( createScenario( fi.absoluteFilePath() ) ) {
 				if ( scenario_->IsEvaluating() )
 					evaluate(); // .par file
