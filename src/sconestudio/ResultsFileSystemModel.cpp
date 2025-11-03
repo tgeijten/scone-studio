@@ -66,7 +66,7 @@ ResultsFileSystemModel::~ResultsFileSystemModel()
 ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi ) const
 {
 	Status stat;
-	if ( fi.isFile() && ( fi.suffix() == "par" || fi.suffix() == "sto" ) )
+	if ( fi.isFile() && ( fi.suffix() == "par" || fi.suffix() == "sto" || fi.suffix() == "stob" ) )
 	{
 		auto split = fi.completeBaseName().split( "_" );
 		if ( split.size() == 3 )
@@ -95,7 +95,7 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi 
 
 		// Using log here causes a recursive loop for some reason
 		//std::cout << "Scanning folder " << fi.absoluteFilePath().toStdString() << std::endl;
-		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par", "*.sto" }, QDir::Files ); dir_it.hasNext(); )
+		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par", "*.sto", "*.stob" }, QDir::Files ); dir_it.hasNext(); )
 		{
 			QFileInfo fileinf = QFileInfo( dir_it.next() );
 			if ( fileinf.isFile() ) {
