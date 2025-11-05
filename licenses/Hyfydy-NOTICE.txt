@@ -1,0 +1,13 @@
+Hyfydy Proprietary Software
+
+Hyfydy is a proprietary software component included with the SCONE Studio installer.
+It is not part of the open-source SCONE or SCONE Studio codebases.
+
+Hyfydy is licensed under different End User License Agreements (EULAs),
+depending on the type of license key used to activate it.
+
+The applicable EULA is presented to the user when enabling Hyfydy
+and must be accepted before activation.
+
+Copyright (c) Goatstream, 2021. All rights reserved.
+Includes subsequent updates and revisions.

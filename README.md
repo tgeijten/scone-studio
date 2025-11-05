@@ -25,7 +25,10 @@ get started!
 See [CONTRIBUTING.md](CONTRIBUTING.md) for information on ways to contribute to
 SCONE.
 
-### License
+### License and Third-Party Software 
 
-SCONE Studio is licensed under the [GNU Public License
-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
+SCONE Studio is licensed under the [GNU General Public License 3.0](./LICENSE).
+
+This product includes third-party software components, each distributed under their own license terms. Full license texts and notices for these components are provided in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+
+The SCONE Studio installer includes the proprietary [**Hyfydy**](https://hyfydy.com) plugin, which is dynamically loaded by the underlying SCONE library. Hyfydy is not part of the SCONE Studio or SCONE open-source codebases and is distributed under a separate proprietary license. See [licenses/Hyfydy-NOTICE.txt](./licenses/Hyfydy-NOTICE.txt) for additional information. 

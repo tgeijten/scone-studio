@@ -116,6 +116,12 @@ if (SCONE_STUDIO_CPACK)
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/scenarios/SconePy" DESTINATION "./scone/scenarios")
 	install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources" DESTINATION ".")
 
+	# install licenses
+	install(FILES "${CMAKE_SOURCE_DIR}/LICENSE" "${CMAKE_SOURCE_DIR}/THIRD_PARTY_NOTICES.md" DESTINATION ".")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/licenses" DESTINATION ".")
+	install(FILES "${CMAKE_SOURCE_DIR}/scone/LICENSE" "${CMAKE_SOURCE_DIR}/scone/THIRD_PARTY_NOTICES.md" DESTINATION "./scone")
+	install(DIRECTORY "${CMAKE_SOURCE_DIR}/scone/licenses" DESTINATION "./scone")
+
 	# Windows install/packaging:
 	if (WIN32)
 		# packaging: use NSIS to package everything into a self-extracting installer

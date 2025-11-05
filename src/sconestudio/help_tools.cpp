@@ -42,22 +42,22 @@ namespace scone
 		QString scone_license =
 			"<b>SCONE</b> is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>. "
 			"It uses the following external libraries:<ul>"
-			"<li><a href='https://opensim.stanford.edu/'>OpenSim 3.3</a> (Apache 2.0)"
-			"<li><a href='https://opensim.stanford.edu/'>OpenSim 4.3</a> (Apache 2.0)"
+			"<li><a href='https://opensim.stanford.edu/'>OpenSim 3</a> (Apache 2.0)"
+			"<li><a href='https://opensim.stanford.edu/'>OpenSim 4</a> (Apache 2.0)"
 			"<li><a href='https://simbody.github.io/3.5.0/index.html'>Simbody</a> (Apache 2.0)"
 			"<li><a href='https://www.lua.org/'>Lua</a> (MIT)"
 			"<li><a href='https://github.com/ThePhD/sol2'>Sol 3</a> (MIT)"
 			"<li><a href='http://tclap.sourceforge.net'>TCLAP</a> (MIT)"
+			"<li><a href='https://github.com/pybind/pybind11'>pybind11</a> (BSD 3-Clause)"
 			"<li><a href='https://github.com/tgeijten/xo'>xo</a> (Apache 2.0)"
 			"<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
 			"</ul><br>";
 		QString studio_license =
-			"<b>SCONE Studio</b> is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU Public License 3.0</a>. "
+			"<b>SCONE Studio</b> is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU General Public License 3.0</a>. "
 			"It uses the following external libraries:<ul>"
-			"<li><a href='https://qt.io'>Qt</a> (GPL / LGPL)"
+			"<li><a href='https://qt.io'>Qt</a> (GPL v3)"
 			"<li><a href='https://www.qcustomplot.com/'>QCustomPlot</a> (GPL v3)"
 			"<li><a href='http://www.openscenegraph.org/'>OpenSceneGraph</a> (OSGPL)"
-			"<li><a href='http://tclap.sourceforge.net'>TCLAP</a> (MIT)"
 			"<li><a href='https://github.com/tgeijten/xo'>xo</a> (Apache 2.0)"
 			"<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
 			"<li><a href='https://github.com/tgeijten/vis'>vis</a> (Apache 2.0)"
@@ -65,7 +65,9 @@ namespace scone
 			"</ul>";
 
 		QString hyfydy_license =
-			"<b>Hyfydy</b> is proprietary software. Please visit <a href='https://hyfydy.com'>hyfydy.com</a> for a free trial license.";
+			"The SCONE Studio installer includes the proprietary <b>Hyfydy</b> plugin (<a href='https://hyfydy.com'>hyfydy.com</a>), which is dynamically loaded by the underlying SCONE library. "
+			"Hyfydy is not part of the SCONE Studio or SCONE open-source codebases and is distributed under a separate proprietary license.<br><br>"
+			"For more information, see <b>THIRD_PARTY_NOTICES.md</b> in the SCONE Studio installation folder.";
 
 		QMessageBox::information( parent, "About SCONE", title + author + scone_license + studio_license + hyfydy_license );
 	}
