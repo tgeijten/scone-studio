@@ -1028,7 +1028,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 #endif
 
 			// reset play control -- this triggers setTime( 0 ) and updates com_delta
-			bool use_static_camera = scenario_->GetModel().GetRootBody().IsStatic();
+			bool use_static_camera = scenario_->GetModel().HasRootBody() && scenario_->GetModel().GetRootBody().IsStatic();
 			ui.playControl->reset();
 			if ( scenario_->IsEvaluating() && scenario_->GetModel().GetInteractionSpring() ) {
 				ui.playControl->setRecordingMode( true );
