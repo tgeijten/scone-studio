@@ -136,7 +136,7 @@ namespace scone
 		// plot cycles and gather range and avg data
 		xo::boundsd range( y_min_, y_max_ );
 		xo::flat_map< double, double > avg_data;
-		auto event_line_extents = range.length() / 12;
+		auto event_line_extents = range.length() / 8;
 
 		for ( const auto& cycle : cycles ) {
 			bool right = cycle.side_ == Side::Right;
