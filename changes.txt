@@ -1,25 +1,44 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.4.3 ====
-//Released August 28, 2025//
-
-=== Major Fixes ===
+==== SCONE 2.4.3-RC-1 ====
+//Released November 20, 2025//
 
 === New Features ===
-  * EffortMeasure now has option to weight muscle activation by muscle volume (use_muscle_volume_weighting)
-  * SconePy model now has set_store_data_profile() to use minimal storage for results
+  * SCONE Studio can now export all scenario files to a new folder (File -> Export Scenario)
+  * Added support for different output formats: sto (default), txt (tab separated values), stob (binary sto, for better performance)
+  * GaitAnalysis can now show swing start events and average match with norm data
+  * Convert to Hyfydy now supports wrapping cylinders, tendon strain muscle parameters, ball_socket_joint and weld_joint
+  * ModelHfd supports better box-capsule collision detection via use_extended_box_capsule_collision
+  * JointHfd now outputs motor_torque
+  * ModelHyfydy now has joint_rotational_damping option
+  * BodyModifier now supports the use of "inertia" to scale all inertia components or individual components via inertia_x/y/z
+  * Added get_custom_value_names() to SconePy and Lua API to get a list of all custom values
+  * Added LuaDof:set_position(pos), set_velocity(vel), is_rotational(), rotation_axis() and LuaModel:init_state_from_dofs()
+  * Added SconePy Model.set_custom_value()/get_custom_value()/has_custom_value()
+  * Added SconePy Model.set_store_data_profile() to use minimal storage for results
+  * SconePy and Lua now support Model.get_ray_distance( position, direction, max_dist ), which returns the distance until a ray collides with a collision geometry, up until max_dist
   * SconePy and Lua scripts now support set_max_muscle_activation() and set_min_muscle_activation()
-  * Both the Lua and Python API now have a function Model.get_ray_distance( position, direction, max_dist ), which returns the distance until a ray collides with a collision geometry, up until max_dist
-  * Added GaitMeasure option always_apply_early_termination_penalty to indicate if the penalty should be applied even if another Measure caused the simulation to terminate early
+  * SconePy and Lua scripts now support limit_torque(), motor_torque(), sconepy has actuator_torque() and muscle_moment()
+  * DofReflex can now use DOF acceleration
+  * CompositeController now has dual_sided and symmetric options
+  * ScriptController can now use par:random_seed(), to get a deterministic random seed based on the current parameter values
+  * Model now has 'muscle_activation' setting to define min/max activation per muscle
+  * EffortMeasure now has option to weight muscle activation by muscle volume (use_muscle_volume_weighting)
+  * EffortMeasure now has include and exclude settings to determine which muscles to include
+  * The data storage settings for RL evaluations can now be changed via Preferences -> Advanced -> data_minimal
+  * GaitMeasure now has option always_apply_early_termination_penalty to indicate if the penalty should be applied even if another Measure caused the simulation to terminate early
   * GaitStateController now has option allow_stance_swing_transition
   * Added support for MuscleGroup, to group different muscles and control them as a single actuator
-  * sconegym now has option to set maximum number of concurrent evaluations
+  * The maximum of concurrent sconegym evaluations can now be configured
   * Added File menu option to export Model muscle information to a .musinf file
   * Evaluation Result window now shows Termination Reason when a Measure caused the simulation to terminate early
   * The evaluation UI is now more responsive with complex Hyfydy simulations
 
 === Updates ===
+  * Both the com_pos/com_lin_vel and the origin pos/lin_vel are now stored when selecting 'Output body position and orientation'
+  * Files of type .osim and .hfd are now also visible in the results browser, opening them no longer displays a warning
+  * The editor no longer automatically adds closing brackets and quotes by default, this setting can be changed in Preferences -> Scone Studio -> Editor
   * CmaOpimizer enable_boundary_transfer is now turned on by default, as leaving it off could significantly reduce optimization performance
   * DofSensors now automatically adjust unsided parent dof sign and include parent in name
   * SconeStudio now also reloads the scenario when included scenario files are modified
@@ -27,9 +46,14 @@
   * Added "Request Hyfydy License" option to Help menu
   * Show warning instead of error if follow body does not exist
   * Muscle wrapping line geometry is now non-transparent for better visibility
+  * Added THIRD_PARTY_NOTICES.md and licenses and updated Help About
 
 === Fixes ===
   * ModelHfdPrecise now works properly on Linux
+  * LuaBody.add_external_force() now applies force to COM by default for OpenSim models
+  * LuaBody:set_com_pos() now sets the actual com_pos instead of the origin pos
+  * muscle_input_soft_limits are now RELATIVE values between 0 and 1
+  * Fixed error when loading a scenario without a root body
   * Camera mode is no longer automatically adjusted when reloading the same scenario
 
 ==== SCONE 2.4.2 ====
