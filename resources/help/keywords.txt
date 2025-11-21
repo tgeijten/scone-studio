@@ -52,6 +52,7 @@ model_hyfydy.txt
 model_objective.txt
 model_open_sim3.txt
 model_open_sim4.txt
+muscle_activation_settings.txt
 muscle_measure.txt
 muscle_reflex.txt
 neural_controller.txt
