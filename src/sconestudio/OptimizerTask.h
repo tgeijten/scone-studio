@@ -7,7 +7,6 @@
 #include "scone/core/PropNode.h"
 #include "xo/system/error_code.h"
 #include "xo/filesystem/path.h"
-#include "xo/utility/optional.h"
 #include "scone/core/types.h"
 #include <deque>
 
