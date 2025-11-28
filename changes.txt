@@ -1,8 +1,8 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.4.3-RC-1 ====
-//Released November 20, 2025//
+==== SCONE 2.4.3-RC-2 ====
+//Released November 25, 2025//
 
 === New Features ===
   * SCONE Studio can now export all scenario files to a new folder (File -> Export Scenario)
@@ -19,7 +19,8 @@
   * Added SconePy Model.set_store_data_profile() to use minimal storage for results
   * SconePy and Lua now support Model.get_ray_distance( position, direction, max_dist ), which returns the distance until a ray collides with a collision geometry, up until max_dist
   * SconePy and Lua scripts now support set_max_muscle_activation() and set_min_muscle_activation()
-  * SconePy and Lua scripts now support limit_torque(), motor_torque(), sconepy has actuator_torque() and muscle_moment()
+  * SconePy and Lua scripts now support limit_torque(), motor_torque(), SconePy has actuator_torque() and various functions to access muscle moments over joints or Dofs
+  * SconePy now has find_body(), find_joint(), etc. to find individual model components
   * DofReflex can now use DOF acceleration
   * CompositeController now has dual_sided and symmetric options
   * ScriptController can now use par:random_seed(), to get a deterministic random seed based on the current parameter values
