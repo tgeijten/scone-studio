@@ -25,8 +25,7 @@ namespace scone
 		const ViewOptions& GetViewOptions() const { return view_flags; }
 
 	private:
-		struct MuscleVis
-		{
+		struct MuscleVis {
 			vis::trail ten1;
 			vis::trail ten2;
 			vis::trail ce;
@@ -34,6 +33,13 @@ namespace scone
 			float ce_pos = 0.5f;
 			float muscle_radius = 0.0f;
 			float tendon_radius = 0.0f;
+		};
+
+		struct BodyVis {
+			vis::node node;
+			vis::axes axes;
+			vis::mesh com;
+			bool is_static = false;
 		};
 
 		std::tuple<Vec3, Real> GetArrowVec( Vec3 vec, Real length, Real scale, Real shape = -1.0 );
@@ -92,6 +98,8 @@ namespace scone
 		vis::material static_mat;
 		vis::material object_mat;
 		xo::color_gradient muscle_gradient;
+
+		std::vector< BodyVis > bodies;
 		std::vector< vis::mesh > body_meshes;
 		std::vector< vis::node > joints;
 		std::vector< vis::mesh > joint_meshes;
@@ -102,9 +110,6 @@ namespace scone
 		std::vector< vis::arrow > forces;
 		std::vector< vis::arrow > joint_forces;
 		std::vector< vis::arrow > moments;
-		std::vector< vis::axes > body_axes;
-		std::vector< vis::mesh > body_com;
-		std::vector< vis::node > bodies;
 		std::vector< vis::mesh > contact_geoms;
 		std::vector< vis::mesh > auxiliary_geoms;
 		std::vector< vis::mesh > object_contact_geoms;

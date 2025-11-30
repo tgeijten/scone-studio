@@ -84,19 +84,20 @@ namespace scone
 		string new_geom_dir;
 		for ( auto& body : model.GetBodies() )
 		{
-			auto& body_node = bodies.emplace_back( vis::node( &root_node_ ) );
-			body_node.set_name( body->GetName().c_str() );
+			BodyVis& body_vis = bodies.emplace_back( BodyVis{ vis::node( &root_node_ ) } );
+			body_vis.node.set_name( body->GetName().c_str() );
+			body_vis.is_static = body->IsStatic();
 			auto body_axes_info = vis::axes_info{ vis::vec3f::diagonal( body_axes_length_ ), body_axes_length_ * 0.05f };
-			auto& ba = body_axes.emplace_back( vis::axes( body_node, body_axes_info ) );
-			body_axes.back().set_cast_shadows( body->GetMass() > 0 );
+			body_vis.axes = vis::axes( body_vis.node, body_axes_info );
+			body_vis.axes.set_cast_shadows( body->GetMass() > 0 );
 			for ( index_t i = 0; i < 3; ++i )
-				ba.meshes()[i].set_color( xo::lerp( body_axes_info.colors_[i], bone_color, 0.333f ) );
+				body_vis.axes.meshes()[i].set_color( xo::lerp( body_axes_info.colors_[i], bone_color, 0.333f ) );
 
 			if ( body->GetMass() > 0 )
 			{
-				body_com.push_back( vis::mesh( body_node, vis::shape_info{ xo::sphere( 0.02f ), xo::color::green(), xo::vec3f::zero(), 0.75f } ) );
-				body_com.back().set_material( com_mat );
-				body_com.back().pos( xo::vec3f( body->GetLocalComPos() ) );
+				body_vis.com = vis::mesh( body_vis.node, vis::shape_info{ xo::sphere( 0.02f ), xo::color::green(), xo::vec3f::zero(), 0.75f } );
+				body_vis.com.set_material( com_mat );
+				body_vis.com.pos( xo::vec3f( body->GetLocalComPos() ) );
 			}
 
 			for ( auto& dg : body->GetDisplayGeometries() )
@@ -119,7 +120,7 @@ namespace scone
 							vis::mesh_options mo;
 							mo.mirror_on_load = dg.options_.get<DisplayGeometryOptions::mirror>();
 							const vis::material& mat = dg.color_.is_null() ? bone_mat : color_materials_( dg.color_ );
-							body_meshes.push_back( MakeMesh( body_node, *geom_file, mat, dg.pos_, dg.ori_, dg.scale_, mo ) );
+							body_meshes.push_back( MakeMesh( body_vis.node, *geom_file, mat, dg.pos_, dg.ori_, dg.scale_, mo ) );
 							body_meshes.back().set_name( body->GetName().c_str() );
 						}
 						else log::warning( "Could not find ", dg.filename_ );
@@ -133,13 +134,13 @@ namespace scone
 					if ( dg.options_.get<DisplayGeometryOptions::auxiliary>() ) {
 						const auto& mat = dg.options_.get<DisplayGeometryOptions::opaque>() ? auxiliary_opaque_mat : auxiliary_mat;
 						auxiliary_geoms.emplace_back(
-							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
+							MakeMesh( body_vis.node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
 						auxiliary_geoms.back().set_name( "!" );
 					}
 					else {
 						const auto& mat = dg.color_.is_null() ? object_mat : color_materials_( dg.color_ );
 						body_meshes.emplace_back(
-							MakeMesh( body_node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
+							MakeMesh( body_vis.node, dg.shape_, xo::color::cyan(), mat, dg.pos_, dg.ori_, dg.scale_ ) );
 						bool clickable = dg.color_.is_null() || dg.color_.a == 1;
 						body_meshes.back().set_name( clickable ? body->GetName().c_str() : "!" );
 					}
@@ -158,7 +159,7 @@ namespace scone
 		for ( auto& cg : model.GetContactGeometries() )
 		{
 			auto idx = xo::find_index_if( model.GetBodies(), [&]( const auto& b ) { return &cg->GetBody() == b; } );
-			auto& parent_node = idx != NoIndex ? bodies[idx] : root_node_;
+			auto& parent_node = idx != NoIndex ? bodies[idx].node : root_node_;
 			bool has_display_geom = !cg->GetBody().GetDisplayGeometries().empty();
 			bool is_static = cg->GetBody().GetMass() == 0 && !has_display_geom;
 			bool is_object_geom = cg->GetPos().is_null() && !has_display_geom;
@@ -264,7 +265,7 @@ namespace scone
 		auto& model_bodies = model.GetBodies();
 		for ( index_t i = 0; i < model_bodies.size(); ++i ) {
 			auto& b = model_bodies[i];
-			bodies[i].pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
+			bodies[i].node.pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
 
 			// contact forces
 			if ( view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !b->IsStatic() ) {
@@ -455,7 +456,7 @@ namespace scone
 	{
 		auto squared_dist = xo::squared( GetStudioSetting<float>( "viewer.max_shadow_dist" ) );
 		for ( index_t i = 1; i < bodies.size(); ++i ) // skip ground body; #todo: skip all static bodies?
-			bodies[i].set_cast_shadows( xo::squared_distance( bodies[i].pos(), focus_point_ ) < squared_dist );
+			bodies[i].node.set_cast_shadows( xo::squared_distance( bodies[i].node.pos(), focus_point_ ) < squared_dist );
 		for ( auto& b : static_contact_geoms )
 			b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
 	}
@@ -526,11 +527,11 @@ namespace scone
 		for ( auto& e : body_meshes )
 			e.show( view_flags( ViewOption::BodyGeom ) );
 
-		for ( auto& e : body_axes )
-			e.show( view_flags( ViewOption::BodyAxes ) );
-
-		for ( auto& e : body_com )
-			e.show( view_flags( ViewOption::BodyCom ) );
+		for ( auto& b : bodies ) {
+			b.axes.show( view_flags( ViewOption::BodyAxes ) );
+			if ( b.com )
+				b.com.show( view_flags( ViewOption::BodyCom ) );
+		}
 
 		for ( auto& e : contact_geoms )
 			e.show( view_flags( ViewOption::ContactGeom ) );
