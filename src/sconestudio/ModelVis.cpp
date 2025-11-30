@@ -459,6 +459,13 @@ namespace scone
 			bodies[i].node.set_cast_shadows( xo::squared_distance( bodies[i].node.pos(), focus_point_ ) < squared_dist );
 		for ( auto& b : static_contact_geoms )
 			b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
+		for ( auto& m : ligaments )
+			m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
+		for ( auto& m : muscles ) {
+			m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
+			m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
+			m.ce.set_cast_shadows( xo::squared_distance( m.ce.pos(), focus_point_ ) < squared_dist );
+		}
 	}
 
 	vis::mesh ModelVis::MakeMesh(
