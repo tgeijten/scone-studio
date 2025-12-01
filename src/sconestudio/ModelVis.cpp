@@ -455,18 +455,22 @@ namespace scone
 	void ModelVis::UpdateShadowCast()
 	{
 		auto squared_dist = xo::squared( GetStudioSetting<float>( "viewer.max_shadow_dist" ) );
-		for ( index_t i = 1; i < bodies.size(); ++i ) // skip ground body; #todo: skip all static bodies?
-			bodies[i].node.set_cast_shadows( xo::squared_distance( bodies[i].node.pos(), focus_point_ ) < squared_dist );
-		for ( auto& b : static_contact_geoms )
-			b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
-		for ( auto& m : ligaments )
-			m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
-		for ( auto& m : springs )
-			m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
-		for ( auto& m : muscles ) {
-			m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
-			m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
-			m.ce.set_cast_shadows( xo::squared_distance( m.ce.pos(), focus_point_ ) < squared_dist );
+		if ( view_flags( ViewOption::BodyGeom ) ) {
+			for ( index_t i = 1; i < bodies.size(); ++i ) // skip ground body; #todo: skip all static bodies?
+				bodies[i].node.set_cast_shadows( xo::squared_distance( bodies[i].node.pos(), focus_point_ ) < squared_dist );
+			for ( auto& b : static_contact_geoms )
+				b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
+			for ( auto& m : springs )
+				m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
+		}
+		if ( view_flags( ViewOption::Muscles ) ) {
+			for ( auto& m : ligaments )
+				m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
+			for ( auto& m : muscles ) {
+				m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
+				m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
+				m.ce.set_cast_shadows( xo::squared_distance( m.ce.pos(), focus_point_ ) < squared_dist );
+			}
 		}
 	}
 
@@ -511,8 +515,7 @@ namespace scone
 		for ( auto& m : moments )
 			m.show( view_flags( ViewOption::Joints ) );
 
-		for ( auto& m : muscles )
-		{
+		for ( auto& m : muscles ) {
 			m.ce.show( view_flags( ViewOption::Muscles ) );
 			m.ten1.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
 			m.ten2.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
