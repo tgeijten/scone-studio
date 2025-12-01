@@ -461,6 +461,8 @@ namespace scone
 			b.set_cast_shadows( xo::squared_distance( b.pos(), focus_point_ ) < squared_dist );
 		for ( auto& m : ligaments )
 			m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
+		for ( auto& m : springs )
+			m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
 		for ( auto& m : muscles ) {
 			m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
 			m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
