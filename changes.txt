@@ -1,8 +1,8 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.4.3-RC-2 ====
-//Released November 25, 2025//
+==== SCONE 2.4.3-RC-3 ====
+//Released December 3, 2025//
 
 === New Features ===
   * SCONE Studio can now export all scenario files to a new folder (File -> Export Scenario)
@@ -47,6 +47,7 @@
   * Added "Request Hyfydy License" option to Help menu
   * Show warning instead of error if follow body does not exist
   * Muscle wrapping line geometry is now non-transparent for better visibility
+  * Improved Viewer shadows for muscles, ligaments and springs
   * Added THIRD_PARTY_NOTICES.md and licenses and updated Help About
 
 === Fixes ===
