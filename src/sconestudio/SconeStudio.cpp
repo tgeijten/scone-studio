@@ -1852,7 +1852,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	// Qt >= 15.5? Move items to thrash, display warning with default Ok
-	auto msgBody = tr( "The following item(s) will be moved to the recycle bin:\n\n" ) + fileList.join( '\n' );
+	auto msgBody = tr( "The following item(s) will be moved to the recycle bin:\n\n" ) + makeFileListString( fileList );
 	if ( QMessageBox::warning( nullptr, msgTitle, msgBody, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok ) == QMessageBox::Cancel )
 		return;
 

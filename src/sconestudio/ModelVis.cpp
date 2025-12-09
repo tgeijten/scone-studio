@@ -303,7 +303,7 @@ namespace scone
 			UpdateMuscleVis( *model_muscles[i], muscles[i] );
 
 		// update ligament paths
-		for ( auto&[lv, lig] : xo::zip( ligaments, model.GetLigaments() ) ) {
+		for ( const auto&[lv, lig] : xo::zip( ligaments, model.GetLigaments() ) ) {
 			auto p = lig->GetLigamentPath();
 			lv.p.set_points( p.begin(), p.end() );
 			auto c = ligament_gradient( lig->GetNormalizedForce() );
