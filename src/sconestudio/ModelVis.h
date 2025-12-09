@@ -42,6 +42,11 @@ namespace scone
 			bool is_static = false;
 		};
 
+		struct PathVis {
+			vis::trail p;
+			vis::material mat;
+		};
+
 		std::tuple<Vec3, Real> GetArrowVec( Vec3 vec, Real length, Real scale, Real shape = -1.0 );
 		void UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float rad_scale = 1.0f );
 		void UpdateMomentVis( index_t moment_idx, Vec3 pos, Vec3 moment, float rad_scale = 1.0f );
@@ -98,6 +103,7 @@ namespace scone
 		vis::material static_mat;
 		vis::material object_mat;
 		xo::color_gradient muscle_gradient;
+		xo::color_gradient ligament_gradient;
 
 		std::vector< BodyVis > bodies;
 		std::vector< vis::mesh > body_meshes;
@@ -105,7 +111,7 @@ namespace scone
 		std::vector< vis::mesh > joint_meshes;
 		std::vector< vis::axes > joint_axes;
 		std::vector< MuscleVis > muscles;
-		std::vector< vis::trail > ligaments;
+		std::vector< PathVis > ligaments;
 		std::vector< vis::trail > springs;
 		std::vector< vis::arrow > forces;
 		std::vector< vis::arrow > joint_forces;

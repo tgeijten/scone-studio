@@ -13,6 +13,8 @@ namespace scone
 	bool moveToTrash( const QString& path );
 	bool moveFilesToTrash( const QStringList& files );
 
+	QString makeFileListString( const QStringList& files, int maxItems = 10 );
+
 	struct CompareFoldersResult {
 		int checked;
 		int missing;

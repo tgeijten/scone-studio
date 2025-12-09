@@ -205,6 +205,14 @@ namespace scone
 #endif
 	}
 
+	QString makeFileListString( const QStringList& files, int maxItems )
+	{
+		QString result = files.mid( 0, maxItems ).join( '\n' );
+		if ( files.size() > maxItems )
+			result += QString().sprintf( "\n\n(%d more)", files.size() - maxItems );
+		return result;
+	}
+
 	bool moveToTrash( const QString& path )
 	{
 #if defined(_MSC_VER)

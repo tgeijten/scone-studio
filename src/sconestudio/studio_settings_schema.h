@@ -48,6 +48,7 @@ viewer {
 	bone { type = color label = "Bone color" default = "hsv(40, 20, 80)" }
 	tendon { type = color label = "Tendon color" default = "hsv(40, 2, 80)" }
 	ligament { type = color label = "Ligament color" default = "hsv(40, 40, 80)" }
+	ligament_100 { type = color label = "Ligament color under tension" default = "hsv(0, 20, 100)" }
 	spring { type = color label = "Spring color" default = "hsv(60, 80, 80)" }
 	force { type = color label = "Force arrow color" default = "hsv(60, 80, 80)" }
 	joint_force { type = color label = "Joint force arrow color" default = "hsv(60, 40, 80)" }

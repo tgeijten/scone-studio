@@ -12,6 +12,7 @@
 #include "scone/core/math.h"
 #include "xo/geometry/quat.h"
 #include "scone/core/Settings.h"
+#include "xo/container/zip.h"
 
 namespace scone
 {
@@ -55,8 +56,13 @@ namespace scone
 			{ -1.0f, GetStudioSetting<xo::color>( "viewer.muscle_min100" ) },
 			{ 0.0f, GetStudioSetting<xo::color>( "viewer.muscle_0" ) },
 			{ 0.5f, GetStudioSetting<xo::color>( "viewer.muscle_50" ) },
-			{ 1.0f, GetStudioSetting<xo::color>( "viewer.muscle_100" ) } } ),
-			color_materials_( [&]( const xo::color& c ) { return vis::material( { c, specular_, shininess_, ambient_, c.a } ); } )
+			{ 1.0f, GetStudioSetting<xo::color>( "viewer.muscle_100" ) }
+			} ),
+		ligament_gradient( {
+			{ 0.0f, GetStudioSetting<xo::color>( "viewer.ligament" ) },
+			{ 1.0f, GetStudioSetting<xo::color>( "viewer.ligament_100" ) }
+			} ),
+		color_materials_( [&]( const xo::color& c ) { return vis::material( { c, specular_, shininess_, ambient_, c.a } ); } )
 	{
 		// ground plane
 		if ( auto* gp = model.GetGroundPlane() )
@@ -172,7 +178,7 @@ namespace scone
 			}
 			else if ( !std::holds_alternative<xo::plane>( cg->GetShape() ) )
 			{
-				auto& mat = is_static ? static_mat : ( is_object_geom ? object_mat : contact_mat );
+				auto& mat = is_static ? static_mat : (is_object_geom ? object_mat : contact_mat);
 				geom_mesh = MakeMesh( parent_node, cg->GetShape(), xo::color::cyan(), mat, cg->GetPos(), cg->GetOri() );
 			}
 
@@ -214,8 +220,10 @@ namespace scone
 
 		for ( auto& ligament : model.GetLigaments() )
 		{
-			auto lv = vis::trail( root_node_, vis::trail_info{ fixed_muscle_width_, xo::color::yellow(), 0.3f } );
-			lv.set_material( ligament_mat );
+			PathVis lv;
+			lv.p = vis::trail( root_node_, vis::trail_info{ fixed_muscle_width_, xo::color::yellow(), 0.3f } );
+			lv.mat = ligament_mat.clone();
+			lv.p.set_material( lv.mat );
 			ligaments.push_back( std::move( lv ) );
 		}
 
@@ -295,10 +303,12 @@ namespace scone
 			UpdateMuscleVis( *model_muscles[i], muscles[i] );
 
 		// update ligament paths
-		auto& model_ligaments = model.GetLigaments();
-		for ( index_t i = 0; i < model_ligaments.size(); ++i ) {
-			auto p = model_ligaments[i]->GetLigamentPath();
-			ligaments[i].set_points( p.begin(), p.end() );
+		for ( auto&[lv, lig] : xo::zip( ligaments, model.GetLigaments() ) ) {
+			auto p = lig->GetLigamentPath();
+			lv.p.set_points( p.begin(), p.end() );
+			auto c = ligament_gradient( lig->GetNormalizedForce() );
+			lv.mat.diffuse( c );
+			lv.mat.ambient( c );
 		}
 
 		// update spring paths
@@ -376,7 +386,7 @@ namespace scone
 			return { Vec3::zero(), 0.0 };
 
 		auto r = std::pow( v, shape / 2 );
-		auto l = length * v / ( r * r );
+		auto l = length * v / (r * r);
 
 		return { l * vec, r };
 	}
@@ -424,7 +434,7 @@ namespace scone
 		else if ( view_flags( ViewOption::MuscleForce ) )
 			a = mus.GetNormalizedForce();
 		else if ( view_flags( ViewOption::MuscleFiberLength ) )
-			a = 1.5 * ( mus.GetNormalizedFiberLength() - 1 );
+			a = 1.5 * (mus.GetNormalizedFiberLength() - 1);
 		else a = 0.0;
 
 		float mw = 1.0f, tw = 1.0f;
@@ -465,7 +475,7 @@ namespace scone
 		}
 		if ( view_flags( ViewOption::Muscles ) ) {
 			for ( auto& m : ligaments )
-				m.set_cast_shadows( xo::squared_distance( m.pos(), focus_point_ ) < squared_dist );
+				m.p.set_cast_shadows( xo::squared_distance( m.p.pos(), focus_point_ ) < squared_dist );
 			for ( auto& m : muscles ) {
 				m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
 				m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
@@ -522,7 +532,7 @@ namespace scone
 		}
 
 		for ( auto& l : ligaments )
-			l.show( view_flags( ViewOption::Muscles ) );
+			l.p.show( view_flags( ViewOption::Muscles ) );
 
 		for ( auto& s : springs )
 			s.show( view_flags( ViewOption::BodyGeom ) );
