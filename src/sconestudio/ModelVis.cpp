@@ -222,6 +222,7 @@ namespace scone
 		{
 			PathVis lv;
 			lv.p = vis::trail( root_node_, vis::trail_info{ fixed_muscle_width_, xo::color::yellow(), 0.3f } );
+			lv.p.set_name( ligament->GetName().c_str() );
 			lv.mat = ligament_mat.clone();
 			lv.p.set_material( lv.mat );
 			ligaments.push_back( std::move( lv ) );
