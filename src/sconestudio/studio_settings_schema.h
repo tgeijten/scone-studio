@@ -91,6 +91,8 @@ viewer {
 	camera_light_offset { type = vec3 label = "Camera light position offset" default = "-2 8 3" }
 	camera_orbit_speed { type = float label = "Medium camera orbit speed" range = [ 0 360 ] default = 10 }
 	camera_transition_duration { type = float label = "Duration of camera transitions during playback" range = [ 0 60 ] default = 0.5 }
+	camera_near_plane { type = string label = "Camera near-plane (0 = automatic)" default = "0" }
+	camera_far_plane { type = string label = "Camera far-plane (0 = automatic)" default = "0" }
 }
 
 optimization {

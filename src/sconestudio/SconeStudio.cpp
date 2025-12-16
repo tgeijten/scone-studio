@@ -1513,6 +1513,7 @@ void SconeStudio::initViewerSettings()
 	ui.osgViewer->setClearColor( vis::to_osg( scone::GetStudioSetting< xo::color >( "viewer.background" ) ) );
 	ui.osgViewer->getCameraMan().setTransitionDuration( GetStudioSetting<double>( "viewer.camera_transition_duration" ) );
 	ui.osgViewer->setLightOffset( GetStudioSetting<vis::vec3f>( "viewer.camera_light_offset" ) );
+	ui.osgViewer->setNearFarPlane( GetStudioSetting<double>( "viewer.camera_near_plane" ), GetStudioSetting<double>( "viewer.camera_far_plane" ) );
 }
 
 void SconeStudio::applyViewOptions()
