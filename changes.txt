@@ -1,14 +1,15 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.4.3-RC-3 ====
-//Released December 3, 2025//
+==== SCONE 2.4.3 ====
+//Released December 18, 2025//
 
 === New Features ===
   * SCONE Studio can now export all scenario files to a new folder (File -> Export Scenario)
-  * Added support for different output formats: sto (default), txt (tab separated values), stob (binary sto, for better performance)
+  * Hyfydy models now support cylinder wrapping for muscles and ligaments
+  * Convert to Hyfydy now uses wrapping cylinders, tendon strain muscle parameters, ball_socket_joint and weld_joint
   * GaitAnalysis can now show swing start events and average match with norm data
-  * Convert to Hyfydy now supports wrapping cylinders, tendon strain muscle parameters, ball_socket_joint and weld_joint
+  * Added support for different output formats: sto (default), txt (tab separated values), stob (binary sto, for better performance)
   * ModelHfd supports better box-capsule collision detection via use_extended_box_capsule_collision
   * JointHfd now outputs motor_torque
   * ModelHyfydy now has joint_rotational_damping option
@@ -21,6 +22,7 @@
   * SconePy and Lua scripts now support set_max_muscle_activation() and set_min_muscle_activation()
   * SconePy and Lua scripts now support limit_torque(), motor_torque(), SconePy has actuator_torque() and various functions to access muscle moments over joints or Dofs
   * SconePy now has find_body(), find_joint(), etc. to find individual model components
+  * SconePy Muscle now has mass(), pcsa() and volume()
   * DofReflex can now use DOF acceleration
   * CompositeController now has dual_sided and symmetric options
   * ScriptController can now use par:random_seed(), to get a deterministic random seed based on the current parameter values
@@ -34,6 +36,9 @@
   * The maximum of concurrent sconegym evaluations can now be configured
   * Added File menu option to export Model muscle information to a .musinf file
   * Evaluation Result window now shows Termination Reason when a Measure caused the simulation to terminate early
+  * Model properties Contact Geometry now shows material
+  * Ligaments now change color based on tension
+  * Added Viewer setting for setting the camera near and far plane
   * The evaluation UI is now more responsive with complex Hyfydy simulations
 
 === Updates ===
