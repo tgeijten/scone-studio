@@ -72,7 +72,7 @@ namespace scone
 				// create model from par or with default parameters
 				if ( filetype_ == "par" )
 				{
-					model_objective_->info().import_mean_std( file, true );
+					model_objective_->info().import_mean_std( file, spot::par_import_settings{} );
 					model_ = model_objective_->CreateModelFromParFile( file );
 					write_results_after_evaluation_ = GetStudioSetting<bool>( "file.auto_write_par_evaluation" );
 				}
