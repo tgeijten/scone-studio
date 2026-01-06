@@ -49,7 +49,7 @@ jobs:
 
     - name: Build simbody (if not cached)
       if: steps.cache_simbody.outputs.cache-hit != 'true'
-      run: cd $GITHUB_WORKSPACE && ./tools/unix_2b_build-simbody
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2b_build-simbody-fix
 
     - name: Cache opensim3
       id: cache_opensim3
@@ -60,7 +60,7 @@ jobs:
 
     - name: Build opensim3 (if not cached)
       if: steps.cache_opensim3.outputs.cache-hit != 'true'
-      run: cd $GITHUB_WORKSPACE && ./tools/unix_2c_build-opensim3
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2c_build-opensim3-fix
 
     - name: Build SCONE
       run: cd $GITHUB_WORKSPACE && ./tools/unix_2d_build-scone
@@ -123,7 +123,7 @@ jobs:
 
     - name: Build simbody (if not cached)
       if: steps.cache_simbody.outputs.cache-hit != 'true'
-      run: cd $GITHUB_WORKSPACE && ./tools/unix_2b_build-simbody
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2b_build-simbody-fix
 
 
     # opensim3: only build it if its source files have changed
@@ -136,7 +136,7 @@ jobs:
 
     - name: Build opensim3 (if not cached)
       if: steps.cache_opensim3.outputs.cache-hit != 'true'
-      run: cd $GITHUB_WORKSPACE && ./tools/unix_2c_build-opensim3
+      run: cd $GITHUB_WORKSPACE && ./tools/unix_2c_build-opensim3-fix
 
 
     - name: Build SCONE
