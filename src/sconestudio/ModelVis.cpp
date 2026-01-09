@@ -313,13 +313,12 @@ namespace scone
 		}
 
 		// update spring paths
-		auto& model_springs = model.GetSprings();
-		for ( index_t i = 0; i < model_springs.size(); ++i ) {
-			const auto& spr = *model_springs[i];
-			springs[i].show( spr.IsActive() );
-			if ( spr.IsActive() ) {
-				auto p = std::array{ spr.GetParentPos(), spr.GetChildPos() };
-				springs[i].set_points( p.begin(), p.end() );
+		for ( const auto& [sv, spr] : xo::zip( springs, model.GetSprings() ) ) {
+			if ( spr->IsActive() ) {
+				sv.set_points( std::array{ spr->GetParentPos(), spr->GetChildPos() } );
+			}
+			else if ( !sv.empty() ) {
+				sv.clear();
 			}
 		}
 
