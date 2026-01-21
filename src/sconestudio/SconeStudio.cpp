@@ -412,8 +412,10 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	if ( GetStudioSetting<bool>( "viewer.enable_object_cache" ) )
 		ui.osgViewer->enableObjectCache( true );
 	ui.osgViewer->setScene( &vis::osg_group( scene_.node_id() ) );
-	if ( scone::GetStudioSetting<int>( "viewer.hud_type" ) != 67 )
-		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png" );
+	if ( scone::GetStudioSetting<int>( "viewer.hud_type" ) < 67 )
+		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/scone_hud.png", 0.1f, 0.1f, 1.0f, -1.0f );
+	else if ( scone::GetStudioSetting<int>( "viewer.hud_type" ) > 67 )
+		ui.osgViewer->createHud( GetSconeStudioFolder() / "resources/ui/hyfydy_hud.png", 0.16f, 0.04f, 1.0f, 1.0f );
 	connect( ui.osgViewer, &QOsgViewer::hover, this, &SconeStudio::viewerTooltip );
 	connect( ui.osgViewer, &QOsgViewer::clicked, this, &SconeStudio::viewerSelect );
 	connect( ui.osgViewer, &QOsgViewer::pressed, this, &SconeStudio::viewerMousePush );
