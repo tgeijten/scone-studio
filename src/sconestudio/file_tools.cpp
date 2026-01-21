@@ -205,11 +205,27 @@ namespace scone
 #endif
 	}
 
-	QString makeFileListString( const QStringList& files, int maxItems )
+	QString shortenPath( const QString& fullPath, int parentCount )
 	{
-		QString result = files.mid( 0, maxItems ).join( '\n' );
+		if ( parentCount < 0 )
+			return fullPath;
+		QFileInfo fi( fullPath );
+		QDir dir = fi.dir();
+		QStringList parts{ fi.fileName() };
+		while ( parentCount-- > 0 && dir.cdUp() )
+			parts.prepend( dir.dirName() );
+		if ( dir.cdUp() )
+			parts.prepend( "..." );
+		return parts.join( '/' );
+	}
+
+	QString makeFileListString( const QStringList& files, int maxItems, int parentCount )
+	{
+		QString result;
+		for ( int i = 0; i < files.size() && i < maxItems; ++i )
+			result += shortenPath( files[i], parentCount ) + "\n";
 		if ( files.size() > maxItems )
-			result += QString().sprintf( "\n\n(%d more)", files.size() - maxItems );
+			result += QString().sprintf( "\n(%d more)", files.size() - maxItems );
 		return result;
 	}
 

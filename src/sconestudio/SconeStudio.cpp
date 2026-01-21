@@ -526,9 +526,7 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 			}
 		}
 		else if ( fi.suffix() == "pt" ) {
-			queuedProcesses.emplace_back( makeCheckpointProcess( fi.absoluteFilePath(), this ) );
-			QString msg = "The following file is being evaluated in the background (see the status bar for progress):\n\n";
-			information( "Evaluate .pt files", msg + fi.absoluteFilePath() );
+			evaluateSelectedFiles();
 		}
 		else {
 			information( "Cannot open file", "File extension is not supported:\n" + fi.absoluteFilePath() );
@@ -1140,14 +1138,6 @@ int SconeStudio::getTabIndex( QCodeEditor* s )
 		if ( ui.tabWidget->widget( idx ) == (QWidget*)s )
 			return idx;
 	return -1;
-}
-
-QStringList SconeStudio::getSelectedFiles()
-{
-	QStringList fileList;
-	for ( const auto& idx : ui.resultsBrowser->selectionModel()->selectedRows() )
-		fileList.push_back( ui.resultsBrowser->fileSystemModel()->fileInfo( idx ).filePath() );
-	return fileList;
 }
 
 QCodeEditor* SconeStudio::getActiveCodeEditor()
@@ -1849,7 +1839,7 @@ void SconeStudio::finalizeCapture()
 void SconeStudio::deleteSelectedFileOrFolder()
 {
 	auto msgTitle = tr( "Remove files or folders" );
-	QStringList fileList = getSelectedFiles();
+	QStringList fileList = ui.resultsBrowser->selectedFiles();
 	if ( fileList.empty() )
 		return information( msgTitle, tr( "No files or folders selected" ) );
 
@@ -1886,7 +1876,7 @@ void SconeStudio::deleteSelectedFileOrFolder()
 
 void SconeStudio::copyToScenarioFolder()
 {
-	auto fileList = getSelectedFiles();
+	auto fileList = ui.resultsBrowser->selectedFiles();
 	auto scenario = getActiveScenario();
 	if ( fileList.size() >= 1 && scenario ) {
 		auto src_path = path_from_qt( fileList.front() );
@@ -1905,12 +1895,12 @@ void SconeStudio::copyToScenarioFolder()
 
 void SconeStudio::evaluateSelectedFiles()
 {
-	auto fileList = getSelectedFiles();
+	auto fileList = ui.resultsBrowser->selectedFiles();
 	for ( const auto& f : fileList )
 		queuedProcesses.emplace_back( makeCheckpointProcess( f, this ) );
 
 	QString msg = "The following files are being evaluated in the background (see the status bar for progress):\n\n";
-	information( "Evaluate .pt files", msg + makeFileListString( fileList ) );
+	information( "Evaluate .pt files", msg + makeFileListString( fileList, 10, 1 ) );
 }
 
 void SconeStudio::sortResultsByDate()

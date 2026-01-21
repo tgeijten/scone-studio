@@ -136,7 +136,6 @@ public:
 	bool hasModel() const { return scenario_ && scenario_->HasModel(); }
 
 private:
-	QStringList getSelectedFiles();
 	QCodeEditor* getActiveCodeEditor();
 	QCodeEditor* getActiveScenario();
 
