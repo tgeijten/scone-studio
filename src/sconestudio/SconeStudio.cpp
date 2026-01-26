@@ -1749,9 +1749,11 @@ void SconeStudio::createVideo()
 
 	fixViewerWindowSize();
 
-	QString defaultName = to_qt( xo::path( scenario_->GetFileName() ).replace_extension( "mp4" ) );
+	xo::path defaultPath = xo::path( scenario_->GetFileName() ).replace_extension( "mp4" );
+	if ( auto def = GetStudioSettings().get<xo::path>( "video.output_folder" ); !def.empty() )
+		defaultPath = def / defaultPath.filename();
 
-	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", defaultName, "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
+	captureFilename = QFileDialog::getSaveFileName( this, "Video Filename", to_qt( defaultPath ), "mp4 files (*.mp4);;avi files (*.avi);;mov files (*.mov)" );
 	if ( captureFilename.isEmpty() )
 		return;
 	if ( !captureFilename.contains( "." ) )

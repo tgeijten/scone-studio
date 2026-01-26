@@ -29,6 +29,7 @@ gait_analysis {
 video {
 	label = "Video"
 	path_to_ffmpeg { type = path default = "" label = "Location of ffmpeg.exe (required for videos)" }
+	output_folder { type = path default = "" label = "Default folder to output videos (leave empty to use scenario folder)" }
 	frame_rate { type = float label = "Video output frame rate" default = 30 }
 	quality { type = int default = 2 label = "Quality for video output" }
 	width { type = int default = 1024 label = "Horizontal resolution (only when Viewer is not docked)" }
