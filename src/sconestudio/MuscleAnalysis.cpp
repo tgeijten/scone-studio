@@ -88,13 +88,13 @@ namespace scone
 			model.InitStateFromDofs();
 			auto& f = storage.AddFrame( v.deg_value() );
 			for ( auto mus : model.GetMuscles() )
-				if ( mus->HasMomentArm( *activeDof ) )
+				if ( mus->ActsOnDof( *activeDof ) )
 					StoreMuscleData( f, *mus, *activeDof );
 		}
 		// compute moment arms using difference in mtu_length
 		SCONE_ASSERT( !storage.IsEmpty() );
 		for ( auto mus : model.GetMuscles() ) {
-			if ( mus->HasMomentArm( *activeDof ) ) {
+			if ( mus->ActsOnDof( *activeDof ) ) {
 				auto len_str = mus->GetName() + ".mtu_length_norm";
 				auto mom_str = mus->GetName() + ".moment_arm";
 				auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonSlackLength() ) / ( step.rad_value() );
