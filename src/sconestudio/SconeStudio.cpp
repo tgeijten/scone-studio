@@ -1263,7 +1263,7 @@ void SconeStudio::optimizeScenarioMultiple()
 			{
 				for ( int i = 1; i <= count; ++i )
 				{
-					QStringList args( QString().sprintf( "#1.random_seed=%d", i ) );
+					QStringList args( QString( "#1.random_seed=%1" ).arg( i ) );
 					auto task = createOptimizerTask( scenario_->GetScenarioFileName(), args );
 					addProgressDock( new ProgressDockWidget( this, std::move( task ) ) );
 					QApplication::processEvents(); // needed for the ProgressDockWidgets to be evenly sized
@@ -1362,7 +1362,7 @@ bool SconeStudio::abortOptimizations()
 	if ( optimizations.size() > 0 )
 	{
 		bool showWarning = false;
-		QString message = QString().sprintf( "Are you sure you want to abort the following optimizations:\n\n" );
+		QString message = QString( "Are you sure you want to abort the following optimizations:\n\n" );
 		for ( auto& o : optimizations )
 		{
 			showWarning |= !o->canCloseWithoutWarning();
@@ -1446,9 +1446,9 @@ void SconeStudio::checkActiveProcesses()
 
 	// update status bar
 	if ( activeProcesses.size() > 0 || queuedProcesses.size() > 0 ) {
-		QString msg = QString().sprintf( "Number of active background processes: %d", activeProcesses.size() );
+		QString msg = QString( "Number of active background processes: %1" ).arg( activeProcesses.size() );
 		if ( queuedProcesses.size() > 0 )
-			msg += QString().sprintf( " (%d queued)", queuedProcesses.size() );
+			msg += QString( " (%1 queued)" ).arg( queuedProcesses.size() );
 		ui.statusBar->showMessage( msg );
 	}
 	else ui.statusBar->showMessage( "All background processes have finished", 3000 );
@@ -1678,7 +1678,7 @@ void SconeStudio::exportMuscleInfo()
 void SconeStudio::exportScenario()
 {
 	if ( scenario_ ) {
-		auto qtdir = QFileDialog::getExistingDirectory( this, "Select Directory", to_qt( scone::GetScenarioFolder() ), nullptr );
+		auto qtdir = QFileDialog::getExistingDirectory( this, "Select Directory", to_qt( scone::GetScenarioFolder() ) );
 		path target_dir = path( qtdir.toStdString() );
 		path scenario_file = scenario_->GetScenarioPath();
 		CopyFileLogErrors( scenario_file, target_dir / scenario_file.filename(), false );
@@ -1816,10 +1816,10 @@ void SconeStudio::finalizeCapture()
 		<< "-q:v" << to_qt( GetStudioSettings().get<string>( "video.quality" ) )
 		<< captureFilename;
 
-	std::cout << "starting " << program.toStdString() << endl;
+	std::cout << "starting " << program.toStdString() << std::endl;
 	auto v = args.toVector();
 	for ( auto arg : v )
-		std::cout << arg.toStdString() << endl;
+		std::cout << arg.toStdString() << std::endl;
 
 	captureProcess = new QProcess( this );
 	captureProcess->start( program, args );

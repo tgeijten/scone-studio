@@ -17,7 +17,7 @@ namespace scone
 		storageModel( &storage )
 	{
 		QHBoxLayout* baseLayout = new QHBoxLayout( this );
-		baseLayout->setMargin( 0 );
+		baseLayout->setContentsMargins( 0, 0, 0, 0 );
 
 		view = new QDataAnalysisView( storageModel, this );
 		view->setObjectName( "Muscle Analysis" );

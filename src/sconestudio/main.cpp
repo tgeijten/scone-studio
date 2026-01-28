@@ -104,7 +104,7 @@ int main( int argc, char* argv[] )
 }
 
 #if defined( _WIN32 ) && !defined( DEBUG )
-int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd )
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nShowCmd )
 {
 	return main( __argc, __argv );
 }

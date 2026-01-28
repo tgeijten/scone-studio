@@ -228,7 +228,7 @@ namespace scone
 		for ( int i = 0; i < files.size() && i < maxItems; ++i )
 			result += shortenPath( files[i], parentCount ) + "\n";
 		if ( files.size() > maxItems )
-			result += QString( "\n(%d more)" ).arg( files.size() - maxItems );
+			result += QString( "\n(%1 more)" ).arg( files.size() - maxItems );
 		return result;
 	}
 

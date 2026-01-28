@@ -94,24 +94,24 @@ namespace scone
 		GUI_PROFILE_FUNCTION;
 
 		QVBoxLayout* wl = new QVBoxLayout( this );
-		wl->setMargin( 0 );
+		wl->setContentsMargins( 0, 0, 0, 0 );
 		wl->setSpacing( 0 );
 
 		QWidget* group = new QWidget( this );
 		QVBoxLayout* vl = new QVBoxLayout( group );
-		vl->setMargin( 6 );
+		vl->setContentsMargins( 6, 6, 6, 6 );
 		vl->setSpacing( 4 );
 
 		dofGrid = new QWidget( group );
 		gridLayout = new QGridLayout();
-		gridLayout->setMargin( 0 );
+		gridLayout->setContentsMargins( 0, 0, 0, 0 );
 		gridLayout->setHorizontalSpacing( 4 );
 		gridLayout->setVerticalSpacing( 4 );
 		dofGrid->setLayout( gridLayout );
 		vl->addWidget( dofGrid );
 
 		auto* hl = new QHBoxLayout( group );
-		hl->setMargin( 10 );
+		hl->setContentsMargins( 10, 10, 10, 10 );
 		hl->setSpacing( 8 );
 		vl->addLayout( hl );
 		resetButton = new QPushButton( "Reset Coordinates", this );

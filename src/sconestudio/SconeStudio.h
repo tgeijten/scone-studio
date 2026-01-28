@@ -59,7 +59,7 @@ class SconeStudio : public QCompositeMainWindow
 	Q_OBJECT
 
 public:
-	SconeStudio( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	SconeStudio( QWidget* parent = 0, Qt::WindowFlags flags = {} );
 	~SconeStudio();
 
 	bool init();

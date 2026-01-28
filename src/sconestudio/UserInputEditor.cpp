@@ -82,23 +82,23 @@ namespace scone
 		dofGrid( nullptr )
 	{
 		QVBoxLayout* wl = new QVBoxLayout( this );
-		wl->setMargin( 0 );
+		wl->setContentsMargins( 0, 0, 0, 0 );
 		wl->setSpacing( 0 );
 
 		QWidget* group = new QWidget( this );
 		QVBoxLayout* vl = new QVBoxLayout( group );
-		vl->setMargin( 8 );
+		vl->setContentsMargins( 8, 8, 8, 8 );
 		vl->setSpacing( 8 );
 
 		dofGrid = new QWidget( group );
 		gridLayout = new QGridLayout();
-		gridLayout->setMargin( 0 );
+		gridLayout->setContentsMargins( 0, 0, 0, 0 );
 		dofGrid->setLayout( gridLayout );
 		vl->addWidget( dofGrid );
 
 		buttonGroup = new QWidget( this );
 		QHBoxLayout* buttonLayout = new QHBoxLayout( buttonGroup );
-		buttonLayout->setMargin( 0 );
+		buttonLayout->setContentsMargins( 0, 0, 0, 0 );
 		buttonLayout->setSpacing( 4 );
 		auto animateButton = new QPushButton( "Toggle Animation", this );
 		connect( animateButton, &QPushButton::pressed, this, &UserInputEditor::toggleAnimation );
