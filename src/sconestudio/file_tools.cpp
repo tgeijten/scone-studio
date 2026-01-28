@@ -12,6 +12,9 @@
 #include "xo/filesystem/filesystem.h"
 #include "qt_convert.h"
 #include "StudioSettings.h"
+#ifdef _MSC_VER
+#	include <windows.h>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -87,7 +90,7 @@ namespace scone
 			if ( l.size() > 5 ) {
 				auto more = l.size() - 5;
 				l.erase( l.begin() + 5, l.end() );
-				l.push_back( QString().sprintf( "\n(%d more)", more ) );
+				l.push_back( QString( "\n(%1 more)" ).arg( more ) );
 			}
 			QString msg = QString( "The following SCONE scenario files will be updated to the latest version (recommended):\n\n" ) + l.join( '\n' );
 			return QMessageBox::question( nullptr, "Update Scenario Files", msg, QMessageBox::Ok, QMessageBox::Cancel ) == QMessageBox::Ok;
@@ -177,22 +180,22 @@ namespace scone
 	bool moveFilesToTrash( const QStringList& files )
 	{
 #if defined(_MSC_VER)
-		std::vector<char> buf;
+		std::vector<wchar_t> buf;
 		for ( const auto& f : files ) {
-			auto fstr = f.toStdString();
+			auto fstr = f.toStdWString();
 			buf.insert( buf.end(), fstr.begin(), fstr.end() );
-			buf.push_back( '\0' );
+			buf.push_back( L'\0' );
 		}
 		buf.push_back( '\0' );
 
-		SHFILEOPSTRUCT FileOp = { 0 };
+		SHFILEOPSTRUCTW FileOp = { 0 };
 		FileOp.hwnd = NULL;
 		FileOp.wFunc = FO_DELETE;
 		FileOp.fFlags = FOF_ALLOWUNDO;
 		FileOp.pFrom = &buf[0];
 		FileOp.pTo = NULL;
 
-		auto ret = SHFileOperation( &FileOp );
+		auto ret = SHFileOperationW( &FileOp );
 		if ( ret != 0 )
 			log::warning( "Could not move files to the recycle bin, error=", ret );
 		return ret == 0;
@@ -225,26 +228,26 @@ namespace scone
 		for ( int i = 0; i < files.size() && i < maxItems; ++i )
 			result += shortenPath( files[i], parentCount ) + "\n";
 		if ( files.size() > maxItems )
-			result += QString().sprintf( "\n(%d more)", files.size() - maxItems );
+			result += QString( "\n(%d more)" ).arg( files.size() - maxItems );
 		return result;
 	}
 
 	bool moveToTrash( const QString& path )
 	{
 #if defined(_MSC_VER)
-		auto file_str = path.toStdString();
-		xo::replace_char( file_str, '/', '\\' );
+		auto file_str = QDir::toNativeSeparators( path ).toStdWString();
+		//xo::replace_char( file_str, '/', '\\' );
 		if ( file_str.back() == '\\' )
 			file_str.pop_back();
 		file_str.push_back( '\0' ); // strings must be double-null-terminated
 
-		SHFILEOPSTRUCT FileOp = { 0 };
+		SHFILEOPSTRUCTW FileOp = { 0 };
 		FileOp.hwnd = NULL;
 		FileOp.wFunc = FO_DELETE;
 		FileOp.fFlags = FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR | FOF_ALLOWUNDO;
 		FileOp.pFrom = file_str.c_str();
 		FileOp.pTo = NULL;
-		auto ret = SHFileOperation( &FileOp );
+		auto ret = SHFileOperationW( &FileOp );
 		if ( ret != 0 )
 			log::warning( "Could not recycle ", path.toStdString(), "; error=", ret );
 		return ret == 0;
