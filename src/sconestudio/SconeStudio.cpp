@@ -1901,7 +1901,7 @@ void SconeStudio::evaluateSelectedFiles()
 	for ( const auto& f : fileList )
 		queuedProcesses.emplace_back( makeCheckpointProcess( f, this ) );
 
-	QString msg = "The following files are being evaluated in the background (see the status bar for progress):\n\n";
+	QString msg = "These files are being evaluated (see status bar for progress):\n\n";
 	information( "Evaluate .pt files", msg + makeFileListString( fileList, 10, 1 ) );
 }
 
