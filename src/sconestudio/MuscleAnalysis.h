@@ -32,6 +32,7 @@ namespace scone
 
 	private:
 		void StoreMuscleData( Storage<Real>::Frame& frame, const Muscle& mus, const Dof& dof ) const;
+		void StoreLigamentData( Storage<Real>::Frame& frame, const Ligament& lig, const Dof& dof ) const;
 
 		scone::Storage<> storage;
 		SconeStorageDataModel storageModel;

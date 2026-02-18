@@ -9,6 +9,7 @@
 #include "qt_convert.h"
 #include <QHBoxLayout>
 #include <QSizePolicy>
+#include "scone/model/Ligament.h"
 
 namespace scone
 {
@@ -90,6 +91,9 @@ namespace scone
 			for ( auto mus : model.GetMuscles() )
 				if ( mus->ActsOnDof( *activeDof ) )
 					StoreMuscleData( f, *mus, *activeDof );
+			for ( auto lig : model.GetLigaments() )
+				if ( lig->ActsOnDof( *activeDof ) )
+					StoreLigamentData( f, *lig, *activeDof );
 		}
 		// compute moment arms using difference in mtu_length
 		SCONE_ASSERT( !storage.IsEmpty() );
@@ -98,6 +102,18 @@ namespace scone
 				auto len_str = mus->GetName() + ".mtu_length_norm";
 				auto mom_str = mus->GetName() + ".moment_arm";
 				auto norm_factor = ( mus->GetOptimalFiberLength() + mus->GetTendonSlackLength() ) / ( step.rad_value() );
+				for ( int i = 0; i < storage.GetFrameCount(); ++i ) {
+					int i0 = std::max( 0, i - 1 ), i1 = std::min( (int)storage.GetFrameCount() - 1, i + 1 );
+					auto dl = storage.GetFrame( i1 )[len_str] - storage.GetFrame( i0 )[len_str];
+					storage.GetFrame( i )[mom_str] = norm_factor * -dl / ( i1 - i0 );
+				}
+			}
+		}
+		for ( auto lig : model.GetLigaments() ) {
+			if ( lig->ActsOnDof( *activeDof ) ) {
+				auto len_str = lig->GetName() + ".length_norm";
+				auto mom_str = lig->GetName() + ".moment_arm";
+				auto norm_factor = lig->GetRestingLength() / step.rad_value();
 				for ( int i = 0; i < storage.GetFrameCount(); ++i ) {
 					int i0 = std::max( 0, i - 1 ), i1 = std::min( (int)storage.GetFrameCount() - 1, i + 1 );
 					auto dl = storage.GetFrame( i1 )[len_str] - storage.GetFrame( i0 )[len_str];
@@ -154,4 +170,29 @@ namespace scone
 		frame[name + ".cos_pennation_angle"] = mus.GetCosPennationAngle();
 		frame[name + ".force_length_multiplier"] = mus.GetActiveForceLengthMultipler();
 	}
+
+	void MuscleAnalysis::StoreLigamentData( Storage<Real>::Frame& frame, const Ligament& lig, const Dof& dof ) const
+	{
+		const auto& model = lig.GetModel();
+		const auto& name = lig.GetName();
+
+		bool normalized_only = true;
+		if ( !normalized_only ) {
+			frame[name + ".length"] = lig.GetLength();
+			frame[name + ".force"] = lig.GetForce();
+		}
+
+		// moment arms
+		bool all_moment_arms = false; // this is not always correct (e.g. deltoid), figure out why
+		frame[name + ".moment_arm"] = lig.GetMomentArm( dof ); // will be recalculated later
+		if ( all_moment_arms ) {
+			for ( auto* d : lig.GetDofs() )
+				frame[name + "." + d->GetName() + ".moment_arm"] = lig.GetMomentArm( *d );
+		}
+
+		// lengths
+		frame[name + ".length_norm"] = lig.GetNormalizedLength();
+		frame[name + ".force_norm"] = lig.GetNormalizedForce();
+	}
+
 }
