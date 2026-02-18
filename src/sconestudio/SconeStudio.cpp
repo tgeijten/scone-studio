@@ -862,9 +862,11 @@ void SconeStudio::fileSaveAsTriggered()
 			else if ( ext == "hfd" || ext == "osim" || ext == "bp" ) default_filter = &model_file;
 
 			// we can finally make the actual call
-			QString filename = QFileDialog::getSaveFileName( this, "Save File As", s->fileName, filter, default_filter );
-			if ( !filename.isEmpty() )
+			QFileDialog dlg( this, "Save File As", s->fileName, filter );
+			dlg.setAcceptMode( QFileDialog::AcceptSave );
+			if ( dlg.exec() == QDialog::Accepted && !dlg.selectedFiles().empty() )
 			{
+				auto filename = dlg.selectedFiles().value( 0 );
 				fileWatcher.removePath( s->fileName );
 				s->saveAs( filename );
 				fileWatcher.addPath( filename );
