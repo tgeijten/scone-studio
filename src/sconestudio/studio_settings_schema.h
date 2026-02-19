@@ -123,6 +123,8 @@ muscle_analysis {
 	step_size { type = float default = 1 label = "Increments to use in Muscle Analysis graph [deg]" range = [ 0.01 10 ] }
 	max_steps { type = int default = 360 label = "Maximum number of samples in Muscle Analysis graph" range = [ 1 10000 ] }
 	analyze_on_load { type = bool default = 0 label = "Perform muscle analysis on scenario load" }
+	muscle_detail { type = bool default = 0 label = "Show unnormalized muscle data" }
+	ligament_detail { type = bool default = 1 label = "Show unnormalized ligament data" }
 }
 
 coordinates {

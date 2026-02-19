@@ -41,5 +41,7 @@ namespace scone
 		QDataAnalysisView* view = nullptr;
 		Dof* activeDof = nullptr;
 		QString dofName;
+		bool muscleDetail = false;
+		bool ligamentDetail = false;
 	};
 }

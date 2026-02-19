@@ -58,6 +58,9 @@ namespace scone
 		if ( dofSelect->currentIndex() == -1 )
 			dofName = ""; // dofName not found
 		dofSelect->blockSignals( false );
+
+		muscleDetail = GetStudioSetting<bool>( "muscle_analysis.muscle_detail" );
+		ligamentDetail = GetStudioSetting<bool>( "muscle_analysis.ligament_detail" );
 	}
 
 	void MuscleAnalysis::clear()
@@ -143,8 +146,7 @@ namespace scone
 		const auto& model = mus.GetModel();
 		const auto& name = mus.GetName();
 
-		bool normalized_only = true;
-		if ( !normalized_only ) {
+		if ( muscleDetail ) {
 			frame[name + ".fiber_length"] = mus.GetFiberLength();
 			frame[name + ".tendon_length"] = mus.GetTendonLength();
 			frame[name + ".mtu_length"] = mus.GetLength();
@@ -176,8 +178,7 @@ namespace scone
 		const auto& model = lig.GetModel();
 		const auto& name = lig.GetName();
 
-		bool normalized_only = true;
-		if ( !normalized_only ) {
+		if ( ligamentDetail ) {
 			frame[name + ".length"] = lig.GetLength();
 			frame[name + ".force"] = lig.GetForce();
 		}
