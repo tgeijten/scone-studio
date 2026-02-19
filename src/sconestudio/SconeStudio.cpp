@@ -864,6 +864,7 @@ void SconeStudio::fileSaveAsTriggered()
 			// we can finally make the actual call
 			QFileDialog dlg( this, "Save File As", s->fileName, filter );
 			dlg.setAcceptMode( QFileDialog::AcceptSave );
+			dlg.setOption( QFileDialog::DontUseNativeDialog, scone::GetStudioSetting<bool>( "ui.use_alternative_file_dialog_windows" ) );
 			if ( dlg.exec() == QDialog::Accepted && !dlg.selectedFiles().empty() )
 			{
 				auto filename = dlg.selectedFiles().value( 0 );
