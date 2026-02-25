@@ -196,7 +196,7 @@ namespace scone
 		const auto relative_tendon_width = GetStudioSetting<float>( "viewer.relative_tendon_width" );
 		const auto muscle_position = GetStudioSetting<float>( "viewer.muscle_position" );
 
-		for ( auto* muscle : model.GetMuscles() )
+		for ( const auto& muscle : model.GetIndividualMuscles() )
 		{
 			MuscleVis mv;
 			mv.muscle_radius = auto_muscle_width_factor * float( std::sqrt( muscle->GetPCSA() / xo::constantsd::pi() ) );
@@ -298,7 +298,7 @@ namespace scone
 		}
 
 		// update muscle paths
-		auto& model_muscles = model.GetMuscles();
+		auto& model_muscles = model.GetIndividualMuscles();
 		SCONE_ASSERT( model_muscles.size() >= muscles.size() );
 		for ( index_t i = 0; i < muscles.size(); ++i )
 			UpdateMuscleVis( *model_muscles[i], muscles[i] );
