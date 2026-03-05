@@ -55,7 +55,7 @@ viewer {
 	joint_force { type = color label = "Joint force arrow color" default = "hsv(60, 40, 80)" }
 	force_alpha { type = float label = "Force arrow transparency" default = 1 }
 	forces_cast_shadows { type = bool label = "Force arrows cast shadows" default = 0 }
-	combine_contact_forces { type = bool label = "Combine body contact forces into a single arrow" default = 0 }
+	combine_contact_forces { type = int label = "Combine contact force arrows: 0 = disabled, 1 = per body, 2 = per leg" default = 0 }
 	joint_forces_are_for_parents { type = bool label = "Show joint forces and torques in the direction of parent bodies" default = 0 }
 	joint_arrow_length { type = float label = "Length of arrows representing joint force and moment" default = 0.15 }
 	force_arrow_length { type = float label = "Length of arrows representing ground reaction forces" default = 0.3 }

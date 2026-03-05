@@ -71,7 +71,7 @@ namespace scone
 		float specular_;
 		float shininess_;
 		float ambient_;
-		const bool combine_contact_forces_;
+		const int combine_contact_forces_; // 0: individual, 1: per body, 2: per leg
 		const bool forces_cast_shadows_;
 		const bool joint_forces_are_for_parents_;
 		float joint_arrow_length_;

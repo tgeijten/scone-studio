@@ -26,7 +26,7 @@ namespace scone
 		specular_( GetStudioSetting<float>( "viewer.specular" ) ),
 		shininess_( GetStudioSetting<float>( "viewer.shininess" ) ),
 		ambient_( GetStudioSetting<float>( "viewer.ambient" ) ),
-		combine_contact_forces_( GetStudioSetting<bool>( "viewer.combine_contact_forces" ) ),
+		combine_contact_forces_( GetStudioSetting<int>( "viewer.combine_contact_forces" ) ),
 		forces_cast_shadows_( GetStudioSetting<bool>( "viewer.forces_cast_shadows" ) ),
 		joint_forces_are_for_parents_( GetStudioSetting<bool>( "viewer.joint_forces_are_for_parents" ) ),
 		joint_arrow_length_( GetStudioSetting<float>( "viewer.joint_arrow_length" ) ),
@@ -277,7 +277,7 @@ namespace scone
 			bodies[i].node.pos_ori( vis::vec3f( b->GetOriginPos() ), vis::quatf( b->GetOrientation() ) );
 
 			// contact forces
-			if ( view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ && !b->IsStatic() ) {
+			if ( view_flags( ViewOption::ExternalForces ) && combine_contact_forces_ == 1 && !b->IsStatic() ) {
 				if ( auto f = b->GetContactForce(); !f.is_null() ) {
 					auto [vec, r] = GetArrowVec( f, force_arrow_length_, force_scale_ );
 					UpdateForceVis( force_count++, b->GetContactPoint(), vec, r );
@@ -342,12 +342,21 @@ namespace scone
 			}
 		}
 
-		// update individual contact forces
-		if ( view_flags( ViewOption::ExternalForces ) && !combine_contact_forces_ ) {
-			auto fvec = model.GetContactForceValues();
-			for ( auto& cf : fvec ) {
-				auto [vec, r] = GetArrowVec( cf.force, force_arrow_length_, force_scale_ );
-				UpdateForceVis( force_count++, cf.point, vec, r );
+		// update contact forces
+		if ( view_flags( ViewOption::ExternalForces ) ) {
+			if ( combine_contact_forces_ == 0 ) {
+				auto fvec = model.GetContactForceValues();
+				for ( auto& cf : fvec ) {
+					auto [vec, r] = GetArrowVec( cf.force, force_arrow_length_, force_scale_ );
+					UpdateForceVis( force_count++, cf.point, vec, r );
+				}
+			}
+			else if ( combine_contact_forces_ == 2 ) {
+				for ( auto& leg : model.GetLegs() ) {
+					auto cf = leg.GetContactForceValue();
+					auto [vec, r] = GetArrowVec( cf.force, force_arrow_length_, force_scale_ );
+					UpdateForceVis( force_count++, cf.point, vec, r );
+				}
 			}
 		}
 
@@ -382,13 +391,12 @@ namespace scone
 			shape = arrow_shape_;
 
 		auto v = scale * xo::normalize( vec );
-		if ( xo::equal( v, Real( 0 ) ) )
-			return { Vec3::zero(), 0.0 };
-
-		auto r = std::pow( v, shape / 2 );
-		auto l = length * v / (r * r);
-
-		return { l * vec, r };
+		if ( v > 0 ) {
+			auto r = std::pow( v, shape / 2 );
+			auto l = length * v / ( r * r );
+			return { l * vec, r };
+		}
+		else return { Vec3::zero(), 0.0 };
 	}
 
 	void ModelVis::UpdateForceVis( index_t force_idx, Vec3 cop, Vec3 force, float rad_scale )
