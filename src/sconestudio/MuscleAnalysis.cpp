@@ -108,7 +108,11 @@ namespace scone
 				for ( int i = 0; i < storage.GetFrameCount(); ++i ) {
 					int i0 = std::max( 0, i - 1 ), i1 = std::min( (int)storage.GetFrameCount() - 1, i + 1 );
 					auto dl = storage.GetFrame( i1 )[len_str] - storage.GetFrame( i0 )[len_str];
-					storage.GetFrame( i )[mom_str] = norm_factor * -dl / ( i1 - i0 );
+					auto moment_arm = norm_factor * -dl / ( i1 - i0 );
+					auto& frame = storage.GetFrame( i );
+					frame[mom_str] = moment_arm;
+					if ( muscleDetail )
+						frame[mus->GetName() + ".mtu_moment"] = moment_arm * frame[mus->GetName() + ".mtu_force"];
 				}
 			}
 		}
@@ -120,7 +124,11 @@ namespace scone
 				for ( int i = 0; i < storage.GetFrameCount(); ++i ) {
 					int i0 = std::max( 0, i - 1 ), i1 = std::min( (int)storage.GetFrameCount() - 1, i + 1 );
 					auto dl = storage.GetFrame( i1 )[len_str] - storage.GetFrame( i0 )[len_str];
-					storage.GetFrame( i )[mom_str] = norm_factor * -dl / ( i1 - i0 );
+					auto moment_arm = norm_factor * -dl / ( i1 - i0 );
+					auto& frame = storage.GetFrame( i );
+					frame[mom_str] = moment_arm;
+					if ( ligamentDetail )
+						frame[lig->GetName() + ".moment"] = moment_arm * frame[lig->GetName() + ".force"];
 				}
 			}
 		}
@@ -156,6 +164,8 @@ namespace scone
 		// moment arms
 		bool all_moment_arms = false; // this is not always correct (e.g. deltoid), figure out why
 		frame[name + ".moment_arm"] = mus.GetMomentArm( dof ); // will be recalculated later
+		if ( muscleDetail )
+			frame[name + ".mtu_moment"] = mus.GetMoment( dof ); // will be recalculated later
 		if ( all_moment_arms ) {
 			for ( auto* d : mus.GetDofs() )
 				frame[name + "." + d->GetName() + ".moment_arm"] = mus.GetMomentArm( *d );
@@ -186,6 +196,8 @@ namespace scone
 		// moment arms
 		bool all_moment_arms = false; // this is not always correct (e.g. deltoid), figure out why
 		frame[name + ".moment_arm"] = lig.GetMomentArm( dof ); // will be recalculated later
+		if ( ligamentDetail )
+			frame[name + ".moment"] = lig.GetMoment( dof ); // will be recalculated later
 		if ( all_moment_arms ) {
 			for ( auto* d : lig.GetDofs() )
 				frame[name + "." + d->GetName() + ".moment_arm"] = lig.GetMomentArm( *d );
