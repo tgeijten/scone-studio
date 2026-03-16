@@ -467,7 +467,9 @@ namespace scone
 			vis.ce.set_points( p.begin() + i1, p.begin() + i2 + 1, mw );
 			vis.ten2.set_points( p.begin() + i2, p.end(), tw );
 		}
-		else vis.ce.set_points( p.begin(), p.end(), mw );
+		else {
+			vis.ce.set_points( p.begin(), p.end(), mw );
+		}
 	}
 
 	void ModelVis::UpdateShadowCast()
@@ -485,9 +487,11 @@ namespace scone
 			for ( auto& m : ligaments )
 				m.p.set_cast_shadows( xo::squared_distance( m.p.pos(), focus_point_ ) < squared_dist );
 			for ( auto& m : muscles ) {
-				m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
-				m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
 				m.ce.set_cast_shadows( xo::squared_distance( m.ce.pos(), focus_point_ ) < squared_dist );
+				if ( view_flags( ViewOption::Tendons ) ) {
+					m.ten1.set_cast_shadows( xo::squared_distance( m.ten1.pos(), focus_point_ ) < squared_dist );
+					m.ten2.set_cast_shadows( xo::squared_distance( m.ten2.pos(), focus_point_ ) < squared_dist );
+				}
 			}
 		}
 	}
@@ -537,6 +541,10 @@ namespace scone
 			m.ce.show( view_flags( ViewOption::Muscles ) );
 			m.ten1.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
 			m.ten2.show( view_flags( ViewOption::Muscles ) && view_flags( ViewOption::Tendons ) );
+			if ( !view_flags( ViewOption::Tendons ) ) {
+				m.ten1.clear();
+				m.ten2.clear();
+			}
 		}
 
 		for ( auto& l : ligaments )
