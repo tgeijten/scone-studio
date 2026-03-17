@@ -140,28 +140,34 @@ int ResultsFileSystemModel::columnCount( const QModelIndex& parent ) const
 
 QVariant ResultsFileSystemModel::data( const QModelIndex& idx, int role ) const
 {
-	if ( idx.column() < QFileSystemModel::columnCount() )
-		return QFileSystemModel::data( idx, role );
-
-	if ( role == Qt::DisplayRole )
-	{
-		auto fi = fileInfo( idx );
-		auto stat = getStatus( fi );
-		if ( stat.type == Status::Type::Invalid )
-			return QVariant( QString( "" ) );
-
-		switch ( idx.column() - QFileSystemModel::columnCount() )
-		{
-		case GenCol: return QVariant( stat.gen );
-		case ScoreCol: return QVariant( QString::asprintf( "%7.3f", stat.best ) );
-		default: return QVariant();
+	if ( role == Qt::ToolTipRole ) {
+		if ( fileInfo( idx ).isDir() ) {
+			QFile file( fileInfo( idx ).absoluteFilePath() + "/notes.txt" );
+			if ( file.exists() && file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+				return file.readAll();
 		}
 	}
-	else if ( role == Qt::TextAlignmentRole )
-	{
-		return Qt::AlignRight;
+
+	if ( idx.column() >= QFileSystemModel::columnCount() ) {
+		if ( role == Qt::DisplayRole ) {
+			auto fi = fileInfo( idx );
+			auto stat = getStatus( fi );
+			if ( stat.type == Status::Type::Invalid )
+				return QVariant( QString( "" ) );
+
+			switch ( idx.column() - QFileSystemModel::columnCount() )
+			{
+			case GenCol: return QVariant( stat.gen );
+			case ScoreCol: return QVariant( QString::asprintf( "%7.3f", stat.best ) );
+			default: return QVariant();
+			}
+		}
+		else if ( role == Qt::TextAlignmentRole ) {
+			return Qt::AlignRight;
+		}
 	}
-	else return QVariant();
+
+	return QFileSystemModel::data( idx, role );
 }
 
 Qt::ItemFlags ResultsFileSystemModel::flags( const QModelIndex& index ) const

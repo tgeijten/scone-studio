@@ -127,6 +127,7 @@ public slots:
 	void evaluateSelectedFiles();
 	void sortResultsByDate();
 	void sortResultsByName();
+	void editNotes();
 	void onResultBrowserCustomContextMenu( const QPoint& );
 
 public:

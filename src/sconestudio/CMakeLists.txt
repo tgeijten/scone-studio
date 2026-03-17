@@ -101,6 +101,7 @@ set (QT_UI_FILES
 	ModelTool.ui
 	ConvertScenario.ui
 	LicenseDialog.ui
+	NotesEditor.ui
 )
 
 set(RESOURCEFILES

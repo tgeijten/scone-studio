@@ -11,6 +11,7 @@
 #include "StudioSettings.h"
 #include "studio_config.h"
 #include "ui_SconeSettings.h"
+#include "ui_NotesEditor.h"
 #include "GaitAnalysis.h"
 #include "OptimizerTaskExternal.h"
 #include "OptimizerTaskThreaded.h"
@@ -116,6 +117,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
 	ui.resultsBrowser->setContextMenuPolicy( Qt::CustomContextMenu );
+	ui.resultsBrowser->viewport()->setMouseTracking( true );
 	connect( ui.resultsBrowser, SIGNAL( customContextMenuRequested( const QPoint& ) ), this, SLOT( onResultBrowserCustomContextMenu( const QPoint& ) ) );
 	connect( ui.resultsBrowser->selectionModel(),
 		SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
@@ -266,6 +268,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
 	fileMenu->addAction( "Export Muscle &Info...", this, &SconeStudio::exportMuscleInfo );
 	fileMenu->addAction( "Export Sce&nario...", this, &SconeStudio::exportScenario );
+	fileMenu->addSeparator();
+	fileMenu->addAction( "Edit Optimization &Notes", this, &SconeStudio::editNotes, QKeySequence( "Ctrl+Shift+N" ) );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	fileMenu->addSeparator();
 	fileMenu->addAction( "Save &Model Inputs", [this]() { saveUserInputs( false ); } );
@@ -536,8 +540,17 @@ void SconeStudio::activateBrowserItem( QModelIndex idx )
 
 void SconeStudio::selectBrowserItem( const QModelIndex& idx, const QModelIndex& idxold )
 {
-	auto item = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
-	string dirname = item.isDir() ? item.filePath().toStdString() : item.dir().path().toStdString();
+	auto fi = ui.resultsBrowser->fileSystemModel()->fileInfo( idx );
+	if ( fi.isDir() ) {
+		QFile file( fi.absoluteFilePath() + "/notes.txt" );
+		if ( file.exists() && file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+			auto pos = ui.resultsBrowser->mapToGlobal( ui.resultsBrowser->visualRect( idx ).topRight() );
+			auto text = file.readAll();
+			QToolTip::showText( pos, text, this );
+			return;
+		}
+	}
+	QToolTip::hideText();
 }
 
 void SconeStudio::start()
@@ -1918,14 +1931,43 @@ void SconeStudio::sortResultsByName()
 	ui.resultsBrowser->fileSystemModel()->sort( 0 );
 }
 
+void SconeStudio::editNotes()
+{
+	auto sel = ui.resultsBrowser->selectionModel()->selectedRows();
+	if ( sel.size() == 1 ) {
+		auto fi = ui.resultsBrowser->fileSystemModel()->fileInfo( sel.front() );
+		if ( fi.isDir() ) {
+			QFile file( fi.absoluteFilePath() + "/notes.txt" );
+			QDialog dlg( this );
+			Ui::NotesEditor ui{};
+			ui.setupUi( &dlg );
+			ui.buttonBox->button( QDialogButtonBox::Ok )->setShortcut( Qt::CTRL | Qt::Key_Return );
+			if ( file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+				ui.plainTextEdit->setPlainText( file.readAll() );
+				file.close();
+			}
+			if ( QDialog::Accepted == dlg.exec() ) {
+				if ( file.open( QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate ) ) {
+					file.write( ui.plainTextEdit->toPlainText().toUtf8() );
+					file.close();
+					log::debug( "Notes written to ", fi.absoluteFilePath().toStdString() );
+				}
+			}
+		}
+	}
+}
+
 void SconeStudio::onResultBrowserCustomContextMenu( const QPoint& pos )
 {
 	QMenu menu;
-	menu.addAction( "Sort by &Name", this, &SconeStudio::sortResultsByName );
+	auto sel = ui.resultsBrowser->selectionModel()->selectedRows();
+	if ( sel.size() == 1 && ui.resultsBrowser->fileSystemModel()->fileInfo( sel.front() ).isDir() ) {
+		menu.addAction( "Edit &Notes", this, &SconeStudio::editNotes );
+		menu.addSeparator();
+	}
+	menu.addAction( "Sort by Na&me", this, &SconeStudio::sortResultsByName );
 	menu.addAction( "Sort by &Date", this, &SconeStudio::sortResultsByDate );
 	menu.addSeparator();
-
-	auto sel = ui.resultsBrowser->selectionModel()->selectedRows();
 	if ( sel.size() == 1 && getActiveScenario() && ui.resultsBrowser->fileSystemModel()->fileInfo( sel.front() ).suffix() == "par" ) {
 		menu.addAction( "&Copy to Scenario Folder", this, &SconeStudio::copyToScenarioFolder );
 		menu.addSeparator();
