@@ -37,5 +37,5 @@ private:
 	virtual QVariant data( const QModelIndex& index, int role = Qt::DisplayRole ) const override;
 	virtual Qt::ItemFlags flags( const QModelIndex& index ) const override;
 
-	mutable xo::flat_map< std::string, Status > m_StatusCache;
+	mutable QHash<QString, Status> m_StatusCache;
 };

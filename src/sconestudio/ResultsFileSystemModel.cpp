@@ -19,6 +19,7 @@
 #include "xo/serialization/serialize.h"
 #include "qt_convert.h"
 #include "xo/filesystem/filesystem.h"
+#include "xo/time/timer.h"
 
 #define SCONE_USE_RESULTS_CACHE 0
 
@@ -88,14 +89,14 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi 
 	else if ( fi.isDir() )
 	{
 		fi.refresh();
-		auto filename = fi.fileName().toStdString();
-		auto cache_it = m_StatusCache.find( filename );
-		if ( cache_it != m_StatusCache.end() && abs( cache_it->second.modified.secsTo( fi.lastModified() ) ) < 3 )
-			return cache_it->second;
+		QString dirname = fi.absoluteFilePath();
+		auto cache_it = m_StatusCache.find( dirname );
+		if ( cache_it != m_StatusCache.end() && abs( cache_it->modified.secsTo( fi.lastModified() ) ) < 3 )
+			return *cache_it;
 
 		// Using log here causes a recursive loop for some reason
 		//std::cout << "Scanning folder " << fi.absoluteFilePath().toStdString() << std::endl;
-		for ( QDirIterator dir_it( fi.absoluteFilePath(), { "*.par", "*.sto", "*.stob" }, QDir::Files ); dir_it.hasNext(); )
+		for ( QDirIterator dir_it( dirname, { "*.par", "*.sto", "*.stob" }, QDir::Files ); dir_it.hasNext(); )
 		{
 			QFileInfo fileinf = QFileInfo( dir_it.next() );
 			if ( fileinf.isFile() ) {
@@ -114,7 +115,7 @@ ResultsFileSystemModel::Status ResultsFileSystemModel::getStatus( QFileInfo& fi 
 			}
 		}
 		stat.modified = fi.lastModified();
-		m_StatusCache[filename] = stat;
+		m_StatusCache[dirname] = stat;
 	}
 	return stat;
 }
