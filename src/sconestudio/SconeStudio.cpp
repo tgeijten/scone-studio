@@ -1699,12 +1699,14 @@ void SconeStudio::exportScenario()
 		auto qtdir = QFileDialog::getExistingDirectory( this, "Select Directory", to_qt( scone::GetScenarioFolder() ) );
 		path target_dir = path( qtdir.toStdString() );
 		path scenario_file = scenario_->GetScenarioPath();
-		CopyFileLogErrors( scenario_file, target_dir / scenario_file.filename(), false );
+		path scenario_file_export = target_dir / scenario_file.filename();
+		CopyFileLogErrors( scenario_file, scenario_file_export, false );
 		for ( auto& r : scenario_->GetExternalFiles().GetVec() ) {
 			path f = path( r.filename_ ).replace( scenario_file.parent_path(), target_dir );
 			xo::create_directories( f.parent_path() );
 			CopyFileLogErrors( r.filename_, f, false );
 		}
+		openFile( to_qt( scenario_file_export ) );
 	}
 }
 
