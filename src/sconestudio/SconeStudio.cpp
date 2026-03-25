@@ -1368,6 +1368,7 @@ void SconeStudio::performanceTest( bool write_stats )
 				auto f = scenario_->GetFileName();
 				scone::BenchmarkOptions bopt;
 				bopt.min_samples = 4;
+				bopt.max_samples_factor = 5;
 				scone::BenchmarkScenario( scenario_->GetScenarioPropNode(), f, bopt );
 			}
 		}
