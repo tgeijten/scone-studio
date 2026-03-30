@@ -117,6 +117,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
 	ui.resultsBrowser->setContextMenuPolicy( Qt::CustomContextMenu );
+	ui.resultsBrowser->viewport()->setMouseTracking( true );
 	connect( ui.resultsBrowser, SIGNAL( customContextMenuRequested( const QPoint& ) ), this, SLOT( onResultBrowserCustomContextMenu( const QPoint& ) ) );
 	connect( ui.resultsBrowser->selectionModel(),
 		SIGNAL( currentChanged( const QModelIndex&, const QModelIndex& ) ),
@@ -696,7 +697,6 @@ void SconeStudio::evaluateOffline()
 	auto real_dur = real_time().secondsd();
 	auto sim_time = scenario_->GetTime();
 	log::info( "Evaluation took ", real_dur, "s for ", sim_time, "s (", sim_time / real_dur, "x real-time)" );
-	log::flush();
 }
 
 void SconeStudio::evaluateRealTime()
@@ -1100,7 +1100,6 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 	// always do this, also in case of error
 	ui.osgViewer->repaint();
-	log::flush();
 
 	return scenario_->IsValid();
 }
@@ -1372,7 +1371,6 @@ void SconeStudio::performanceTest( bool write_stats )
 				scone::BenchmarkScenario( scenario_->GetScenarioPropNode(), f, bopt );
 			}
 		}
-		log::flush();
 	}
 }
 
