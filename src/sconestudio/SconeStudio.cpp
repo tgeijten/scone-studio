@@ -990,7 +990,6 @@ void SconeStudio::clearScenario()
 			fileWatcher.removePath( to_qt( p.filename_ ) );
 
 	ui.playControl->stop();
-	scenario_.reset();
 	analysisStorageModel.setStorage( nullptr );
 	parModel->setObjectiveInfo( nullptr );
 	gaitAnalysis->reset();
@@ -998,6 +997,7 @@ void SconeStudio::clearScenario()
 	ui.playControl->setRange( 0, 0 );
 	optimizationHistoryStorage.Clear();
 	muscleAnalysis->clear();
+	scenario_.reset();
 }
 
 bool SconeStudio::createScenario( const QString& any_file )
@@ -1065,6 +1065,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 		if ( xo::file_exists( history_file ) )
 		{
 			try {
+				log::debug( "Loading parameter history from ", history_file );
 				scone::ReadStorageTxt( optimizationHistoryStorage, history_file );
 				if ( !optimizationHistoryStorage.IsEmpty() )
 				{
@@ -1099,7 +1100,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 	}
 
 	// always do this, also in case of error
-	ui.osgViewer->repaint();
+	ui.osgViewer->update();
 
 	return scenario_->IsValid();
 }
