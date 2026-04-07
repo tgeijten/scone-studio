@@ -142,6 +142,7 @@ sconegym {
 ui {
 	label = "User Interface"
 	log_level { type = int default = 2 label = "Messages log level (1-7)" }
+	evaluation_report_depth { type = int default = 1 label = "Depth to which to expand Evaluation Report tree" }
 	enable_profiler { type = bool default = 0 label = "Enable GUI profiler" }
 	show_conversion_support_message { type = bool default = 1 label = "Show support message after convert to Hyfydy" }
 	use_alternative_file_dialog_windows { type = bool default = 0 label = "Use alternative save file dialog windows" }
