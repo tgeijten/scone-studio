@@ -51,7 +51,8 @@ namespace scone
 
 	void GaitAnalysis::update( const Storage<>& sto, const path& filename )
 	{
-		log::debug( "Updating Gait Analysis" );
+		log::debug( "Performing Gait Analysis on ",filename );
+		log::flush();
 		GaitCycleExtractionSettings cfg;
 		cfg.touch_force_threshold = GetStudioSetting<Real>( "gait_analysis.force_threshold" );
 		cfg.min_swing_duraction = GetStudioSetting<Real>( "gait_analysis.min_stance_duration" );
@@ -82,7 +83,7 @@ namespace scone
 			auto avg_score = xo::average( scores );
 
 			if ( GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
-				info_ = QString::asprintf( "Gait Analysis (%.1f%%) -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", avg_score, cycles.size(), avg_length, avg_dur, avg_speed );
+				info_ = QString::asprintf( "Gait Analysis (%.1f%%)  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", avg_score, cycles.size(), avg_length, avg_dur, avg_speed );
 			else 
 				info_ = QString::asprintf( "Gait Analysis  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_dur, avg_speed );
 		}
