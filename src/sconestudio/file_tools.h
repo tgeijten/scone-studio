@@ -26,4 +26,6 @@ namespace scone
 
 	bool okToUpdateFiles( QStringList l );
 	void updateTutorialsExamples();
+
+	void createSconeModelFile( const QString& sconeFile, const QString& modelFile );
 }

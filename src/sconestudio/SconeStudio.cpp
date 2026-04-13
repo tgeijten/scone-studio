@@ -818,8 +818,18 @@ void SconeStudio::fileOpenTriggered()
 
 	QString filename = QFileDialog::getOpenFileName( this, "Open Scenario", default_path,
 		"Supported file formats (*.scone *.xml *.zml *.lua *.hfd *.osim *.bp);;SCONE Scenarios (*.scone *.xml *.zml);;Lua Scripts (*.lua);;Models (*.osim *.hfd *.bp)" );
-	if ( !filename.isEmpty() )
+	if ( !filename.isEmpty() ) {
 		openFile( filename );
+
+		// create companying scenario when opening .osim file
+		auto fi = QFileInfo( filename );
+		if ( fi.suffix() == "osim" ) {
+			auto sconeFile = fi.path() + "/" + fi.completeBaseName() + ".scone";
+			if ( !QFileInfo( sconeFile ).exists() )
+				createSconeModelFile( sconeFile, filename );
+			openFile( sconeFile );
+		}
+	}
 }
 
 void SconeStudio::fileReloadTriggered()
@@ -1712,8 +1722,10 @@ void SconeStudio::exportScenario()
 
 void SconeStudio::convertScenario()
 {
-	if ( !( createAndVerifyActiveScenario( true ) && scenario_->HasModel() ) )
+	if ( !( createAndVerifyActiveScenario( true ) && scenario_->HasModel() ) ) {
+		information( "No Scenario or Model", "Please open a .scone scenario or .osim model first" );
 		return;
+	}
 
 	if ( scenario_->GetModel().GetModelFile().extension_no_dot() == "hfd" ) {
 		auto r = QMessageBox::question( this, "Convert to Hyfydy", "This scenario already uses a Hyfydy model", "&Save", "&Convert", "Ca&ncel" );

@@ -15,6 +15,9 @@
 #ifdef _MSC_VER
 #	include <windows.h>
 #endif
+#include "scone/core/PropNode.h"
+#include "xo/serialization/prop_node_serializer_zml.h"
+#include "scone/core/Factories.h"
 
 namespace fs = std::filesystem;
 
@@ -175,6 +178,19 @@ namespace scone
 			msg += ( "\nTarget=" + trgPath ).c_str();
 			QMessageBox::critical( nullptr, "Error updating Tutorials and Examples", msg );
 		}
+	}
+
+	void createSconeModelFile( const QString& sconeFile, const QString& modelFile )
+	{
+		scone::PropNode scone_pn;
+		auto modelType = scone::GetModelFactoryType( modelFile.toStdString() );
+		auto& model_pn = scone_pn.add_child( modelType );
+		auto sconeDir = QFileInfo( sconeFile ).dir();
+		auto modelFileRelative = sconeDir.relativeFilePath( modelFile );
+		xo::log::info( "scone=", sconeFile.toStdString(), " model=", modelFileRelative.toStdString() );
+		model_pn["model_file"] = modelFileRelative.toStdString();
+		model_pn["initial_load"] = 0.0;
+		xo::save_zml( scone_pn, sconeFile.toStdString() );
 	}
 
 	bool moveFilesToTrash( const QStringList& files )
