@@ -134,6 +134,8 @@ namespace scone
 		// set mc settings in ui
 		ui.useBodyMassThreshold->setChecked( mc.use_body_mass_threshold_ );
 		ui.compoundBodies->setChecked( mc.compound_welded_bodies );
+		ui.useCoordinateRange->setChecked( mc.use_limits_from_dof_range_ );
+		ui.useLockedCoordinates->setChecked( mc.use_zero_limits_for_locked_dof_ );
 		ui.usePinJoints->setChecked( mc.use_pin_joints_ );
 		ui.useBallSocketJoints->setChecked( mc.use_ball_socket_joints_ );
 		ui.useWeldJoints->setChecked( mc.use_weld_joints_ );
@@ -146,6 +148,7 @@ namespace scone
 			mc.joint_limit_stiffness_ = ui.limitStiffness->value();
 			mc.use_stiffness_from_limit_force_ = ui.useLimitForceStiffness->isChecked();
 			mc.use_limits_from_dof_range_ = ui.useCoordinateRange->isChecked();
+			mc.use_zero_limits_for_locked_dof_ = ui.useLockedCoordinates->isChecked();
 			mc.compound_welded_bodies = ui.compoundBodies->isChecked();
 			mc.compound_mass_threshold = ui.compoundMassThreshold->value();
 			mc.use_pin_joints_ = ui.usePinJoints->isChecked();
@@ -170,8 +173,8 @@ namespace scone
 				else model_file_new = hfd_model_path;
 				auto str = xo::load_string( scenario.GetScenarioPath() );
 				xo::replace_str( str, model_file_org.str(), model_file_new.str() );
-				xo::replace_str( str, "ModelOpenSim3", "ModelHyfydy" );
-				xo::replace_str( str, "ModelOpenSim4", "ModelHyfydy" );
+				xo::replace_str( str, "ModelOpenSim3", "ModelHyfydyPrecise" );
+				xo::replace_str( str, "ModelOpenSim4", "ModelHyfydyPrecise" );
 				xo::save_string( scenario_path, str );
 				log::info( "Scenario written to ", hfd_model_path );
 				return to_qt( scenario_path );

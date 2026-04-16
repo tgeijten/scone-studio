@@ -148,6 +148,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="useLockedCoordinates">
+        <property name="text">
+         <string>Set limits to zero for locked coordinates</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="usePinJoints">
         <property name="text">
          <string>Convert 1-DOF joints to Hyfydy &amp;pin_joint</string>
