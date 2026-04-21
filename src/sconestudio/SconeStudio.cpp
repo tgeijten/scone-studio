@@ -939,6 +939,7 @@ bool SconeStudio::tryExit()
 		// wait until all optimizations are actually done
 		while ( !optimizations.empty() )
 			updateOptimizations();
+		log::info( "Closing SCONE Studio" );
 		return true;
 	}
 	else return false;
@@ -1075,7 +1076,6 @@ bool SconeStudio::createScenario( const QString& any_file )
 		if ( xo::file_exists( history_file ) )
 		{
 			try {
-				log::debug( "Loading parameter history from ", history_file );
 				scone::ReadStorageTxt( optimizationHistoryStorage, history_file );
 				if ( !optimizationHistoryStorage.IsEmpty() )
 				{
@@ -1083,6 +1083,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 					optimizationHistoryView->reloadData();
 					optimizationHistoryView->setRange( 0, optimizationHistoryStorage.Back().GetTime() );
 				}
+				log::debug( "Loaded parameter history from ", history_file );
 			}
 			catch ( std::exception& e ) {
 				log::error( e.what() );
@@ -1111,6 +1112,7 @@ bool SconeStudio::createScenario( const QString& any_file )
 
 	// always do this, also in case of error
 	ui.osgViewer->update();
+	log::debug( "Created scenario from ", any_file.toStdString() );
 
 	return scenario_->IsValid();
 }
