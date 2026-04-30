@@ -79,15 +79,16 @@ namespace scone
 				[]( const auto& v, const auto& c ) { return v + c.length();  } );
 			auto avg_dur = f * std::accumulate( cycles.begin(), cycles.end(), 0.0,
 				[]( const auto& v, const auto& c ) { return v + c.duration();  } );
+			auto avg_width = f * std::accumulate( cycles.begin(), cycles.end(), 0.0,
+				[]( const auto& v, const auto& c ) { return v + c.width();  } );
 			auto avg_speed = avg_length / avg_dur;
 			auto avg_score = xo::average( scores );
 
-			if ( GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
-				info_ = QString::asprintf( "Gait Analysis (%.1f%%)  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", avg_score, cycles.size(), avg_length, avg_dur, avg_speed );
-			else 
-				info_ = QString::asprintf( "Gait Analysis  -  Steps=%zu  StrideLength=%.2fm  StrideTime=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_dur, avg_speed );
+			bool show_fit = GetStudioSetting<bool>( "gait_analysis.show_fit" );
+			info_ = show_fit ? QString::asprintf( "Gait Analysis (%.1f%%)", avg_score ) : "Gait Analysis";
+			info_ += QString::asprintf( "  -  Strides=%zu  Length=%.2fm  Width=%.2fm  Time=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_width, avg_dur, avg_speed );
 		}
-		else log::error( "Could not extract enough gait cycles from ", filename.str() );
+		else log::warning( "Could not extract enough gait cycles from ", filename.str() );
 		log::debug( "Gait Analysis extracted ", cycles.size(), " gait cycles" );
 		log::flush();
 	}
