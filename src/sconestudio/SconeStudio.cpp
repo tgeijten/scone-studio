@@ -112,7 +112,7 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	resultsModel = new ResultsFileSystemModel( nullptr );
 	ui.resultsBrowser->setModel( resultsModel );
 	ui.resultsBrowser->setNumColumns( 1 );
-	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.stob;*.txt;*.scone;*.osim;*.hfd;step_*.pt" );
+	ui.resultsBrowser->setRoot( to_qt( results_folder ), "*.par;*.sto;*.stob;*.txt;*.scone;*.osim;*.hfd;step_*.pt;*.zml" );
 	ui.resultsBrowser->header()->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
 	ui.resultsBrowser->setSelectionMode( QAbstractItemView::ExtendedSelection );
 	ui.resultsBrowser->setSelectionBehavior( QAbstractItemView::SelectRows );
