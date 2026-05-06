@@ -214,7 +214,7 @@ namespace scone
 		try
 		{
 			status_ = Status::Aborted;
-			storage_ = model_->GetData();
+			storage_ = model_->ReleaseData();
 			InitStateDataIndices();
 		}
 		catch ( const std::exception& e )
@@ -258,7 +258,7 @@ namespace scone
 			try
 			{
 				// fetch data
-				storage_ = model_->GetData();
+				storage_ = model_->ReleaseData();
 				InitStateDataIndices();
 
 				// compute and show fitness results
