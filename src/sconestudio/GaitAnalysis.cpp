@@ -22,13 +22,25 @@ namespace scone
 		reset();
 	}
 
-	void GaitAnalysis::reset()
+	GaitAnalysis::~GaitAnalysis()
+	{
+		clear();
+	}
+
+	void GaitAnalysis::clear()
 	{
 		if ( grid_ ) {
 			delete grid_;
 			grid_ = nullptr;
 		}
+		for ( auto* p : plots_ )
+			delete p;
 		plots_.clear();
+	}
+
+	void GaitAnalysis::reset()
+	{
+		clear();
 		info_ = "Gait Analysis";
 
 		grid_ = new QGridLayout( this );

@@ -21,7 +21,7 @@ namespace scone
 	{
 	public:
 		GaitPlot( const PropNode& pn, QWidget* parent = nullptr );
-		virtual ~GaitPlot() {}
+		virtual ~GaitPlot();
 
 		xo::error_message update( const Storage<>& sto, const std::vector<GaitCycle>& cycles );
 		double matchPercentage() const { return match_percentage_; }

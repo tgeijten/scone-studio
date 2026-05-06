@@ -116,6 +116,11 @@ namespace scone
 		plot_->replot();
 	}
 
+	GaitPlot::~GaitPlot()
+	{
+		delete plot_; // deleted automatically by parent destructor, but we do it here anyway
+	}
+
 	xo::error_message GaitPlot::update( const Storage<>& sto, const std::vector<GaitCycle>& cycles )
 	{
 		while ( plot_->graphCount() > 2 )

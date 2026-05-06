@@ -10,6 +10,8 @@ namespace scone
 	{
 	public:
 		GaitAnalysis( QWidget* parent = nullptr );
+		virtual ~GaitAnalysis();
+		void clear();
 		void reset();
 		void update( const Storage<>& sto, const path& filename );
 
