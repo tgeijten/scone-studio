@@ -1,6 +1,68 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.4.4-RC-1 ====
+//Released May 7, 2026//
+
+=== New Features ===
+  * SCONE Studio
+    * Added the ability to add notes to optimization results (via Ctrl + Shift + N)
+    * Gait Analysis can now show stride width as a vertical bar, configure in Preferences
+    * MuscleAnalysis now includes ligament data
+    * External forces can now be visualized as a single arrow per leg
+    * You can now press enter on a selection of .pt files to evaluate them all
+    * SCONE now automatically creates a corresponding .scone scenario when opening a .osim file
+    * Added setting for depth to which to expand Evaluation Report tree
+    * Added option to use alternative file Save As dialog window, to prevent hidden cursor issue on Windows
+    * Added option to specify a default output folder for videos
+  * SCONE Features
+    * Add muscle_limit_input_type setting to Model, for either C1 or C2 (default) continuous soft input limiting
+    * ParInitSettings now supports value_factor and value_offset
+  * Measures
+    * StepMeasure now support stride_width, also shown in Gait Analysis
+    * DofMeasure use_average_acceleration_per_frame
+    * JointMeasure for measuring joint limit_torque, muscle_torque, motor_torque and joint_force
+    * Measures now have scale_weight_by_relative_duration option to lower the weight of a measure if the simulation terminates early
+    * Added EffortMeasure store_individual_muscle_effort_details setting for effort breakdown details
+  * SconePy and Lua scripting
+    * SconePy now supports NumPy 2
+    * Python and Lua api now support contact_forces() to get all contact forces acting on a body per geometry
+    * SconePy and Lua now have self_contact_force() and ground_reaction_force()
+    * SconePy.Joint.muscle_moment()
+    * Added LuaJoint:muscle_moment(), LuaMuscle:dof_moment()/dof_moment_arm(), LuaMuscle:joint_moment()/joint_moment_arm()
+    * LuaBody has_parent(), parent_joint(), parent_body(); LuaJoint parent(), child()
+  * New Hyfydy features
+    * Joints can now automatically deduce either pos_in_parent or pos_in_child when child body is correctly placed
+    * ref_ori can now be omitted for 3-dof joints if both bodies are connected
+    * Added MaterialModifier to optimize material stiffness, damping and friction
+    * Added GeometryModifier to optimize contact geometry radius and offset
+    * Add support for optimizing muscle path and radius in MuscleModifier and LigamentModifier
+
+=== Updates ===
+  * Added support for .vtp files without normal data
+  * Muscle Analysis can now show moment and mtu_moment
+  * Muscle Analysis can now show unnormalized data based on setting
+  * Reduced Analysis memory footprint
+  * Increased maximum width of Optimization Results window
+  * Convert scenario now uses ModelHyfydyPrecise, added Set limits to zero for locked coordinates
+  * Show .zml files in results browser
+  * Benchmarks with ctrl+shift+p now complete quicker
+  * Improved Message logging performance and stability
+  * StepMeasure now shows more details in signature
+  * Improved OpenSim model conversion for cylindrical muscle wrapping, WeldJoint, PinJoint, and locked Coordinates
+  * ConstantFunction value can now have any name (e.g. C0)
+  * Muscle data now includes active_fiber_power
+
+=== Fixes ===
+  * Fixed memory leak in Gait Analysis
+  * Optimization results no longer show incorrect summary for folders with identical names
+  * Turning of tendon visualization now works correctly
+  * Inactive Springs are now hidden
+  * CompositeController now logs single message when multiple children have no name
+  * mtu_power data now has correct sign
+  * Muscles and Ligaments now correctly compute joints they act upon, even if origin and insertion are reversed
+  * BodyHfd contact forces are now correct for contacts between dynamic bodies, added GetGroundContactForce() for Leg::GetLoad() backwards compatibility
+
 ==== SCONE 2.4.3 ====
 //Released December 18, 2025//
 
