@@ -63,8 +63,10 @@ namespace scone
 
 	void GaitAnalysis::update( const Storage<>& sto, const path& filename )
 	{
+		if ( hasData() )
+			reset();
+
 		log::debug( "Performing Gait Analysis on ",filename );
-		log::flush();
 		GaitCycleExtractionSettings cfg;
 		cfg.touch_force_threshold = GetStudioSetting<Real>( "gait_analysis.force_threshold" );
 		cfg.min_swing_duraction = GetStudioSetting<Real>( "gait_analysis.min_stance_duration" );
@@ -99,9 +101,14 @@ namespace scone
 			bool show_fit = GetStudioSetting<bool>( "gait_analysis.show_fit" );
 			info_ = show_fit ? QString::asprintf( "Gait Analysis (%.1f%%)", avg_score ) : "Gait Analysis";
 			info_ += QString::asprintf( "  -  Strides=%zu  Length=%.2fm  Width=%.2fm  Time=%.2fs  Speed=%0.2fm/s", cycles.size(), avg_length, avg_width, avg_dur, avg_speed );
+			log::debug( "Gait Analysis extracted ", cycles.size(), " gait cycles" );
+			log::flush();
 		}
-		else log::warning( "Could not extract enough gait cycles from ", filename.str() );
-		log::debug( "Gait Analysis extracted ", cycles.size(), " gait cycles" );
-		log::flush();
+		else log::warning( "Could not extract gait cycles from ", filename.str() );
+	}
+
+	bool GaitAnalysis::hasData() const
+	{
+		return xo::contains_if( plots_, [&]( auto&& p ) { return p->hasData(); } );
 	}
 }

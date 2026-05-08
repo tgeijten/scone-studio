@@ -26,6 +26,7 @@ namespace scone
 		xo::error_message update( const Storage<>& sto, const std::vector<GaitCycle>& cycles );
 		double matchPercentage() const { return match_percentage_; }
 		bool hasNormData() const { return !norm_data_.empty(); }
+		bool hasData() const;
 
 		String title_;
 		xo::pattern_matcher left_channel_;
@@ -49,5 +50,7 @@ namespace scone
 		QCustomPlot* plot_;
 		QCPPlotTitle* plot_title_;
 		double match_percentage_;
+		int base_graph_count_;
+		int base_item_count_;
 	};
 }

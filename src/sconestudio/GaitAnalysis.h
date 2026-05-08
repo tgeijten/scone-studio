@@ -16,6 +16,7 @@ namespace scone
 		void update( const Storage<>& sto, const path& filename );
 
 		const QString& info() const { return info_; }
+		bool hasData() const;
 
 	private:
 		Storage<> sto_;

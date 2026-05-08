@@ -33,7 +33,9 @@ namespace scone
 		norm_event_( pn.try_get<xo::bounds<double>>( "norm_event" ) ),
 		plot_( nullptr ),
 		plot_title_( nullptr ),
-		match_percentage_()
+		match_percentage_(),
+		base_graph_count_(),
+		base_item_count_()
 	{
 		auto l = new QHBoxLayout( this );
 		l->setContentsMargins( 0, 0, 0, 0 );
@@ -83,6 +85,7 @@ namespace scone
 			bar->bottomRight->setCoords( norm_event_->upper, y_max_ );
 			bar->setPen( Qt::NoPen );
 			bar->setBrush( QColor( 0, 0, 0, 30.0 ) );
+			plot_->addItem( bar );
 		}
 
 		// margins
@@ -113,6 +116,9 @@ namespace scone
 		plot_->yAxis->setAutoSubTicks( false );
 		plot_->yAxis->setAutoTickCount( 4 );
 
+		base_graph_count_ = plot_->graphCount();
+		base_item_count_ = plot_->itemCount();
+
 		plot_->replot();
 	}
 
@@ -123,8 +129,13 @@ namespace scone
 
 	xo::error_message GaitPlot::update( const Storage<>& sto, const std::vector<GaitCycle>& cycles )
 	{
-		while ( plot_->graphCount() > 2 )
-			plot_->removeGraph( plot_->graphCount() - 1 );
+		if ( hasData() ) {
+			log::warning( "Clearing existing data in plot ", title_ ); // this shouldn't happen and may cause leaks
+			while ( plot_->graphCount() > base_graph_count_ )
+				plot_->removeGraph( plot_->graphCount() - 1 );
+			while ( plot_->itemCount() > base_item_count_ )
+				plot_->removeItem( plot_->itemCount() - 1 );
+		}
 
 		// find channels, report error if not found
 		const auto& labels = sto.GetLabels();
@@ -210,5 +221,10 @@ namespace scone
 		plot_->replot();
 
 		return {};
+	}
+
+	bool GaitPlot::hasData() const
+	{
+		return plot_ && ( plot_->graphCount() > base_graph_count_ || plot_->itemCount() > base_item_count_ );
 	}
 }
