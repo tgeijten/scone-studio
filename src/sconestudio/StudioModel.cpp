@@ -214,6 +214,7 @@ namespace scone
 		try
 		{
 			status_ = Status::Aborted;
+			UpdateReports();
 			storage_ = model_->ReleaseData();
 			InitStateDataIndices();
 		}
@@ -223,26 +224,29 @@ namespace scone
 		}
 	}
 
-	const PropNode& StudioModel::GetResult()
+	void StudioModel::UpdateReports()
 	{
-		if ( result_pn_.empty() )
+		if ( evaluation_report_pn_.empty() )
 		{
 			if ( model_objective_ ) {
 				auto fitness = model_objective_->GetResult( *model_ ); // this calls ComputeResult which fills report
-				auto& result = result_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
+				auto& result = evaluation_report_pn_.add_child( "Result", model_objective_->GetReport( *model_ ) );
 			}
 			else if ( model_ && model_->GetMeasure() ) {
 				auto fitness = model_->GetMeasure()->GetWeightedResult( *model_ ); // this calls ComputeResult which fills report
-				auto& result = result_pn_.add_child( "Result", model_->GetMeasure()->GetReport() );
+				auto& result = evaluation_report_pn_.add_child( "Result", model_->GetMeasure()->GetReport() );
 				result.set_value( fitness ); // needed because result value is only set by ModelObjective
 			}
-			else result_pn_.add_child( "Result", PropNode( "<no result>" ) );
+			else evaluation_report_pn_.add_child( "Result", PropNode( "<no result>" ) );
 
 			// append termination reason
 			if ( model_ && !model_->GetTerminationReason().empty() )
-				result_pn_["Termination Reason"] = model_->GetTerminationReason();
+				evaluation_report_pn_["Termination Reason"] = model_->GetTerminationReason();
 		}
-		return result_pn_;
+
+		if ( simulation_report_pn_.empty() && model_ ) {
+			simulation_report_pn_ = model_->GetSimulationReport();
+		}
 	}
 
 	void StudioModel::CheckWriteResults()
@@ -257,13 +261,16 @@ namespace scone
 		{
 			try
 			{
+				// update evaluation and simulation report, must be done before model_->ReleaseData()
+				UpdateReports();
+
 				// fetch data
 				storage_ = model_->ReleaseData();
 				InitStateDataIndices();
 
-				// compute and show fitness results
+				// show fitness results
 				if ( model_->GetMeasure() )
-					log::info( GetResult() );
+					log::info( GetEvaluationReport() );
 
 				// write results to file(s)
 				if ( write_results_after_evaluation_ )

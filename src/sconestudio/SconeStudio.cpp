@@ -1248,8 +1248,8 @@ bool SconeStudio::createAndVerifyActiveScenario( bool always_create, bool must_h
 void SconeStudio::updateEvaluationReport()
 {
 	SCONE_ASSERT( scenario_ );
-	PropNode report_pn = scenario_->GetResult();
-	report_pn.append( scenario_->GetModel().GetSimulationReport() );
+	PropNode report_pn = scenario_->GetEvaluationReport();
+	report_pn.append( scenario_->GetSimulationReport() );
 	reportModel->setData( std::move( report_pn ) );
 	reportView->expandToDepth( scone::GetStudioSetting<int>( "ui.evaluation_report_depth" ) );
 }

@@ -69,7 +69,8 @@ namespace scone
 		enum class Status { Initializing, Evaluating, Overtime, Finished, Aborted, Error };
 		Status GetStatus() const { return status_; }
 
-		const PropNode& GetResult();
+		const PropNode& GetEvaluationReport() const { return evaluation_report_pn_; }
+		const PropNode& GetSimulationReport() const { return simulation_report_pn_; }
 
 		using WriteResultsInfo = std::pair<std::vector<path>, xo::time>;
 		WriteResultsInfo WriteResults();
@@ -79,6 +80,7 @@ namespace scone
 	private:
 		void FinalizeEvaluation();
 		void InvokeError( const String& message );
+		void UpdateReports();
 
 		// visualizer
 		u_ptr<ModelVis> vis_;
@@ -95,7 +97,8 @@ namespace scone
 		path scenario_filename_;
 		ExternalResourceContainer external_files_;
 		PropNode scenario_pn_;
-		PropNode result_pn_;
+		PropNode evaluation_report_pn_;
+		PropNode simulation_report_pn_;
 
 		Status status_;
 
