@@ -86,7 +86,7 @@ namespace scone
 		u_ptr<ModelVis> vis_;
 
 		// model / scenario data
-		Storage<> storage_;
+		Storage<Real, TimeInSeconds> storage_;
 		OptimizerUP optimizer_;
 		ModelObjective* model_objective_;
 		Objective null_objective_;

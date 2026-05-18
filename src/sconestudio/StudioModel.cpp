@@ -141,7 +141,7 @@ namespace scone
 			return log::warning( "InitStateDataIndices() called without model" );
 		if ( !state_data_index.empty() )
 			return log::warning( "InitStateDataIndices() called while state_data_index is non-empty" );
-		if (storage_.IsEmpty())
+		if ( storage_.IsEmpty() )
 			return log::warning( "InitStateDataIndices() called without data" );
 
 		model_state = model_->GetState();
@@ -309,7 +309,7 @@ namespace scone
 	{
 		SCONE_ASSERT( model_ );
 		xo::timer t;
-		auto r = model_->WriteResults( filename_ );
+		auto r = model_->WriteResults( filename_, !storage_.IsEmpty() ? &storage_ : nullptr );
 		auto d = t();
 		log::info( "Results written to ", concat_str( r, ", " ), " in ", d, "s" );
 		return { r, d };
