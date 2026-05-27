@@ -1,13 +1,14 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.4.4-RC-1 ====
+==== SCONE 2.4.4-RC-8 ====
 //Released May 7, 2026//
 
 === New Features ===
   * SCONE Studio
     * Added the ability to add notes to optimization results (via Ctrl + Shift + N)
-    * Gait Analysis can now show stride width as a vertical bar, configure in Preferences
+    * Gait Analysis now shows stride width
+    * Gait Analysis can now show swing start as a vertical bar, configure in Preferences
     * MuscleAnalysis now includes ligament data
     * External forces can now be visualized as a single arrow per leg
     * You can now press enter on a selection of .pt files to evaluate them all
@@ -24,6 +25,9 @@
     * JointMeasure for measuring joint limit_torque, muscle_torque, motor_torque and joint_force
     * Measures now have scale_weight_by_relative_duration option to lower the weight of a measure if the simulation terminates early
     * Added EffortMeasure store_individual_muscle_effort_details setting for effort breakdown details
+  * Controllers  
+    * New FeedForward Controller Function: PieceWiseCubicSpline
+    * PieceWiseConstant and PieceWiseLinear now have optional control_point_t0
   * SconePy and Lua scripting
     * SconePy now supports NumPy 2
     * Python and Lua api now support contact_forces() to get all contact forces acting on a body per geometry
@@ -52,6 +56,10 @@
   * Improved OpenSim model conversion for cylindrical muscle wrapping, WeldJoint, PinJoint, and locked Coordinates
   * ConstantFunction value can now have any name (e.g. C0)
   * Muscle data now includes active_fiber_power
+  * BodyMeasure now has option use_local_direction
+  * MimicMeasure now always applies early termination penalty
+  * BodyPostureMuscleSensor now flips moment arm if target body is muscle origin
+  * Referenced parameter name can now be scoped
 
 === Fixes ===
   * Fixed memory leak in Gait Analysis
