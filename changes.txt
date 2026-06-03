@@ -60,6 +60,8 @@
   * MimicMeasure now always applies early termination penalty
   * BodyPostureMuscleSensor now flips moment arm if target body is muscle origin
   * Referenced parameter name can now be scoped
+  * GaitStateController now includes name (if any) in analysis data
+  * FeedForwardController now stores data for analysis
 
 === Fixes ===
   * Fixed memory leak in Gait Analysis
