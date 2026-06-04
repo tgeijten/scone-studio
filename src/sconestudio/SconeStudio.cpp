@@ -1728,7 +1728,7 @@ void SconeStudio::exportScenario()
 void SconeStudio::convertScenario()
 {
 	if ( !( createAndVerifyActiveScenario( true ) && scenario_->HasModel() ) ) {
-		information( "No Scenario or Model", "Please open a .scone scenario or .osim model first" );
+		information( "No Scenario or Model", "Please first open the OpenSim model or SCONE scenario you wish to convert" );
 		return;
 	}
 
@@ -1775,7 +1775,7 @@ void SconeStudio::createVideo()
 	ui.playControl->reset(); // playback interferes with video generation
 
 	if ( !scenario_ )
-		return error( "No Scenario", "There is no scenario open" );
+		return information( "No Scenario", "Please open the scenario or result for which you wish to generate a video" );
 
 	if ( auto p = GetStudioSetting<path>( "video.path_to_ffmpeg" ); !xo::file_exists( p ) ) {
 		QString msg = "<b></b>Could not find ffmpeg (" + to_qt( p.str() ) + ")<br><br>";
