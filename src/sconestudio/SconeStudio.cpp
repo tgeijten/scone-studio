@@ -371,7 +371,8 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	toolsMenu->addSeparator();
 #if SCONE_HYFYDY_ENABLED
 	toolsMenu->addAction( "&Convert to Hyfydy...", this, &SconeStudio::convertScenario );
-	toolsMenu->addAction( "Convert OpenSim3 &Model...", [this]() { ShowModelConversionDialog( this ); } );
+	if ( scone::GetStudioSetting<bool>( "ui.enable_legacy_convert_opensim" ) )
+		toolsMenu->addAction( "Convert OpenSim3 &Model...", [this]() { ShowModelConversionDialog( this ); } );
 	toolsMenu->addSeparator();
 #endif
 	toolsMenu->addAction( "&Preferences...", this, &SconeStudio::showSettingsDialog, QKeySequence( "Ctrl+," ) );

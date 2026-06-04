@@ -145,6 +145,7 @@ ui {
 	evaluation_report_depth { type = int default = 1 label = "Depth to which to expand Evaluation Report tree" }
 	enable_profiler { type = bool default = 0 label = "Enable GUI profiler" }
 	show_conversion_support_message { type = bool default = 1 label = "Show support message after convert to Hyfydy" }
+	enable_legacy_convert_opensim { type = bool default = 0 label = "Enable legacy Convert OpenSim 3 menu option (needs restart)" }
 	use_alternative_file_dialog_windows { type = bool default = 0 label = "Use alternative save file dialog windows" }
 	reset_layout { type = bool default = 0 label = "Reset window layout on start" }
 	last_version_run { type = string default = "" label = "Last version run" }
