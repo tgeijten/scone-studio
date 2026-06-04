@@ -1,8 +1,8 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
-==== SCONE 2.4.4-RC-8 ====
-//Released May 7, 2026//
+==== SCONE 2.4.4 ====
+//Released June 4, 2026//
 
 === New Features ===
   * SCONE Studio
