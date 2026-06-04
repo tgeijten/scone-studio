@@ -28,6 +28,7 @@ height_measure.txt
 imitation_objective.txt
 interpolatary_cubic_spline.txt
 joint_load_measure.txt
+joint_measure.txt
 jump_measure.txt
 lua_actuator.txt
 lua_body.txt
@@ -62,6 +63,7 @@ optimizer.txt
 par_init_settings.txt
 perturbation_controller.txt
 piece_wise_constant_function.txt
+piece_wise_cubic_spline.txt
 piece_wise_linear_function.txt
 polynomial.txt
 raised_cosine.txt
