@@ -18,7 +18,7 @@ gait_analysis {
 	show_swing_start { type = int default = 0 label = "Show swing start in graphs (0 = no, 1 = small bars, 2 = full bars)" }
 	show_fit { type = bool default = 1 label = "Show data fit" }
 	force_threshold { type = float default = 0.001 label = "Force threshold [BW] for step detection" }
-	plot_step_frame_lead { type = float default = 1 range = [0 1] label = "Relative frame lead for step detection plots (0-1)" }
+	contact_timing_offset { type = float default = 1 range = [0 1] label = "Fraction of a sample to shift detected contact onset backward in time (0-1)" }
 	min_stance_duration { type = float default = 0.1 label = "Minimum contact length [s] for stance detection" }
 	skip_first { type = int default = 2 label = "Number of initial steps to exclude from analysis" }
 	skip_last { type = int default = 1 label = "Number of final steps to exclude from analysis" }

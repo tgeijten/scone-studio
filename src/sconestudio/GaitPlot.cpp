@@ -125,7 +125,7 @@ namespace scone
 		// get settings (read here so they can be updated)
 		bool plot_cycles = GetStudioSetting<bool>( "gait_analysis.plot_individual_cycles" );
 		int show_swing_start = GetStudioSetting<int>( "gait_analysis.show_swing_start" );
-		Real lookahead = sto.GetAverageFrameDuration() * GetStudioSetting<Real>( "gait_analysis.plot_step_frame_lead" );
+		Real lookahead = sto.GetAverageFrameDuration() * GetStudioSetting<Real>( "gait_analysis.contact_timing_offset" );
 
 		// plot cycles and gather range and avg data
 		xo::boundsd range( data_.y_min_, data_.y_max_ );
