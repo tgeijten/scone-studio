@@ -11,6 +11,7 @@
 #include "xo/numerical/bounds.h"
 #include "xo/utility/result.h"
 #include "xo/string/pattern_matcher.h"
+#include "scone/core/GaitPlotData.h"
 
 class QCustomPlot;
 class QCPPlotTitle;
@@ -25,26 +26,10 @@ namespace scone
 
 		xo::error_message update( const Storage<>& sto, const std::vector<GaitCycle>& cycles );
 		double matchPercentage() const { return match_percentage_; }
-		bool hasNormData() const { return !norm_data_.empty(); }
+		bool hasNormData() const { return data_.HasNormData(); }
 		bool hasData() const;
 
-		String title_;
-		xo::pattern_matcher left_channel_;
-		xo::pattern_matcher right_channel_;
-		int row_;
-		int column_;
-		String x_label_;
-		String y_label_;
-		double y_min_;
-		double y_max_;
-
-		double channel_offset_;
-		double channel_multiply_;
-		double norm_offset_;
-		bool mirror_left_;
-
-		xo::flat_map<double, xo::bounds<double>> norm_data_;
-		xo::optional<xo::bounds<double>> norm_event_;
+		GaitPlotData data_;
 
 	private:
 		QCustomPlot* plot_;

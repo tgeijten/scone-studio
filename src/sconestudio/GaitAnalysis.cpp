@@ -54,7 +54,7 @@ namespace scone
 			for ( const auto& pn : plot_pn )
 			{
 				auto plot = new GaitPlot( pn.second );
-				grid_->addWidget( plot, plot->row_, plot->column_ );
+				grid_->addWidget( plot, plot->data_.row_, plot->data_.column_ );
 				plots_.push_back( plot );
 			}
 		}
