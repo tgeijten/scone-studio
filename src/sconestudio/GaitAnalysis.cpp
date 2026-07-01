@@ -82,9 +82,10 @@ namespace scone
 			cycles.erase( cycles.end() - skip_last, cycles.end() );
 
 			for ( auto* p : plots_ ) {
-				if ( auto em = p->update( sto, cycles ); em.bad() )
+				auto em = p->update( sto, cycles ); 
+				if ( em.bad() )
 					log::warning( em.message() );
-				if ( p->hasNormData() )
+				if ( p->hasNormData() && em.good() )
 					scores.emplace_back( p->matchPercentage() );
 			}
 
