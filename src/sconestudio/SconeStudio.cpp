@@ -263,17 +263,17 @@ SconeStudio::SconeStudio( QWidget* parent, Qt::WindowFlags flags ) :
 	fileMenu->addAction( "Save &As...", this, &SconeStudio::fileSaveAsTriggered, QKeySequence( "Ctrl+Shift+S" ) );
 	fileMenu->addAction( "&Close", this, &SconeStudio::fileCloseTriggered, QKeySequence( "Ctrl+W" ) );
 	fileMenu->addSeparator();
-	fileMenu->addAction( "Save Evaluation &Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
+	fileMenu->addAction( "Save E&valuation Data", this, &SconeStudio::writeEvaluationResults, QKeySequence( "Ctrl+Shift+E" ) );
 	fileMenu->addSeparator();
-	fileMenu->addAction( "&Export Model Coordinates...", this, &SconeStudio::exportCoordinates );
-	fileMenu->addAction( "Export Muscle &Info...", this, &SconeStudio::exportMuscleInfo );
-	fileMenu->addAction( "Export Sce&nario...", this, &SconeStudio::exportScenario );
+	fileMenu->addAction( "Export Model Coor&dinates...", this, &SconeStudio::exportCoordinates );
+	fileMenu->addAction( "Export &Muscle Info...", this, &SconeStudio::exportMuscleInfo );
+	fileMenu->addAction( "&Export Scenario...", this, &SconeStudio::exportScenario );
 	fileMenu->addSeparator();
 	fileMenu->addAction( "Edit Optimization &Notes", this, &SconeStudio::editNotes, QKeySequence( "Ctrl+Shift+N" ) );
 #if SCONE_EXPERIMENTAL_FEATURES_ENABLED
 	fileMenu->addSeparator();
-	fileMenu->addAction( "Save &Model Inputs", [this]() { saveUserInputs( false ); } );
-	fileMenu->addAction( "Save &Model Inputs As...", [this]() { saveUserInputs( true ); } );
+	fileMenu->addAction( "Save Model &Inputs", [this]() { saveUserInputs( false ); } );
+	fileMenu->addAction( "Save Model &Inputs As...", [this]() { saveUserInputs( true ); } );
 #endif
 	fileMenu->addSeparator();
 	fileMenu->addAction( "E&xit", this, &SconeStudio::fileExitTriggered, QKeySequence( "Alt+X" ) );
