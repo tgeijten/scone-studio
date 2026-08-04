@@ -15,6 +15,7 @@
 
 class QCustomPlot;
 class QCPPlotTitle;
+class QCPGraph;
 
 namespace scone
 {
