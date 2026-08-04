@@ -22,6 +22,8 @@ namespace scone
 		data_( pn ),
 		plot_( nullptr ),
 		plot_title_( nullptr ),
+		norm_top_(),
+		norm_bot_(),
 		match_percentage_(),
 		base_graph_count_(),
 		base_item_count_()
@@ -40,21 +42,14 @@ namespace scone
 
 		// norm data
 		if ( data_.HasNormData() ) {
-			auto* top = plot_->addGraph();
-			auto* bot = plot_->addGraph();
-			for ( index_t i = 0; i < data_.norm_data_.size(); ++i )
-			{
-				const auto& r = data_.norm_data_[i];
-				auto yt = r.upper;
-				auto yb = r.lower;
-				double x = 100.0 * i / ( data_.norm_data_.size() - 1 );
-				top->addData( x, yt );
-				bot->addData( x, yb );
-			}
-			top->setPen( Qt::NoPen );
-			bot->setPen( Qt::NoPen );
-			top->setBrush( QColor( 0, 0, 0, 30.0 ) );
-			top->setChannelFillGraph( bot );
+			norm_top_ = plot_->addGraph();
+			norm_bot_ = plot_->addGraph();
+			norm_top_->setPen( Qt::NoPen );
+			norm_bot_->setPen( Qt::NoPen );
+			norm_top_->setBrush( QColor( 0, 0, 0, 30.0 ) );
+			norm_top_->setChannelFillGraph( norm_bot_ );
+
+			setNormDataGraph();
 		}
 
 		// event bounds
@@ -207,5 +202,19 @@ namespace scone
 	bool GaitPlot::hasData() const
 	{
 		return plot_ && ( plot_->graphCount() > base_graph_count_ || plot_->itemCount() > base_item_count_ );
+	}
+
+	void GaitPlot::setNormDataGraph()
+	{
+		norm_top_->clearData();
+		norm_bot_->clearData();
+		for ( index_t i = 0; i < data_.norm_data_.size(); ++i ) {
+			const auto& r = data_.norm_data_[i];
+			auto yt = data_.norm_data_multiply_ * r.upper;
+			auto yb = data_.norm_data_multiply_ * r.lower;
+			double x = 100.0 * i / ( data_.norm_data_.size() - 1 );
+			norm_top_->addData( x, yt );
+			norm_bot_->addData( x, yb );
+		}
 	}
 }
