@@ -13,6 +13,7 @@
 #include "scone/core/Log.h"
 #include "xo/container/container_tools.h"
 #include "xo/utility/irange.h"
+#include "xo/container/container_algorithms.h"
 
 namespace scone
 {
@@ -117,9 +118,9 @@ namespace scone
 
 		// find channels, report error if not found
 		const auto& labels = sto.GetLabels();
-		auto right_channel_idx = xo::find_index_if( labels, [&]( auto& l ) { return data_.right_channel_( l ); } );
-		auto left_channel_idx = xo::find_index_if( labels, [&]( auto& l ) { return data_.left_channel_( l ); } );
-		if ( right_channel_idx == no_index && left_channel_idx == no_index )
+		auto channels_r = xo::find_indices_if( labels, [&]( auto& l ) { return data_.right_channel_( l ); } );
+		auto channels_l = xo::find_indices_if( labels, [&]( auto& l ) { return data_.left_channel_( l ); } );
+		if ( channels_r.empty() && channels_l.empty() )
 			return "Could not find " + data_.left_channel_.str() + " / " + data_.right_channel_.str() + "; please verify Tools->Preferences->Data";
 
 		// get settings (read here so they can be updated)
@@ -134,14 +135,14 @@ namespace scone
 
 		for ( const auto& cycle : cycles ) {
 			bool right = cycle.side_ == Side::Right;
-			auto channel_idx = right ? right_channel_idx : left_channel_idx;
-			if ( channel_idx != no_index ) {
+			const auto& channels = right ? channels_r : channels_l;
+			if ( !channels.empty() ) {
 				auto* graph = plot_cycles ? plot_->addGraph() : nullptr;
 				if ( graph ) graph->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
 				double factor = data_.mirror_left_ && !right ? -data_.channel_multiply_ : data_.channel_multiply_;
 				for ( Real perc : xo::frange<Real>( 0.0, 100.0, 0.5 ) ) {
 					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 - lookahead );
-					auto value = data_.channel_offset_ + factor * f.value( channel_idx );
+					Real value = data_.channel_offset_ + factor * xo::average( channels, 0.0, [&]( Real v, index_t i ) { return v + f.value( i ); } );
 					if ( graph ) graph->addData( perc, value );
 					avg_data[perc] += value / cycles.size();
 					range.extend( value );
@@ -151,7 +152,7 @@ namespace scone
 				if ( show_swing_start == 1 && plot_cycles ) {
 					auto t = 100.0 * cycle.stance_duration() / cycle.duration();
 					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + t * cycle.duration() / 100.0 - lookahead );
-					auto value = data_.channel_offset_ + factor * f.value( channel_idx );
+					Real value = data_.channel_offset_ + factor * xo::average( channels, 0.0, [&]( Real v, index_t i ) { return v + f.value( i ); } );
 					auto* line = new QCPItemLine( plot_ );
 					line->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
 					plot_->addItem( line );
