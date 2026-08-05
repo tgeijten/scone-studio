@@ -24,6 +24,7 @@ namespace scone
 		plot_title_( nullptr ),
 		norm_top_(),
 		norm_bot_(),
+		norm_data_multiply_( 1.0 ),
 		match_percentage_(),
 		base_graph_count_(),
 		base_item_count_()
@@ -124,7 +125,8 @@ namespace scone
 		Real lookahead = sto.GetAverageFrameDuration() * GetStudioSetting<Real>( "gait_analysis.contact_timing_offset" );
 
 		// plot cycles and gather range and avg data
-		xo::boundsd range( data_.y_min_, data_.y_max_ );
+		xo::boundsd range = xo::boundsd::no_bounds();
+		xo::boundsd plot_range{ data_.y_min_, data_.y_max_ };
 		xo::flat_map< double, double > avg_data;
 		auto event_line_extents = range.length() / 8;
 
@@ -158,6 +160,15 @@ namespace scone
 			else log::warning( "Gait Analysis could not find: ", right ? data_.right_channel_ : data_.left_channel_ ); // only shown when *either* left / right is missing
 		}
 
+		// extend plot range by value range here
+		plot_range.extend( range );
+
+		// update norm data if normalize_norm_data is set
+		if ( data_.normalize_norm_data_ && data_.HasNormData() && data_.norm_data_mean_range_.upper > 0.0 ) {
+			norm_data_multiply_ = range.upper / data_.norm_data_mean_range_.upper;
+			setNormDataGraph();
+		}
+
 		// plot swing start_lines
 		if ( show_swing_start == 2 && plot_cycles ) {
 			for ( const auto& cycle : cycles ) {
@@ -168,8 +179,8 @@ namespace scone
 				pen.setStyle( Qt::DotLine );
 				line->setPen( pen );
 				plot_->addItem( line );
-				line->start->setCoords( t, range.lower );
-				line->end->setCoords( t, range.upper );
+				line->start->setCoords( t, plot_range.lower );
+				line->end->setCoords( t, plot_range.upper );
 			}
 		}
 
@@ -184,8 +195,9 @@ namespace scone
 		// compute average error in STD
 		if ( !avg_data.empty() && !data_.norm_data_.empty() ) {
 			double error = 0.0;
-			for ( const auto& r : data_.norm_data_ ) {
-				double x = 100.0 * xo::index_of( r, data_.norm_data_ ) / ( data_.norm_data_.size() - 1 );
+			for ( index_t norm_idx = 0; norm_idx < data_.norm_data_.size(); ++norm_idx ) {
+				auto r = data_.norm_data_[norm_idx] * norm_data_multiply_;
+				double x = 100.0 * norm_idx / ( data_.norm_data_.size() - 1 );
 				error += xo::abs( r.get_excess( xo::lerp_map( avg_data, x ) ) ) / xo::max( 0.01, r.length() );
 			}
 			error /= data_.norm_data_.size();
@@ -193,7 +205,7 @@ namespace scone
 			if ( plot_title_ && GetStudioSetting<bool>( "gait_analysis.show_fit" ) )
 				plot_title_->setText( data_.title_.c_str() + QString::asprintf( " (%.1f%%)", match_percentage_ ) );
 		}
-		plot_->yAxis->setRange( range.lower, range.upper );
+		plot_->yAxis->setRange( plot_range.lower, plot_range.upper );
 		plot_->replot();
 
 		return {};
@@ -210,8 +222,8 @@ namespace scone
 		norm_bot_->clearData();
 		for ( index_t i = 0; i < data_.norm_data_.size(); ++i ) {
 			const auto& r = data_.norm_data_[i];
-			auto yt = data_.norm_data_multiply_ * r.upper;
-			auto yb = data_.norm_data_multiply_ * r.lower;
+			auto yt = norm_data_multiply_ * r.upper;
+			auto yb = norm_data_multiply_ * r.lower;
 			double x = 100.0 * i / ( data_.norm_data_.size() - 1 );
 			norm_top_->addData( x, yt );
 			norm_bot_->addData( x, yb );

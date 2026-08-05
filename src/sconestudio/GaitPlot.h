@@ -39,6 +39,7 @@ namespace scone
 		QCPPlotTitle* plot_title_;
 		QCPGraph* norm_top_;
 		QCPGraph* norm_bot_;
+		double norm_data_multiply_;
 		double match_percentage_;
 		int base_graph_count_;
 		int base_item_count_;
