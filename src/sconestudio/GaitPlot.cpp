@@ -125,10 +125,10 @@ namespace scone
 		Real lookahead = sto.GetAverageFrameDuration() * GetStudioSetting<Real>( "gait_analysis.contact_timing_offset" );
 
 		// plot cycles and gather range and avg data
-		xo::boundsd range = xo::boundsd::no_bounds();
+		xo::boundsd value_range = xo::boundsd::no_bounds();
 		xo::boundsd plot_range{ data_.y_min_, data_.y_max_ };
 		xo::flat_map< double, double > avg_data;
-		auto event_line_extents = range.length() / 8;
+		auto event_line_extents = value_range.length() / 8;
 
 		for ( const auto& cycle : cycles ) {
 			bool right = cycle.side_ == Side::Right;
@@ -136,20 +136,21 @@ namespace scone
 			if ( !channels.empty() ) {
 				auto* graph = plot_cycles ? plot_->addGraph() : nullptr;
 				if ( graph ) graph->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
-				double factor = data_.mirror_left_ && !right ? -data_.channel_multiply_ : data_.channel_multiply_;
 				for ( Real perc : xo::frange<Real>( 0.0, 100.0, 0.5 ) ) {
 					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + perc * cycle.duration() / 100.0 - lookahead );
-					Real value = data_.channel_offset_ + factor * xo::average( channels, 0.0, [&]( Real v, index_t i ) { return v + f.value( i ); } );
+					auto sto_value = xo::average( channels, 0.0, [&]( Real v, index_t i ) { return v + f.value( i ); } );
+					auto value = data_.TransformValue( sto_value, cycle.side_ );
 					if ( graph ) graph->addData( perc, value );
 					avg_data[perc] += value / cycles.size();
-					range.extend( value );
+					value_range.extend( value );
 				}
 
 				// plot swing start point
 				if ( show_swing_start == 1 && plot_cycles ) {
 					auto t = 100.0 * cycle.stance_duration() / cycle.duration();
 					auto f = sto.ComputeInterpolatedFrame( cycle.begin_ + t * cycle.duration() / 100.0 - lookahead );
-					Real value = data_.channel_offset_ + factor * xo::average( channels, 0.0, [&]( Real v, index_t i ) { return v + f.value( i ); } );
+					auto sto_value = xo::average( channels, 0.0, [&]( Real v, index_t i ) { return v + f.value( i ); } );
+					auto value = data_.TransformValue( sto_value, cycle.side_ );
 					auto* line = new QCPItemLine( plot_ );
 					line->setPen( QPen( right ? Qt::red : Qt::blue, 1 ) );
 					plot_->addItem( line );
@@ -161,11 +162,11 @@ namespace scone
 		}
 
 		// extend plot range by value range here
-		plot_range.extend( range );
+		plot_range.extend( value_range );
 
 		// update norm data if normalize_norm_data is set
-		if ( data_.normalize_norm_data_ && data_.HasNormData() && data_.norm_data_mean_range_.upper > 0.0 ) {
-			norm_data_multiply_ = range.upper / data_.norm_data_mean_range_.upper;
+		if ( data_.MustNormalizeNormData() ) {
+			norm_data_multiply_ = data_.GetNormalizeNormDataFactor( value_range.upper );
 			setNormDataGraph();
 		}
 
@@ -196,7 +197,7 @@ namespace scone
 		if ( !avg_data.empty() && !data_.norm_data_.empty() ) {
 			double error = 0.0;
 			for ( index_t norm_idx = 0; norm_idx < data_.norm_data_.size(); ++norm_idx ) {
-				auto r = data_.norm_data_[norm_idx] * norm_data_multiply_;
+				auto r = norm_data_multiply_ * data_.norm_data_[norm_idx];
 				double x = 100.0 * norm_idx / ( data_.norm_data_.size() - 1 );
 				error += xo::abs( r.get_excess( xo::lerp_map( avg_data, x ) ) ) / xo::max( 0.01, r.length() );
 			}
