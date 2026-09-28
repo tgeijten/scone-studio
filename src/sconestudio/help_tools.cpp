@@ -38,7 +38,7 @@ namespace scone
 	void showAbout( QWidget* parent )
 	{
 		QString title = "<b>" + to_qt( "SCONE version " + xo::to_str( GetSconeVersion() ) ) + "</b><br><br>";
-		QString author = "Copyright (C) 2013 - 2025 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
+		QString author = "Copyright (C) 2013 - 2026 Thomas Geijtenbeek and contributors. All rights reserved.<br><br>";
 		QString scone_license =
 			"<b>SCONE</b> is licensed under the <a href='https://www.apache.org/licenses/LICENSE-2.0'>Apache License, Version 2.0</a>. "
 			"It uses the following external libraries:<ul>"
@@ -53,16 +53,16 @@ namespace scone
 			"<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
 			"</ul><br>";
 		QString studio_license =
-			"<b>SCONE Studio</b> is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU General Public License 3.0</a>. "
-			"It uses the following external libraries:<ul>"
-			"<li><a href='https://qt.io'>Qt</a> (GPL v3)"
-			"<li><a href='https://www.qcustomplot.com/'>QCustomPlot</a> (GPL v3)"
-			"<li><a href='http://www.openscenegraph.org/'>OpenSceneGraph</a> (OSGPL)"
-			"<li><a href='https://github.com/tgeijten/xo'>xo</a> (Apache 2.0)"
-			"<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
-			"<li><a href='https://github.com/tgeijten/vis'>vis</a> (Apache 2.0)"
-			"<li><a href='https://github.com/tgeijten/qtfx'>qtfx</a> (Apache 2.0)"
-			"</ul>";
+			QString( "<b>SCONE Studio</b> is licensed under the <a href='https://www.gnu.org/licenses/gpl-3.0.en.html'>GNU General Public License 3.0</a>. " )
+			+ "It uses the following external libraries:<ul>"
+			+ "<li><a href='https://qt.io'>Qt " + qVersion() + "</a> (GPL v3)"
+			+ "<li><a href='https://www.qcustomplot.com/'>QCustomPlot</a> (GPL v3)"
+			+ "<li><a href='http://www.openscenegraph.org/'>OpenSceneGraph</a> (OSGPL)"
+			+ "<li><a href='https://github.com/tgeijten/xo'>xo</a> (Apache 2.0)"
+			+ "<li><a href='https://github.com/tgeijten/spot'>spot</a> (Apache 2.0)"
+			+ "<li><a href='https://github.com/tgeijten/vis'>vis</a> (Apache 2.0)"
+			+ "<li><a href='https://github.com/tgeijten/qtfx'>qtfx</a> (Apache 2.0)"
+			+ "</ul>";
 
 		QString hyfydy_license =
 			"The SCONE Studio installer includes the proprietary <b>Hyfydy</b> plugin (<a href='https://hyfydy.com'>hyfydy.com</a>), which is dynamically loaded by the underlying SCONE library. "
