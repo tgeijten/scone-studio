@@ -875,7 +875,7 @@ void SconeStudio::fileSaveAsTriggered()
 		if ( auto* s = getActiveCodeEditor() )
 		{
 			// apparently, the mess below is needed to setup the (trivially) correct file filter in Qt
-			QString scone_file = "SCONE scenario (*.scone *.xml)";
+			QString scone_file = "SCONE scenario (*.scone *.zml)";
 			QString lua_file = "Lua script (*.lua)";
 			QString model_file = "Model file (*.hfd *.osim *.bp)";
 			QString ext = QFileInfo( s->fileName ).suffix();
@@ -885,8 +885,15 @@ void SconeStudio::fileSaveAsTriggered()
 			else if ( ext == "lua" ) default_filter = &lua_file;
 			else if ( ext == "hfd" || ext == "osim" || ext == "bp" ) default_filter = &model_file;
 
-			// we can finally make the actual call
+			// the cursor in the file dialog remains hidden if the code editor has focus
+			bool hasFocus = s->hasFocus();
+			if ( hasFocus )
+				s->clearFocus();
+
+			// create and show the dialog, using explicit QFileDialog to allow use_alternative_file_dialog_window
 			QFileDialog dlg( this, "Save File As", s->fileName, filter );
+			if ( default_filter )
+				dlg.selectNameFilter( *default_filter );
 			dlg.setAcceptMode( QFileDialog::AcceptSave );
 			dlg.setOption( QFileDialog::DontUseNativeDialog, scone::GetStudioSetting<bool>( "ui.use_alternative_file_dialog_windows" ) );
 			if ( dlg.exec() == QDialog::Accepted && !dlg.selectedFiles().empty() )
@@ -899,6 +906,10 @@ void SconeStudio::fileSaveAsTriggered()
 				updateRecentFilesMenu( s->fileName );
 				createAndVerifyActiveScenario( true );
 			}
+
+			// restore focus to editor widget
+			if ( hasFocus )
+				s->setFocus();
 		}
 	}
 	catch ( std::exception& e ) { error( "Error saving file", e.what() ); }
