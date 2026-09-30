@@ -1,6 +1,36 @@
 ~~NOCACHE~~
 ====== SCONE Version History ======
 
+==== SCONE 2.4.5 ====
+//Released September 30, 2026 //
+
+=== New Features ===
+  * ReactionForceMeasure now supports GRF velocity and acceleration penalty
+  * sconepy.Body pos(), vel(), acc(), local_com_pos(), local_pos(), has_parent(), set_com_pos()
+  * LuaBody point_acc(), set_external_force(), set_external_force_at(), set_external_moment(), clear_external_force_moment()
+  * Added LuaBody pos(), vel(), acc(), local_com_pos(), local_pos(), set_pos(); U: LuaBody documentation
+  * Initial working version of GaitAnalysisMeasure
+  * Hyfydy Model Info now shows rotational_damping
+  * Hyfydy models now support name, version, credits, publications, license and minimum_required_version
+
+=== Updates ===
+  * GaitData now supports norm_data_multiply
+  * Gait analysis data now supports norm_mean / norm_std in addition to norm_min / norm_max
+  * Include planar in Model Info
+  * Gait Analysis now have normalize_norm_data setting to normalize norm data based on simulation results (useful for comparing muscle activation to EMG)
+  * GaitPlots can now use the average of multiple data channels
+  * renamed setting plot_step_frame_lead -> contact_timing_offset
+
+=== Fixes ===
+  * BodyMeasure angular_acceleration penalty now works correctly
+  * Fixed issue where the cursor would be hidden in the Save As dialog
+  * GaitAnalysis score now skips plots that have no data
+  * Hyfydy fixes
+    * models with only pin_joints are now initialized correctly
+    * Custom activation_rate / deactivation_rate now works correctly in ModelHyfydy
+    * replaced use_legacy_scapular_joint_force setting with force_model
+    * scapular_joint ellipsoid visualization
+
 ==== SCONE 2.4.4 ====
 //Released June 4, 2026//
 
