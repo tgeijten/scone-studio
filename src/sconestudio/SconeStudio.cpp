@@ -799,7 +799,7 @@ void SconeStudio::updateVisualization()
 			if ( scenario_->GetViewOptions().get<ViewOption::FollowCamera>() )
 				ui.osgViewer->setFocusPoint( fp );
 			else ui.osgViewer->setTrackingPoint( fp );
-		}
+		} else ui.osgViewer->setFocusPoint( osg::Vec3() );
 		scenario_->SetVisFocusPoint( scone::Vec3( ui.osgViewer->getCameraMan().getFocusPoint() ) );
 		ui.osgViewer->setFrameTime( current_time );
 
