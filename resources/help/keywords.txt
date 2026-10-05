@@ -19,6 +19,7 @@ es_optimizer.txt
 external_controller.txt
 feed_forward_controller.txt
 function.txt
+gait_analysis_measure.txt
 gait_cycle_measure.txt
 gait_measure.txt
 gait_state_controller.txt

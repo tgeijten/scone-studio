@@ -2,14 +2,14 @@
 ====== SCONE Version History ======
 
 ==== SCONE 2.4.5 ====
-//Released September 30, 2026 //
+//Released October 5, 2026//
 
 === New Features ===
+  * New GaitAnalysisMeasure for optimizing gait to match existing gait analysis data
   * ReactionForceMeasure now supports GRF velocity and acceleration penalty
   * sconepy.Body pos(), vel(), acc(), local_com_pos(), local_pos(), has_parent(), set_com_pos()
   * LuaBody point_acc(), set_external_force(), set_external_force_at(), set_external_moment(), clear_external_force_moment()
   * Added LuaBody pos(), vel(), acc(), local_com_pos(), local_pos(), set_pos(); U: LuaBody documentation
-  * Initial working version of GaitAnalysisMeasure
   * Hyfydy Model Info now shows rotational_damping
   * Hyfydy models now support name, version, credits, publications, license and minimum_required_version
 
